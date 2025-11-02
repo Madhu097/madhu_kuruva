@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
-import resumePdf from '../assets/madhu resume.pdf';
+  
 
 export default function Hero() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -152,7 +152,7 @@ export default function Hero() {
               data-magnetic
               className="group px-6 sm:px-8 py-3 sm:py-4 border-2 border-cyan-400 text-cyan-400 rounded-full font-medium relative overflow-hidden transition-all duration-300 hover:bg-cyan-400/10 text-sm sm:text-base"
             >
-              <a href={resumePdf} target="_blank" rel="noreferrer"><span className="relative z-10">Download Resume</span></a>
+              <a href="src/public/madhu Resume.pdf" target="_blank" rel="noopener noreferrer"><span className="relative z-10">Download Resume</span></a>
             </button>
           </div>
         </div>
