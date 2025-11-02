@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Code2, Palette, Zap } from 'lucide-react';
+import profilePic from '../assets/madhu pic.jpg';
 
 export default function About() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -109,11 +110,11 @@ export default function About() {
               style={{ transformStyle: 'preserve-3d' }}
             >
               <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 to-purple-600 opacity-80" />
-              <img
-                src="src/assets/madhu pic.jpg"
-                alt="Profile"
-                className="w-full h-full object-cover mix-blend-overlay"
-              />
+                <img
+                  src={profilePic}
+                  alt="Profile"
+                  className="w-full h-full object-cover mix-blend-overlay"
+                />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a14] via-transparent to-transparent" />
             </div>
 

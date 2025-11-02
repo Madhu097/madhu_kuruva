@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { ExternalLink, Github } from 'lucide-react';
+import DesignerImg from '../assets/Designer.jpg';
+import FoodImg from '../assets/food remainder.png';
+import HomecoImg from '../assets/homeco.png';
 
 export default function Portfolio() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -30,7 +33,7 @@ export default function Portfolio() {
       title: 'E-Commerce Platform',
       category: 'web',
       description: 'A modern e-commerce platform with real-time inventory management',
-      image: 'src/assets/Designer.jpg',
+  image: DesignerImg,
       tags: ['Html', 'Css', 'JavaScript'],
       gradient: 'from-cyan-500 to-blue-500',
       github: 'https://github.com/Madhu097/shopify',
@@ -41,7 +44,7 @@ export default function Portfolio() {
       title: 'Food Remainder',
       category: 'design',
       description: 'A food remainder app with real-time inventory management',
-      image: 'src/assets/food remainder.png',
+  image: FoodImg,
       tags: ['react', 'nodejs', 'postgresql'],
       gradient: 'from-purple-500 to-pink-500',
       github: 'https://github.com/Madhu097/foodremainder',
@@ -52,7 +55,7 @@ export default function Portfolio() {
       title: 'HomeCo Services',
       category: 'web',
       description: 'A home services website find all type of services ',
-      image: 'src/assets/homeco.png',
+  image: HomecoImg,
       tags: ['react', 'javascript', 'firebase'],
       gradient: 'from-blue-500 to-purple-500',
       github: 'https://github.com/Madhu097/HomeCo-Service',
