@@ -32,7 +32,7 @@ export default function Portfolio() {
       title: 'E-Commerce Platform',
       category: 'web',
       description: 'A modern e-commerce platform with real-time inventory management',
-      image:'src/assets/Designer.jpg',
+      image:DesignerImg,
       tags: ['Html', 'Css', 'JavaScript'],
       gradient: 'from-cyan-500 to-blue-500',
       github: 'https://github.com/Madhu097/shopify',
