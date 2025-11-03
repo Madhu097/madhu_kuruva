@@ -2,10 +2,10 @@ import { useEffect } from 'react';
 
 export default function ScrollAnimations() {
   useEffect(() => {
-  let rafId: number;
+    let rafId: number;
 
     const handleScroll = () => {
-  const scrollY = window.scrollY;
+      const scrollY = window.scrollY;
 
       const elements = document.querySelectorAll('[data-scroll-reveal]');
       elements.forEach((element) => {

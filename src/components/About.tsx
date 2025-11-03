@@ -115,6 +115,11 @@ export default function About() {
                   alt="Profile"
                   className="w-full h-full object-cover mix-blend-overlay"
                 />
+              <img
+                src="src/assets/madhu pic.jpg"
+                alt="Profile"
+                className="w-full h-full object-cover mix-blend-overlay"
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a14] via-transparent to-transparent" />
             </div>
 
