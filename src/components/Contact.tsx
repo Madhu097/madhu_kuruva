@@ -2,6 +2,9 @@ import { useState, useEffect, useRef, type FormEvent, type ChangeEvent } from 'r
 import emailjs from '@emailjs/browser';
 import { Send, Mail, Linkedin, Github, Twitter, PhoneCall } from 'lucide-react';
 
+// Initialize EmailJS with public key
+emailjs.init(import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '');
+
 export default function Contact() {
   const sectionRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -18,6 +21,15 @@ export default function Contact() {
   const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
   const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
   const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+  useEffect(() => {
+    // Debug log to check environment variables
+    console.log('EmailJS Config:', {
+      serviceId: EMAILJS_SERVICE_ID,
+      templateId: EMAILJS_TEMPLATE_ID,
+      publicKey: EMAILJS_PUBLIC_KEY
+    });
+  }, [EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, EMAILJS_PUBLIC_KEY]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
