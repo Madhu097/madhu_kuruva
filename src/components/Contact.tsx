@@ -215,7 +215,7 @@ export default function Contact() {
                   required
                   rows={4}
                   className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white placeholder-gray-500 text-sm sm:text-base focus:outline-none focus:border-cyan-500 transition-all duration-300 resize-none"
-                  placeholder="Tell me about your project..."
+                  placeholder="Tell me about your project or collabration..."
                 />
               </div>
 
