@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef, type FormEvent, type ChangeEvent } from 'react';
+import { useState, useEffect, useRef, type FormEvent, type ChangeEvent, type MouseEvent } from 'react';
 import emailjs from '@emailjs/browser';
-import { Send, Mail, Linkedin, Github, Twitter, PhoneCall } from 'lucide-react';
+import { Send, Mail, Linkedin, Github, Twitter, PhoneCall, MessageCircle } from 'lucide-react';
 
 // Initialize EmailJS with public key
 emailjs.init(import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '');
@@ -107,9 +107,14 @@ export default function Contact() {
     { icon: Github, label: 'GitHub', href: 'https://github.com/Madhu097', color: 'hover:text-white' },
     { icon: Linkedin, label: 'LinkedIn', href: 'https://www.linkedin.com/in/madhukuruva9/', color: 'hover:text-blue-400' },
     { icon: Twitter, label: 'Twitter', href: '#', color: 'hover:text-cyan-400' },
-    { icon: Mail, label: 'Email', href: 'Mailto:madhukuruva20@gmail.com', color: 'hover:text-purple-400' },
+    { icon: MessageCircle, label: 'WhatsApp', href: 'https://wa.me/916281198769', color: 'hover:text-green-400' },
     { icon: PhoneCall, label: 'Call', href: 'tel:+916281198769', color: 'hover:text-emerald-400' },
   ];
+
+  const handleEmailClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    // Let the mailto link work naturally
+    // No preventDefault needed - the href will handle it
+  };
 
   return (
     <section ref={sectionRef} className="min-h-screen bg-[#0a0a14] py-16 sm:py-24 md:py-32 px-4 sm:px-6 relative overflow-hidden">
@@ -139,15 +144,19 @@ export default function Contact() {
             </div>
 
             <div className="space-y-4 md:space-y-6">
-              <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl hover:border-cyan-500/50 transition-all duration-300">
-                <div className="w-10 sm:w-12 h-10 sm:h-12 bg-gradient-to-br from-cyan-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Mail className="w-5 sm:w-6 h-5 sm:h-6 text-white" />
+              <a
+                href="mailto:madhukuruva20@gmail.com"
+                onClick={handleEmailClick}
+                className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl hover:border-cyan-500/50 transition-all duration-300"
+              >
+                <div className="w-10 sm:w-12 h-10 sm:h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <MessageCircle className="w-5 sm:w-6 h-5 sm:h-6 text-white" />
                 </div>
                 <div>
                   <p className="text-gray-400 text-xs sm:text-sm">Email</p>
                   <p className="text-white font-medium text-sm sm:text-base">Madhukuruva20@gmail.com</p>
                 </div>
-              </div>
+              </a>
 
               <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl hover:border-cyan-500/50 transition-all duration-300">
                 <div className="w-10 sm:w-12 h-10 sm:h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center flex-shrink-0">

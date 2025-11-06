@@ -4,6 +4,7 @@ import Hero from './components/Hero';
 import About from './components/About';
 import Skills from './components/Skills';
 import Portfolio from './components/Portfolio';
+import Certifications from './components/Certifications';
 import Contact from './components/Contact';
 import ScrollAnimations from './components/ScrollAnimations';
 
@@ -23,6 +24,7 @@ function App() {
       <About />
       <Skills />
       <Portfolio />
+      <Certifications />
       <Contact />
     </div>
   );

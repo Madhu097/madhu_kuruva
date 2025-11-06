@@ -106,7 +106,7 @@ export default function Hero() {
       <div className="relative z-10 flex flex-col items-center justify-center h-full px-4 sm:px-6">
         <div className="text-center space-y-4 sm:space-y-6">
           <div className="overflow-hidden">
-            <h1 ref={nameRef} className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-bold tracking-tight text-white leading-tight">
+            <h1 ref={nameRef} className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold tracking-tight text-white leading-tight">
               {'MADHU KURUVA'.split('').map((char, i) => (
                 <span
                   key={i}
