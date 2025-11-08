@@ -1,7 +1,11 @@
 {
   "framework": "vite",
+  "installCommand": "npm ci",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "env": {
+    "ROLLUP_DISABLE_NATIVE": "1"
+  },
   "rewrites": [
     {
       "source": "/(.*)",
