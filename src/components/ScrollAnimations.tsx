@@ -3,12 +3,17 @@ import { useEffect } from 'react';
 export default function ScrollAnimations() {
   useEffect(() => {
     let rafId: number;
+    const revealElements = Array.from(document.querySelectorAll('[data-scroll-reveal]'));
+    const parallaxElements = Array.from(
+      document.querySelectorAll('[data-parallax]')
+    ) as HTMLElement[];
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const handleScroll = () => {
       const scrollY = window.scrollY;
 
-      const elements = document.querySelectorAll('[data-scroll-reveal]');
-      elements.forEach((element) => {
+      revealElements.forEach((element) => {
         const rect = element.getBoundingClientRect();
         const windowHeight = window.innerHeight;
         const elementMid = rect.top + rect.height / 2;
@@ -19,11 +24,14 @@ export default function ScrollAnimations() {
         }
       });
 
-      const parallaxElements = document.querySelectorAll('[data-parallax]');
+      if (prefersReducedMotion) {
+        return;
+      }
+
       parallaxElements.forEach((element) => {
         const speed = parseFloat(element.getAttribute('data-parallax') || '0.5');
         const yPos = -(scrollY * speed);
-        (element as HTMLElement).style.transform = `translateY(${yPos}px)`;
+        element.style.transform = `translate3d(0, ${yPos}px, 0)`;
       });
     };
 
@@ -42,38 +50,71 @@ export default function ScrollAnimations() {
   }, []);
 
   useEffect(() => {
-    const magneticElements = document.querySelectorAll('[data-magnetic]');
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+      return;
+    }
 
-    magneticElements.forEach((element) => {
-      const el = element as HTMLElement;
+    const magneticElements = Array.from(
+      document.querySelectorAll('[data-magnetic]')
+    ) as HTMLElement[];
+
+    const cleanupFns = magneticElements.map((el) => {
+      let rafId: number | null = null;
+      let targetX = 0;
+      let targetY = 0;
+
+      const updatePosition = () => {
+        rafId = null;
+        el.style.transform = `translate3d(${targetX}px, ${targetY}px, 0)`;
+      };
 
       const handleMouseMove = (e: MouseEvent) => {
         const rect = el.getBoundingClientRect();
         const x = e.clientX - rect.left - rect.width / 2;
         const y = e.clientY - rect.top - rect.height / 2;
 
-        const maxDistance = 20;
+        const maxDistance = 18;
         const distance = Math.sqrt(x * x + y * y);
         const strength = Math.min(distance / 100, 1);
 
-        const moveX = (x / rect.width) * maxDistance * strength;
-        const moveY = (y / rect.height) * maxDistance * strength;
+        targetX = (x / rect.width) * maxDistance * strength;
+        targetY = (y / rect.height) * maxDistance * strength;
 
-        el.style.transform = `translate(${moveX}px, ${moveY}px)`;
+        if (rafId == null) {
+          rafId = requestAnimationFrame(updatePosition);
+        }
       };
 
       const handleMouseLeave = () => {
-        el.style.transform = 'translate(0, 0)';
+        targetX = 0;
+        targetY = 0;
+        if (rafId == null) {
+          el.style.transform = 'translate3d(0, 0, 0)';
+        } else {
+          cancelAnimationFrame(rafId);
+          rafId = requestAnimationFrame(updatePosition);
+        }
       };
 
+      el.style.willChange = 'transform';
       el.addEventListener('mousemove', handleMouseMove);
       el.addEventListener('mouseleave', handleMouseLeave);
 
       return () => {
+        if (rafId != null) {
+          cancelAnimationFrame(rafId);
+        }
+        el.style.willChange = '';
         el.removeEventListener('mousemove', handleMouseMove);
         el.removeEventListener('mouseleave', handleMouseLeave);
+        el.style.transform = 'translate3d(0, 0, 0)';
       };
     });
+
+    return () => {
+      cleanupFns.forEach((cleanup) => cleanup());
+    };
   }, []);
 
   return null;

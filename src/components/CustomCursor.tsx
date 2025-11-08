@@ -1,64 +1,91 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function CustomCursor() {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const outerRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const frameRef = useRef<number | null>(null);
+  const latestPosition = useRef({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const updateCursor = (e: MouseEvent) => {
-      setPosition({ x: e.clientX, y: e.clientY });
-      if (!isVisible) setIsVisible(true);
+    const updatePosition = () => {
+      frameRef.current = null;
+      const { x, y } = latestPosition.current;
+      const baseTransform = `translate3d(${x}px, ${y}px, 0)`;
+
+      if (outerRef.current) {
+        outerRef.current.style.transform = `${baseTransform} translate3d(-50%, -50%, 0)`;
+      }
+      if (innerRef.current) {
+        innerRef.current.style.transform = `${baseTransform} translate3d(-50%, -50%, 0)`;
+      }
     };
 
-    const handleMouseEnter = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
+    const handleMouseMove = (event: MouseEvent) => {
+      latestPosition.current = { x: event.clientX, y: event.clientY };
+      if (!isVisible) {
+        setIsVisible(true);
+      }
+
+      if (frameRef.current == null) {
+        frameRef.current = requestAnimationFrame(updatePosition);
+      }
+    };
+
+    const handleMouseEnter = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
       if (target.matches('a, button, [data-magnetic]')) {
         setIsHovering(true);
       }
     };
 
-    const handleMouseLeave = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
+    const handleMouseLeave = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
       if (target.matches('a, button, [data-magnetic]')) {
         setIsHovering(false);
       }
     };
 
-    window.addEventListener('mousemove', updateCursor);
+    window.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseenter', handleMouseEnter, true);
     document.addEventListener('mouseleave', handleMouseLeave, true);
 
     return () => {
-      window.removeEventListener('mousemove', updateCursor);
+      if (frameRef.current) {
+        cancelAnimationFrame(frameRef.current);
+      }
+      window.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseenter', handleMouseEnter, true);
       document.removeEventListener('mouseleave', handleMouseLeave, true);
     };
   }, [isVisible]);
 
-  if (!isVisible) return null;
+  if (!isVisible) {
+    return null;
+  }
 
   return (
     <>
       <div
-        className="fixed pointer-events-none z-[9999] mix-blend-difference transition-transform duration-200 ease-out"
-        style={{
-          left: `${position.x}px`,
-          top: `${position.y}px`,
-          transform: `translate(-50%, -50%) scale(${isHovering ? 1.5 : 1})`,
-        }}
+        ref={outerRef}
+        className={`fixed pointer-events-none z-[9999] mix-blend-difference transition-transform duration-150 ease-out ${
+          isHovering ? 'scale-125' : 'scale-100'
+        }`}
+        style={{ willChange: 'transform' }}
       >
         <div className="w-8 h-8 border-2 border-cyan-400 rounded-full" />
       </div>
       <div
-        className="fixed pointer-events-none z-[9998] transition-all duration-100 ease-out"
-        style={{
-          left: `${position.x}px`,
-          top: `${position.y}px`,
-          transform: 'translate(-50%, -50%)',
-        }}
+        ref={innerRef}
+        className="fixed pointer-events-none z-[9998] transition-transform duration-100 ease-out"
+        style={{ willChange: 'transform' }}
       >
-        <div className={`w-2 h-2 bg-cyan-400 rounded-full transition-all duration-200 ${isHovering ? 'scale-150' : 'scale-100'}`} />
+        <div
+          className={`w-2 h-2 bg-cyan-400 rounded-full transition-transform duration-150 ${
+            isHovering ? 'scale-150' : 'scale-100'
+          }`}
+        />
       </div>
     </>
   );
