@@ -61,6 +61,7 @@ export default function Portfolio() {
       github: 'https://github.com/Madhu097/HomeCo-Service',
       live: 'https://homeco-service.onrender.com/',
     },
+    /*
     {
       id: 4,
       title: 'Mobile Fitness App',
@@ -93,7 +94,7 @@ export default function Portfolio() {
       gradient: 'from-orange-500 to-cyan-500',
       github: 'https://github.com/yourname/realtime-collaboration',
       live: 'https://collab.example.com',
-    },
+    },*/
   ];
 
   const filters = ['all'];

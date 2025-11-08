@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Code2, Layers, Zap, Database, Palette, Globe } from 'lucide-react';
+import { Code2, Layers, Zap, Database, Palette, Globe, Terminal } from 'lucide-react';
 
 export default function Skills() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -38,32 +38,39 @@ export default function Skills() {
       delay: 100,
     },
     {
+      icon: Terminal,
+      name: 'Python & Java',
+      description: 'Data science, automation, and OOP development',
+      color: 'from-yellow-500 to-red-600',
+      delay: 200,
+    },
+    {
       icon: Zap,
       name: 'Animation & Motion',
       description: 'Framer Motion, CSS animations',
       color: 'from-purple-500 to-pink-500',
-      delay: 200,
+      delay: 300,
     },
     {
       icon: Database,
       name: 'Database & APIs',
       description: 'SQL, MongoDB, PostgersQL',
       color: 'from-pink-500 to-rose-500',
-      delay: 300,
+      delay: 400,
     },
     {
       icon: Palette,
       name: 'UI/UX Design',
       description: 'Figma, Canva, design systems',
       color: 'from-rose-500 to-orange-500',
-      delay: 400,
+      delay: 500,
     },
     {
       icon: Globe,
       name: 'Tools',
       description: 'Git, GitHub, Docker, AWS, VS code',
       color: 'from-orange-500 to-cyan-500',
-      delay: 500,
+      delay: 600,
     },
   ];
 

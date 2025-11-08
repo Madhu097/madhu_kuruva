@@ -55,7 +55,7 @@ export default function About() {
 
   const education = [
     { year: '2026', title: 'BTech in Computer Science', institute: 'Malla Reddy Engineering College And Management Science', status: 'Current' },
-    { year: '2023', title: 'Dipmolo - Ece Stream', institute: 'Anurag Engineering College', status: 'Completed' },
+    { year: '2023', title: 'Diploma - ECE Stream', institute: 'Anurag Engineering College', status: 'Completed' },
     { year: '2020', title: '10th Grade', institute: 'SR High School', status: 'Completed' },
   ];
 
