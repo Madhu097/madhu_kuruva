@@ -4,6 +4,7 @@ import { resolve } from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: '/madhu_kuruva/',
   plugins: [react()],
   optimizeDeps: {
     exclude: ['lucide-react'],
