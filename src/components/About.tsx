@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Code2, Palette, Zap } from 'lucide-react';
-import profilePic from '../assets/madhu pic.jpg';
+import profilePic from '../assets/madhu .jpg';
 
 export default function About() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -23,33 +23,31 @@ export default function About() {
 
     return () => observer.disconnect();
   }, []);
+
   useEffect(() => {
+    const imgElement = imageRef.current;
+    if (!imgElement) return;
+
     const handleMouseMove = (e: MouseEvent) => {
-      if (!imageRef.current) return;
-      const rect = imageRef.current.getBoundingClientRect();
+      const rect = imgElement.getBoundingClientRect();
       const x = e.clientX - rect.left - rect.width / 2;
       const y = e.clientY - rect.top - rect.height / 2;
-      const rotateX = (y / rect.height) * 10;
-      const rotateY = (x / rect.width) * -10;
-      imageRef.current.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      const rotateX = (y / rect.height) * 15;
+      const rotateY = (x / rect.width) * -15;
+      
+      imgElement.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
     };
 
     const handleMouseLeave = () => {
-      if (!imageRef.current) return;
-      imageRef.current.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+      imgElement.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
     };
 
-    const imgElement = imageRef.current;
-    if (imgElement) {
-      imgElement.addEventListener('mousemove', handleMouseMove);
-      imgElement.addEventListener('mouseleave', handleMouseLeave);
-    }
+    imgElement.addEventListener('mousemove', handleMouseMove);
+    imgElement.addEventListener('mouseleave', handleMouseLeave);
 
     return () => {
-      if (imgElement) {
-        imgElement.removeEventListener('mousemove', handleMouseMove);
-        imgElement.removeEventListener('mouseleave', handleMouseLeave);
-      }
+      imgElement.removeEventListener('mousemove', handleMouseMove);
+      imgElement.removeEventListener('mouseleave', handleMouseLeave);
     };
   }, []);
 
@@ -106,21 +104,14 @@ export default function About() {
           <div className={`space-y-6 md:space-y-8 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-20'}`}>
             <div
               ref={imageRef}
-              className="relative aspect-square rounded-2xl overflow-hidden transition-transform duration-300 ease-out"
-              style={{ transformStyle: 'preserve-3d' }}
+              className="relative aspect-square rounded-2xl overflow-hidden transition-all duration-500 ease-out"
+              style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 to-purple-600 opacity-80" />
-                <img
-                  src={profilePic}
-                  alt="Profile"
-                  className="w-full h-full object-cover mix-blend-overlay"
-                />
               <img
-                src="src/assets/madhu pic.jpg"
+                src={profilePic}
                 alt="Profile"
-                className="w-full h-full object-cover mix-blend-overlay"
+                className="w-full h-full object-cover pointer-events-none"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a14] via-transparent to-transparent" />
             </div>
 
             <div className="space-y-3 sm:space-y-4">

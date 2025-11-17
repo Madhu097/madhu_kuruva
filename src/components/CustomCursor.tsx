@@ -34,15 +34,15 @@ export default function CustomCursor() {
     };
 
     const handleMouseEnter = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (target.matches('a, button, [data-magnetic]')) {
+      const target = event.target;
+      if (target instanceof Element && target.matches('a, button, [data-magnetic]')) {
         setIsHovering(true);
       }
     };
 
     const handleMouseLeave = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (target.matches('a, button, [data-magnetic]')) {
+      const target = event.target;
+      if (target instanceof Element && target.matches('a, button, [data-magnetic]')) {
         setIsHovering(false);
       }
     };
