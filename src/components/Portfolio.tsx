@@ -152,6 +152,8 @@ export default function Portfolio() {
                   src={project.image}
                   alt={project.title}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div className={`absolute inset-0 bg-gradient-to-br ${project.gradient} opacity-40 mix-blend-overlay transition-opacity duration-500 group-hover:opacity-60`} />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a14] via-transparent to-transparent opacity-60" />
@@ -219,6 +221,8 @@ export default function Portfolio() {
                       src={activeProject.image}
                       alt={activeProject.title}
                       className="w-full h-64 object-cover rounded-xl mb-6"
+                      loading="lazy"
+                      decoding="async"
                     />
                     <h3 className="text-4xl font-bold text-white mb-4">
                       {activeProject.title}

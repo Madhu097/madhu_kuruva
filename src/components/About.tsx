@@ -111,6 +111,9 @@ export default function About() {
                 src={profilePic}
                 alt="Profile"
                 className="w-full h-full object-cover pointer-events-none"
+                loading="eager"
+                decoding="async"
+                fetchPriority="high"
               />
             </div>
 
