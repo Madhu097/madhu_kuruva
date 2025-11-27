@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Code2, Palette, Zap } from 'lucide-react';
-import profilePic from '../assets/madhu .jpg';
+import profilePic from '../assets/madhu.jpeg';
 
 export default function About() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -109,11 +109,13 @@ export default function About() {
             >
               <img
                 src={profilePic}
-                alt="Profile"
+                alt="Madhu Kuruva - Full Stack Developer"
                 className="w-full h-full object-cover pointer-events-none"
                 loading="eager"
                 decoding="async"
                 fetchPriority="high"
+                width="800"
+                height="800"
               />
             </div>
 

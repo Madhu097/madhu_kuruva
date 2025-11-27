@@ -106,7 +106,7 @@ export default function Hero() {
       <div className="relative z-10 flex flex-col items-center justify-center h-full px-4 sm:px-6">
         <div className="text-center space-y-4 sm:space-y-6">
           <div className="overflow-hidden">
-            <h1 ref={nameRef} className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold tracking-tight text-white leading-tight">
+            <h1 ref={nameRef} className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-bold tracking-tight text-white leading-tight">
               {'MADHU KURUVA'.split('').map((char, i) => (
                 <span
                   key={i}
@@ -152,7 +152,7 @@ export default function Hero() {
               data-magnetic
               className="group px-6 sm:px-8 py-3 sm:py-4 border-2 border-cyan-400 text-cyan-400 rounded-full font-medium relative overflow-hidden transition-all duration-300 hover:bg-cyan-400/10 text-sm sm:text-base"
             >
-              <a href="src/assets/Madhu Resume.pdf" target="_blank" rel="noopener noreferrer"><span className="relative z-10">Download Resume</span></a>
+              <a href="src/public/madhu Resume.pdf" target="_blank" rel="noopener noreferrer"><span className="relative z-10">Download Resume</span></a>
             </button>
           </div>
         </div>
