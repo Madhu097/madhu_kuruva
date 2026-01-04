@@ -48,7 +48,7 @@ export default function Portfolio() {
       tags: ['react', 'nodejs', 'postgresql'],
       gradient: 'from-purple-500 to-pink-500',
       github: 'https://github.com/Madhu097/foodremainder',
-      live: 'https://foodremainder.onrender.com/',
+      live: 'https://foodremainder.vercel.app/',
     },
     {
       id: 3,
