@@ -3,6 +3,7 @@ import { ExternalLink, Github } from 'lucide-react';
 import DesignerImg from '../assets/Designer.jpg';
 import FoodImg from '../assets/food remainder.png';
 import HomecoImg from '../assets/homeco.png';
+import Habitracker from '../assets/habit tracking.png';
 
 export default function Portfolio() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -55,24 +56,25 @@ export default function Portfolio() {
       title: 'HomeCo Services',
       category: 'web',
       description: 'A home services website find all type of services ',
-  image: HomecoImg,
+      image: HomecoImg,
       tags: ['react', 'javascript', 'firebase'],
       gradient: 'from-blue-500 to-purple-500',
       github: 'https://github.com/Madhu097/HomeCo-Service',
       live: 'https://homeco-service.onrender.com/',
     },
-    /*
+    
     {
       id: 4,
-      title: 'Mobile Fitness App',
-      category: 'mobile',
-      description: 'AI-powered fitness tracking app with personalized workout recommendations',
-      image: 'https://images.pexels.com/photos/841130/pexels-photo-841130.jpeg?auto=compress&cs=tinysrgb&w=800',
+      title: 'Habit tracker web App',
+      category: 'web',
+      description: 'A web application to track and manage daily habits effectively',
+      image: Habitracker,
       tags: ['React Native', 'TensorFlow', 'Firebase'],
-      gradient: 'from-pink-500 to-rose-500',
-      github: 'https://github.com/yourname/mobile-fitness-app',
-      live: 'https://fitnessapp.example.com',
+      gradient: 'from-green-500 to-teal-500',
+      github: 'https://github.com/Madhu097/Habit-tracker',
+      live: 'https://habit-trackings.vercel.app/',
     },
+    /*
     {
       id: 5,
       title: 'Brand Identity System',
@@ -165,7 +167,7 @@ export default function Portfolio() {
                     href={project.github}
                     target="_blank"
                     rel="noreferrer"
-                    className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
+                    className="w-10 h-10 bg-gray-900/90 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-cyan-500 border border-white/20 hover:border-cyan-400 transition-all duration-300 shadow-lg"
                     onClick={(e) => e.stopPropagation()}
                     aria-label={`${project.title} GitHub`}
                   >
@@ -175,7 +177,7 @@ export default function Portfolio() {
                     href={project.live}
                     target="_blank"
                     rel="noreferrer"
-                    className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
+                    className="w-10 h-10 bg-gray-900/90 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-purple-600 border border-white/20 hover:border-purple-400 transition-all duration-300 shadow-lg"
                     onClick={(e) => e.stopPropagation()}
                     aria-label={`${project.title} Live Demo`}
                   >
