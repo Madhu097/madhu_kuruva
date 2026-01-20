@@ -15,9 +15,7 @@
     "preview": "cross-env ROLLUP_DISABLE_NATIVE=1 vite preview",
     "predeploy": "npm run build:gh",
     "deploy": "gh-pages -d dist",
-    "typecheck": "tsc --noEmit -p tsconfig.app.json",
-    "build": "next build",
-    "postbuild": "next-sitemap"
+    "typecheck": "tsc --noEmit -p tsconfig.app.json"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
