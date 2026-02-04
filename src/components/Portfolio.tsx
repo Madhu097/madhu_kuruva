@@ -4,6 +4,7 @@ import DesignerImg from '../assets/Designer.jpg';
 import FoodImg from '../assets/food remainder.png';
 import HomecoImg from '../assets/homeco.png';
 import Habitracker from '../assets/habit tracking.png';
+import RealestateImg from '../assets/realestate.jpg';
 
 export default function Portfolio() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -67,25 +68,26 @@ export default function Portfolio() {
       id: 4,
       title: 'Habit tracker web App',
       category: 'web',
-      description: 'A web application to track and manage daily habits effectively',
+      description: 'Track all your habits in one place with HabitFlow,goals,steak,monthly report and more',
       image: Habitracker,
       tags: ['React Native', 'TensorFlow', 'Firebase'],
       gradient: 'from-green-500 to-teal-500',
       github: 'https://github.com/Madhu097/Habit-tracker',
       live: 'https://habit-trackings.vercel.app/',
     },
-    /*
+   
     {
       id: 5,
-      title: 'Brand Identity System',
-      category: 'design',
-      description: 'Complete brand identity and design system for a tech startup',
-      image: 'https://images.pexels.com/photos/1779487/pexels-photo-1779487.jpeg?auto=compress&cs=tinysrgb&w=800',
-      tags: ['Figma', 'UI/UX', 'Design System'],
-      gradient: 'from-rose-500 to-orange-500',
-      github: 'https://github.com/yourname/brand-identity-system',
-      live: 'https://brand.example.com',
+      title: 'Real Estate Listing Website',
+      category: 'website',
+      description: 'Detects realestate properties and displays risk percentage,details',
+      image: RealestateImg,
+      tags: ["React", "Python", "Firebase"],
+      gradient: 'from-cyan-500 to-blue-500',
+      github: 'https://github.com/Madhu097/realestate-fraud-frontend',
+      live: 'https://realestate-fraud-frontend.vercel.app/',
     },
+    /*
     {
       id: 6,
       title: 'Real-time Collaboration',
