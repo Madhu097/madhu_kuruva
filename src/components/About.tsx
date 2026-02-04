@@ -113,7 +113,6 @@ export default function About() {
                 className="w-full h-full object-cover pointer-events-none"
                 loading="eager"
                 decoding="async"
-                fetchPriority="high"
                 width="800"
                 height="800"
               />

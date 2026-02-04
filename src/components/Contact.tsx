@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, type FormEvent, type ChangeEvent } from 'react';
 import emailjs from '@emailjs/browser';
-import { Send, Mail, Linkedin, Github, Twitter, PhoneCall } from 'lucide-react';
+import { Send, Mail, Linkedin, Github, MessageCircle, PhoneCall } from 'lucide-react';
 
 // Initialize EmailJS with public key
 emailjs.init(import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '');
@@ -106,8 +106,8 @@ export default function Contact() {
   const socialLinks = [
     { icon: Github, label: 'GitHub', href: 'https://github.com/Madhu097', color: 'hover:text-white' },
     { icon: Linkedin, label: 'LinkedIn', href: 'https://www.linkedin.com/in/madhukuruva9/', color: 'hover:text-blue-400' },
-    { icon: Twitter, label: 'Twitter', href: '#', color: 'hover:text-cyan-400' },
-    { icon: Mail, label: 'Email', href: 'Mailto:madhukuruva20@gmail.com', color: 'hover:text-purple-400' },
+    { icon: MessageCircle, label: 'WhatsApp', href: 'https://wa.me/916281198769', color: 'hover:text-green-400' },
+    { icon: Mail, label: 'Email', href: 'mailto:madhukuruva20@gmail.com', color: 'hover:text-purple-400' },
     { icon: PhoneCall, label: 'Call', href: 'tel:+916281198769', color: 'hover:text-emerald-400' },
   ];
 
@@ -139,15 +139,18 @@ export default function Contact() {
             </div>
 
             <div className="space-y-4 md:space-y-6">
-              <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl hover:border-cyan-500/50 transition-all duration-300">
+              <a 
+                href="mailto:madhukuruva20@gmail.com" 
+                className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl hover:border-cyan-500/50 transition-all duration-300 group"
+              >
                 <div className="w-10 sm:w-12 h-10 sm:h-12 bg-gradient-to-br from-cyan-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
                   <Mail className="w-5 sm:w-6 h-5 sm:h-6 text-white" />
                 </div>
-                <div>
+                <div className="flex-1">
                   <p className="text-gray-400 text-xs sm:text-sm">Email</p>
-                  <p className="text-white font-medium text-sm sm:text-base">Madhukuruva20@gmail.com</p>
+                  <p className="text-white font-medium text-sm sm:text-base group-hover:text-cyan-400 transition-colors">Madhukuruva20@gmail.com</p>
                 </div>
-              </div>
+              </a>
 
               <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl hover:border-cyan-500/50 transition-all duration-300">
                 <div className="w-10 sm:w-12 h-10 sm:h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center flex-shrink-0">
