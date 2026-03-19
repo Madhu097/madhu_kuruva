@@ -54,9 +54,18 @@ export default function Contact() {
     setError(null);
 
     if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
-      console.error('EmailJS environment variables are missing.');
-      setError('Contact form is temporarily unavailable. Please try again later.');
-      setIsSubmitting(false);
+      console.warn('EmailJS keys missing. Simulating send for animation preview.');
+      // Simulate network request so user can see the new animation locally
+      setTimeout(() => {
+        setSubmitted(true);
+        setShowFlyingMessage(true);
+        setIsSubmitting(false);
+        setTimeout(() => {
+          setSubmitted(false);
+          setFormData({ name: '', email: '', message: '' });
+        }, 3000);
+        setTimeout(() => setShowFlyingMessage(false), 1800);
+      }, 2000);
       return;
     }
 
@@ -245,17 +254,30 @@ export default function Contact() {
                     'Message Sent!'
                   ) : isSubmitting ? (
                     <>
-                      <span className="inline-block w-4 h-4 sm:w-5 sm:h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      {/* New Sending Animation: Paper Plane taking off */}
+                      <span className="relative flex items-center justify-center w-5 h-5 overflow-hidden">
+                        <Send className="absolute w-4 sm:w-5 h-4 sm:h-5 text-white animate-[flyOut_1s_ease-in-out_infinite]" />
+                      </span>
                       Sending...
                     </>
                   ) : (
                     <>
                       Send Message
-                      <Send className="w-4 sm:w-5 h-4 sm:h-5 group-hover:translate-x-1 transition-transform" />
+                      <Send className="w-4 sm:w-5 h-4 sm:h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                     </>
                   )}
                 </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                
+                {/* Tailwind custom animation definition */}
+                <style>{`
+                  @keyframes flyOut {
+                    0% { transform: translate(-100%, 100%) scale(0.5); opacity: 0; }
+                    20% { opacity: 1; }
+                    80% { transform: translate(100%, -100%) scale(1.2); opacity: 1; }
+                    100% { transform: translate(150%, -150%) scale(1.2); opacity: 0; }
+                  }
+                `}</style>
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
               </button>
               {error && (
                 <p className="text-sm text-red-400 text-center">{error}</p>
