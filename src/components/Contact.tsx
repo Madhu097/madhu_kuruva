@@ -116,7 +116,7 @@ export default function Contact() {
     { icon: Github, label: 'GitHub', href: 'https://github.com/Madhu097', color: 'hover:text-white' },
     { icon: Linkedin, label: 'LinkedIn', href: 'https://www.linkedin.com/in/madhukuruva9/', color: 'hover:text-blue-400' },
     { icon: MessageCircle, label: 'WhatsApp', href: 'https://wa.me/916281198769', color: 'hover:text-green-400' },
-    { icon: Mail, label: 'Email', href: 'mailto:madhukuruva20@gmail.com', color: 'hover:text-purple-400' },
+    { icon: Mail, label: 'Gmail', href: 'https://mail.google.com/mail/?view=cm&fs=1&to=madhukuruva20@gmail.com', color: 'hover:text-purple-400' },
     { icon: PhoneCall, label: 'Call', href: 'tel:+916281198769', color: 'hover:text-emerald-400' },
   ];
 
@@ -149,14 +149,16 @@ export default function Contact() {
 
             <div className="space-y-4 md:space-y-6">
               <a 
-                href="mailto:madhukuruva20@gmail.com" 
+                href="https://mail.google.com/mail/?view=cm&fs=1&to=madhukuruva20@gmail.com" 
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl hover:border-cyan-500/50 transition-all duration-300 group"
               >
                 <div className="w-10 sm:w-12 h-10 sm:h-12 bg-gradient-to-br from-cyan-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
                   <Mail className="w-5 sm:w-6 h-5 sm:h-6 text-white" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-gray-400 text-xs sm:text-sm">Email</p>
+                  <p className="text-gray-400 text-xs sm:text-sm">Gmail</p>
                   <p className="text-white font-medium text-sm sm:text-base group-hover:text-cyan-400 transition-colors">Madhukuruva20@gmail.com</p>
                 </div>
               </a>
@@ -181,6 +183,8 @@ export default function Contact() {
                     <a
                       key={index}
                       href={social.href}
+                      target={social.href.startsWith('http') ? '_blank' : undefined}
+                      rel={social.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                       data-magnetic
                       className={`w-10 sm:w-12 h-10 sm:h-12 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center text-gray-400 text-sm ${social.color} transition-all duration-300 hover:scale-110 hover:border-white/30`}
                       aria-label={social.label}
