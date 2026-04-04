@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
-  
+import heroVideo from '../assets/hero.mp4';
 
 export default function Hero() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -37,8 +37,7 @@ export default function Hero() {
     let animationId: number;
 
     const animate = () => {
-      ctx.fillStyle = 'rgba(10, 10, 20, 0.1)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       particles.forEach((p, i) => {
         p.x += p.vx;
@@ -50,8 +49,8 @@ export default function Hero() {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 2);
-        gradient.addColorStop(0, 'rgba(34, 211, 238, 0.8)');
-        gradient.addColorStop(1, 'rgba(147, 51, 234, 0.2)');
+        gradient.addColorStop(0, 'rgba(34, 211, 238, 0.4)');
+        gradient.addColorStop(1, 'rgba(147, 51, 234, 0.1)');
         ctx.fillStyle = gradient;
         ctx.fill();
 
@@ -65,7 +64,7 @@ export default function Hero() {
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(34, 211, 238, ${0.15 * (1 - dist / 150)})`;
+            ctx.strokeStyle = `rgba(34, 211, 238, ${0.1 * (1 - dist / 150)})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }
@@ -88,7 +87,7 @@ export default function Hero() {
       const letters = nameRef.current.children;
       Array.from(letters).forEach((letter, i) => {
         setTimeout(() => {
-          letter.classList.add('animate-in');
+          (letter as HTMLElement).classList.add('animate-in');
         }, i * 80);
       });
     }
@@ -100,13 +99,26 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative h-screen w-full overflow-hidden bg-[#0a0a14]">
-      <canvas ref={canvasRef} className="absolute inset-0" />
+    <section className="relative h-screen w-full overflow-hidden bg-black">
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover opacity-60"
+        style={{ objectPosition: 'center 20%' }} // Adjust this percentage to move video up/down (0% shows top, 100% shows bottom)
+      >
+        <source src={heroVideo} type="video/mp4" />
+      </video>
+
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/60" />
+
+      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" />
 
       <div className="relative z-10 flex flex-col items-center justify-center h-full px-4 sm:px-6">
         <div className="text-center space-y-4 sm:space-y-6">
           <div className="overflow-hidden">
-            <h1 ref={nameRef} className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-bold tracking-tight text-white leading-tight">
+            <h1 ref={nameRef} className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-extrabold tracking-[-0.02em] text-white leading-tight">
               {'MADHU KURUVA'.split('').map((char, i) => (
                 <span
                   key={i}

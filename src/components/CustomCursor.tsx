@@ -1,92 +1,100 @@
 import { useEffect, useRef, useState } from 'react';
 
 export default function CustomCursor() {
-  const outerRef = useRef<HTMLDivElement>(null);
+  const cursorRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
-  const frameRef = useRef<number | null>(null);
-  const latestPosition = useRef({ x: 0, y: 0 });
-  const [isHovering, setIsHovering] = useState(false);
+  const dotRef = useRef<HTMLDivElement>(null);
+  
+  const mouse = useRef({ x: -100, y: -100 });
+  const pos = useRef({ x: -100, y: -100 });
+  const [isHovered, setIsHovered] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [isTouch, setIsTouch] = useState(false);
 
   useEffect(() => {
-    const updatePosition = () => {
-      frameRef.current = null;
-      const { x, y } = latestPosition.current;
-      const baseTransform = `translate3d(${x}px, ${y}px, 0)`;
+    // Check if device is touch or mobile-sized to disable cursor
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const isSmallScreen = window.innerWidth <= 1024;
+    if (isTouchDevice || isSmallScreen) {
+      setIsTouch(true);
+      document.body.style.cursor = 'auto';
+      return;
+    }
 
-      if (outerRef.current) {
-        outerRef.current.style.transform = `${baseTransform} translate3d(-50%, -50%, 0)`;
-      }
-      if (innerRef.current) {
-        innerRef.current.style.transform = `${baseTransform} translate3d(-50%, -50%, 0)`;
-      }
+    const mouseMove = (e: MouseEvent) => {
+      mouse.current.x = e.clientX;
+      mouse.current.y = e.clientY;
+      if (!isVisible) setIsVisible(true);
     };
 
-    const handleMouseMove = (event: MouseEvent) => {
-      latestPosition.current = { x: event.clientX, y: event.clientY };
-      if (!isVisible) {
-        setIsVisible(true);
-      }
-
-      if (frameRef.current == null) {
-        frameRef.current = requestAnimationFrame(updatePosition);
-      }
+    const handleHover = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const isSelectable = target.closest('a, button, [role="button"], input, textarea, [data-magnetic]');
+      setIsHovered(!!isSelectable);
     };
 
-    const handleMouseEnter = (event: MouseEvent) => {
-      const target = event.target;
-      if (target instanceof Element && target.matches('a, button, [data-magnetic]')) {
-        setIsHovering(true);
+    const updateCursor = () => {
+      // Smooth following effect (Lerp)
+      const speed = 0.15;
+      pos.current.x += (mouse.current.x - pos.current.x) * speed;
+      pos.current.y += (mouse.current.y - pos.current.y) * speed;
+
+      if (cursorRef.current) {
+        cursorRef.current.style.transform = `translate3d(${pos.current.x}px, ${pos.current.y}px, 0)`;
       }
+      
+      // The inner dot follows instantly
+      if (dotRef.current) {
+        dotRef.current.style.transform = `translate3d(${mouse.current.x}px, ${mouse.current.y}px, 0)`;
+      }
+
+      requestAnimationFrame(updateCursor);
     };
 
-    const handleMouseLeave = (event: MouseEvent) => {
-      const target = event.target;
-      if (target instanceof Element && target.matches('a, button, [data-magnetic]')) {
-        setIsHovering(false);
-      }
-    };
+    window.addEventListener('mousemove', mouseMove);
+    window.addEventListener('mouseover', handleHover);
+    const animationFrame = requestAnimationFrame(updateCursor);
 
-    window.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseenter', handleMouseEnter, true);
-    document.addEventListener('mouseleave', handleMouseLeave, true);
+    // Hide original cursor
+    document.body.style.cursor = 'none';
 
     return () => {
-      if (frameRef.current) {
-        cancelAnimationFrame(frameRef.current);
-      }
-      window.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseenter', handleMouseEnter, true);
-      document.removeEventListener('mouseleave', handleMouseLeave, true);
+      window.removeEventListener('mousemove', mouseMove);
+      window.removeEventListener('mouseover', handleHover);
+      cancelAnimationFrame(animationFrame);
+      document.body.style.cursor = 'auto';
     };
-  }, [isVisible]);
+  }, []);
 
-  if (!isVisible) {
-    return null;
-  }
+  if (isTouch || !isVisible) return null;
 
   return (
-    <>
-      <div
-        ref={outerRef}
-        className={`fixed pointer-events-none z-[9999] mix-blend-difference transition-transform duration-150 ease-out ${
-          isHovering ? 'scale-125' : 'scale-100'
-        }`}
-        style={{ willChange: 'transform' }}
+    <div className="fixed inset-0 pointer-events-none z-[99999]">
+      {/* Lagging outer ring */}
+      <div 
+        ref={cursorRef} 
+        className="fixed top-0 left-0 w-10 h-10 -ml-5 -mt-5 rounded-full border border-cyan-400/50 transition-[width,height,margin,border-color] duration-300 pointer-events-none"
+        style={{ 
+          width: isHovered ? '60px' : '40px',
+          height: isHovered ? '60px' : '40px',
+          marginLeft: isHovered ? '-30px' : '-20px',
+          marginTop: isHovered ? '-30px' : '-20px',
+          borderColor: isHovered ? 'rgba(34,211,238,0.8)' : 'rgba(34,211,238,0.4)',
+          backgroundColor: isHovered ? 'rgba(34,211,238,0.1)' : 'transparent',
+        }}
+      />
+      
+      {/* Instant inner dot */}
+      <div 
+        ref={dotRef}
+        className="fixed top-0 left-0 w-1.5 h-1.5 -ml-[3px] -mt-[3px] bg-cyan-400 rounded-full z-10 pointer-events-none"
+        style={{ 
+          filter: 'drop-shadow(0 0 5px rgba(34,211,238,0.8))'
+        }}
       >
-        <div className="w-8 h-8 border-2 border-cyan-400 rounded-full" />
+        {/* Shimmer inside for extra premium feel */}
+        {isHovered && <span className="absolute inset-0 bg-white rounded-full animate-ping opacity-50" />}
       </div>
-      <div
-        ref={innerRef}
-        className="fixed pointer-events-none z-[9998] transition-transform duration-100 ease-out"
-        style={{ willChange: 'transform' }}
-      >
-        <div
-          className={`w-2 h-2 bg-cyan-400 rounded-full transition-transform duration-150 ${
-            isHovering ? 'scale-150' : 'scale-100'
-          }`}
-        />
-      </div>
-    </>
+    </div>
   );
 }

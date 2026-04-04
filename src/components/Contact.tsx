@@ -148,8 +148,8 @@ export default function Contact() {
             </div>
 
             <div className="space-y-4 md:space-y-6">
-              <a 
-                href="https://mail.google.com/mail/?view=cm&fs=1&to=madhukuruva20@gmail.com" 
+              <a
+                href="https://mail.google.com/mail/?view=cm&fs=1&to=madhukuruva20@gmail.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl hover:border-cyan-500/50 transition-all duration-300 group"
@@ -271,7 +271,7 @@ export default function Contact() {
                     </>
                   )}
                 </span>
-                
+
                 {/* Tailwind custom animation definition */}
                 <style>{`
                   @keyframes flyOut {

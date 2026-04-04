@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import CustomCursor from './components/CustomCursor';
 import Hero from './components/Hero';
 import About from './components/About';
+import Experience from './components/Experience';
 import Skills from './components/Skills';
 import Portfolio from './components/Portfolio';
 import Certifications from './components/Certifications';
@@ -22,6 +23,7 @@ function App() {
       <ScrollAnimations />
       <Hero />
       <About />
+      <Experience />
       <Skills />
       <Portfolio />
       <Certifications />
