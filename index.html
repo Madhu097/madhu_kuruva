@@ -3,32 +3,165 @@
 
 <head>
   <meta charset="UTF-8" />
+
+  <!-- ============================================================
+       FAVICON & APP ICONS
+  ============================================================ -->
   <link rel="icon" type="image/svg+xml"
-    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2322D3EE'%3E%3Cpath d='M12 14l9-5-9-5-9 5 9 5z'/%3E%3Cpath d='M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z'/%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M12 14l9-5-9-5-9 5 9 5z'/%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z'/%3E%3C/svg%3E" />
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2322D3EE'%3E%3Cpath d='M12 14l9-5-9-5-9 5 9 5z'/%3E%3Cpath d='M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z'/%3E%3C/svg%3E" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+  <!-- ============================================================
+       VIEWPORT & THEME
+  ============================================================ -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Madhukuruva - Full Stack Developer Portfolio" />
+  <meta name="theme-color" content="#0a0a14" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Madhu Kuruva" />
+
+  <!-- ============================================================
+       PRIMARY SEO META TAGS
+  ============================================================ -->
+  <title>Madhu Kuruva | Full Stack Developer &amp; AI Enthusiast — Hyderabad</title>
+  <meta name="title" content="Madhu Kuruva | Full Stack Developer &amp; AI Enthusiast — Hyderabad" />
+  <meta name="description"
+    content="Portfolio of Madhu Kuruva — Full Stack Developer (BTech CS, Final Year) based in Hyderabad, India. Specialising in React, Node.js, TypeScript, and AI-driven web applications. Available for internships &amp; freelance projects." />
+  <meta name="keywords"
+    content="Madhu Kuruva, Full Stack Developer, React Developer, Node.js, TypeScript, AI Developer, Web Developer Hyderabad, Portfolio, BTech Computer Science, JavaScript Developer, Frontend Developer, Backend Developer" />
+  <meta name="author" content="Madhu Kuruva" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <meta name="googlebot" content="index, follow" />
+
+  <!-- ============================================================
+       CANONICAL URL
+  ============================================================ -->
+  <link rel="canonical" href="https://madhukuruva.vercel.app/" />
+
+  <!-- ============================================================
+       OPEN GRAPH (Facebook / LinkedIn)
+  ============================================================ -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://madhukuruva.vercel.app/" />
+  <meta property="og:site_name" content="Madhu Kuruva Portfolio" />
+  <meta property="og:title" content="Madhu Kuruva | Full Stack Developer &amp; AI Enthusiast" />
+  <meta property="og:description"
+    content="Full Stack Developer specialising in React, Node.js &amp; TypeScript. Building elegant, performant web applications and AI-powered experiences." />
+  <meta property="og:image" content="https://madhukuruva.vercel.app/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Madhu Kuruva — Full Stack Developer Portfolio" />
+  <meta property="og:locale" content="en_IN" />
+
+  <!-- ============================================================
+       TWITTER CARD
+  ============================================================ -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://madhukuruva.vercel.app/" />
+  <meta name="twitter:title" content="Madhu Kuruva | Full Stack Developer &amp; AI Enthusiast" />
+  <meta name="twitter:description"
+    content="Full Stack Developer specialising in React, Node.js &amp; TypeScript. Building elegant, performant web applications and AI-powered experiences." />
+  <meta name="twitter:image" content="https://madhukuruva.vercel.app/og-image.jpg" />
+  <meta name="twitter:image:alt" content="Madhu Kuruva — Full Stack Developer Portfolio" />
+  <meta name="twitter:creator" content="@madhukuruva" />
+
+  <!-- ============================================================
+       GOOGLE SITE VERIFICATION
+  ============================================================ -->
+  <meta name="google-site-verification" content="WcRKp9Dpdz470qpFRmBvszKHTyJE95aSzxcupQx5AJc" />
+
+  <!-- ============================================================
+       STRUCTURED DATA — Person + WebSite (JSON-LD)
+  ============================================================ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Person",
+        "@id": "https://madhukuruva.vercel.app/#person",
+        "name": "Madhu Kuruva",
+        "url": "https://madhukuruva.vercel.app/",
+        "image": {
+          "@type": "ImageObject",
+          "url": "https://madhukuruva.vercel.app/og-image.jpg",
+          "width": 1200,
+          "height": 630
+        },
+        "description": "Full Stack Developer (BTech CS, Final Year) based in Hyderabad, India. Specialising in React, Node.js, TypeScript, and AI-driven web applications.",
+        "jobTitle": "Full Stack Developer",
+        "alumniOf": {
+          "@type": "CollegeOrUniversity",
+          "name": "BTech Computer Science"
+        },
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Hyderabad",
+          "addressCountry": "IN"
+        },
+        "sameAs": [
+          "https://github.com/Madhu097",
+          "https://linkedin.com/in/madhukuruva"
+        ],
+        "knowsAbout": [
+          "React",
+          "Node.js",
+          "TypeScript",
+          "JavaScript",
+          "Full Stack Development",
+          "Artificial Intelligence",
+          "Web Development"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://madhukuruva.vercel.app/#website",
+        "url": "https://madhukuruva.vercel.app/",
+        "name": "Madhu Kuruva Portfolio",
+        "description": "Portfolio of Madhu Kuruva — Full Stack Developer based in Hyderabad, India.",
+        "publisher": { "@id": "https://madhukuruva.vercel.app/#person" },
+        "inLanguage": "en-IN"
+      }
+    ]
+  }
+  </script>
+
+  <!-- ============================================================
+       PERFORMANCE — RESOURCE HINTS
+  ============================================================ -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+  <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
   <link rel="preload" href="/src/assets/madhu.jpeg" as="image" type="image/jpeg" fetchpriority="high" />
-  <meta name="google-site-verification" content="WcRKp9Dpdz470qpFRmBvszKHTyJE95aSzxcupQx5AJc" />
-  <!-- Google Tag Manager -->
+
+  <!-- ============================================================
+       GOOGLE TAG MANAGER (async — non-blocking)
+  ============================================================ -->
   <script>(function (w, d, s, l, i) {
       w[l] = w[l] || []; w[l].push({
-        'gtm.start':
-          new Date().getTime(), event: 'gtm.js'
-      }); var f = d.getElementsByTagName(s)[0],
-        j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
-          'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+        'gtm.start': new Date().getTime(), event: 'gtm.js'
+      });
+      var f = d.getElementsByTagName(s)[0],
+        j = d.createElement(s),
+        dl = l !== 'dataLayer' ? '&l=' + l : '';
+      j.async = true;
+      j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+      f.parentNode.insertBefore(j, f);
     })(window, document, 'script', 'dataLayer', 'GTM-PVJ7XGS3');</script>
   <!-- End Google Tag Manager -->
-  <title>Madhukuruva</title>
+
 </head>
 
 <body>
-  <!-- Google Tag Manager (noscript) -->
-  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PVJ7XGS3" height="0" width="0"
-      style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- Google Tag Manager (noscript fallback) -->
+  <noscript>
+    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PVJ7XGS3" height="0" width="0"
+      style="display:none;visibility:hidden" title="Google Tag Manager"></iframe>
+  </noscript>
   <!-- End Google Tag Manager (noscript) -->
+
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>

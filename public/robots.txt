@@ -1,0 +1,8 @@
+# robots.txt — https://madhukuruva.vercel.app/
+# Allow all search engine crawlers
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://madhukuruva.vercel.app/sitemap.xml
