@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, type FormEvent, type ChangeEvent } from 'react';
 import emailjs from '@emailjs/browser';
-import { Send, Mail, Linkedin, Github, MessageCircle, PhoneCall } from 'lucide-react';
+import { Send, Mail, Linkedin, Github, MessageCircle, PhoneCall, ArrowUp } from 'lucide-react';
 
 // Initialize EmailJS with public key
 emailjs.init(import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '');
@@ -121,7 +121,7 @@ export default function Contact() {
   ];
 
   return (
-    <section ref={sectionRef} className="min-h-screen bg-[#0a0a14] py-16 sm:py-24 md:py-32 px-4 sm:px-6 relative overflow-hidden">
+    <section ref={sectionRef} className="min-h-screen bg-[#0a0a14] pt-16 sm:pt-24 md:pt-32 pb-4 sm:pb-6 px-4 sm:px-6 relative overflow-hidden flex flex-col justify-between">
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-20 left-1/4 w-64 sm:w-96 h-64 sm:h-96 bg-cyan-500 rounded-full blur-[150px]" />
         <div className="absolute bottom-20 right-1/4 w-64 sm:w-96 h-64 sm:h-96 bg-purple-600 rounded-full blur-[150px]" />
@@ -298,11 +298,20 @@ export default function Contact() {
         </div>
       </div>
 
-      <footer className={`mt-12 md:mt-20 text-center transition-all duration-1000 delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-        <div className="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-4 md:mb-6" />
-        <p className="text-gray-400 text-[10px] sm:text-xs">
-          © 2025 Madhu Kuruva. Built with React, Tailwind CSS & passion.
-        </p>
+      <footer className={`mt-8 md:mt-12 pb-4 transition-all duration-1000 delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-4" />
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 max-w-6xl mx-auto px-2">
+          <p className="text-gray-400 text-[10px] sm:text-xs text-center sm:text-left">
+            © 2025 Madhu Kuruva. Built with React, Tailwind CSS & passion.
+          </p>
+          <button 
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="w-10 h-10 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full flex items-center justify-center text-white hover:text-cyan-400 hover:border-cyan-400 hover:bg-white/20 hover:shadow-[0_0_15px_rgba(34,211,238,0.5)] transition-all duration-300 group cursor-pointer z-50 animate-bounce hover:animate-none"
+            aria-label="Go to top"
+          >
+            <ArrowUp className="w-5 h-5 group-hover:-translate-y-1 transition-transform" />
+          </button>
+        </div>
       </footer>
     </section>
   );

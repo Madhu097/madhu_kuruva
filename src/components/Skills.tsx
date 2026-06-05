@@ -4,21 +4,21 @@ const D = 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons';
 
 const techs = [
   { name: 'React',       logo: `${D}/react/react-original.svg`,                          color: '#61DAFB', bg: 'rgba(97,218,251,0.1)',   category: 'Frontend'  },
-  { name: 'TypeScript',  logo: `${D}/typescript/typescript-original.svg`,                color: '#3178C6', bg: 'rgba(49,120,198,0.1)',   category: 'Frontend'  },
-  { name: 'Tailwind',    logo: `${D}/tailwindcss/tailwindcss-original.svg`,              color: '#06B6D4', bg: 'rgba(6,182,212,0.1)',    category: 'Frontend'  },
+/*  { name: 'TypeScript',  logo: `${D}/typescript/typescript-original.svg`,                color: '#3178C6', bg: 'rgba(49,120,198,0.1)',   category: 'Frontend'  },
+  { name: 'Tailwind',    logo: `${D}/tailwindcss/tailwindcss-original.svg`,              color: '#06B6D4', bg: 'rgba(6,182,212,0.1)',    category: 'Frontend'  },*/
   { name: 'JavaScript',  logo: `${D}/javascript/javascript-original.svg`,                color: '#F7DF1E', bg: 'rgba(247,223,30,0.1)',   category: 'Frontend'  },
   { name: 'HTML5',       logo: `${D}/html5/html5-original.svg`,                          color: '#E34F26', bg: 'rgba(227,79,38,0.1)',    category: 'Frontend'  },
   { name: 'CSS3',        logo: `${D}/css3/css3-original.svg`,                            color: '#1572B6', bg: 'rgba(21,114,182,0.1)',   category: 'Frontend'  },
-  { name: 'Node.js',     logo: `${D}/nodejs/nodejs-original.svg`,                        color: '#339933', bg: 'rgba(51,153,51,0.1)',    category: 'Backend'   },
+ /* { name: 'Node.js',     logo: `${D}/nodejs/nodejs-original.svg`,                        color: '#339933', bg: 'rgba(51,153,51,0.1)',    category: 'Backend'   },*/
   { name: 'Python',      logo: `${D}/python/python-original.svg`,                        color: '#3776AB', bg: 'rgba(55,118,171,0.1)',   category: 'Backend'   },
-  { name: 'Express',     logo: `${D}/express/express-original.svg`,                     color: '#FFFFFF', bg: 'rgba(255,255,255,0.08)', category: 'Backend'   },
+ /* { name: 'Express',     logo: `${D}/express/express-original.svg`,                     color: '#FFFFFF', bg: 'rgba(255,255,255,0.08)', category: 'Backend'   },*/
   { name: 'MongoDB',     logo: `${D}/mongodb/mongodb-original.svg`,                     color: '#47A248', bg: 'rgba(71,162,72,0.1)',    category: 'Database'  },
-  { name: 'PostgreSQL',  logo: `${D}/postgresql/postgresql-original.svg`,               color: '#4169E1', bg: 'rgba(65,105,225,0.1)',   category: 'Database'  },
+ /* { name: 'PostgreSQL',  logo: `${D}/postgresql/postgresql-original.svg`,               color: '#4169E1', bg: 'rgba(65,105,225,0.1)',   category: 'Database'  },*/
   { name: 'MySQL',       logo: `${D}/mysql/mysql-original.svg`,                         color: '#4479A1', bg: 'rgba(68,121,161,0.1)',   category: 'Database'  },
   { name: 'Firebase',    logo: `${D}/firebase/firebase-plain.svg`,                      color: '#FFCA28', bg: 'rgba(255,202,40,0.1)',   category: 'Database'  },
   { name: 'Git',         logo: `${D}/git/git-original.svg`,                             color: '#F05032', bg: 'rgba(240,80,50,0.1)',    category: 'Tools'     },
-  { name: 'GitHub',      logo: `${D}/github/github-original.svg`,                       color: '#FFFFFF', bg: 'rgba(255,255,255,0.08)', category: 'Tools'     },
-  { name: 'Docker',      logo: `${D}/docker/docker-original.svg`,                       color: '#2496ED', bg: 'rgba(36,150,237,0.1)',   category: 'Tools'     },
+  { name: 'GitHub',      logo: 'https://cdn.simpleicons.org/github/FFFFFF',             color: '#FFFFFF', bg: 'rgba(255,255,255,0.08)', category: 'Tools'     },
+ /* { name: 'Docker',      logo: `${D}/docker/docker-original.svg`,                       color: '#2496ED', bg: 'rgba(36,150,237,0.1)',   category: 'Tools'     },*/
   { name: 'AWS',         logo: `${D}/amazonwebservices/amazonwebservices-plain-wordmark.svg`, color: '#FF9900', bg: 'rgba(255,153,0,0.1)', category: 'Tools'  },
   { name: 'Vercel',      logo: 'https://cdn.simpleicons.org/vercel/FFFFFF',              color: '#FFFFFF', bg: 'rgba(255,255,255,0.08)', category: 'Tools'     },
   { name: 'Figma',       logo: `${D}/figma/figma-original.svg`,                         color: '#F24E1E', bg: 'rgba(242,78,30,0.1)',    category: 'Design'    },
