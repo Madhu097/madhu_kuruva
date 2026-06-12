@@ -10,7 +10,8 @@
   "scripts": {
     "dev": "cross-env ROLLUP_DISABLE_NATIVE=1 vite",
     "build": "cross-env ROLLUP_DISABLE_NATIVE=1 tsc && cross-env ROLLUP_DISABLE_NATIVE=1 vite build",
-    "build:gh": "cross-env ROLLUP_DISABLE_NATIVE=1 tsc && cross-env ROLLUP_DISABLE_NATIVE=1 vite build --base=/madhu_kuruva/",
+    "postbuild": "next-sitemap",
+    "build:gh": "cross-env ROLLUP_DISABLE_NATIVE=1 tsc && cross-env ROLLUP_DISABLE_NATIVE=1 vite build --base=/madhu_kuruva/ && next-sitemap",
     "lint": "eslint .",
     "preview": "cross-env ROLLUP_DISABLE_NATIVE=1 vite preview",
     "predeploy": "npm run build:gh",
