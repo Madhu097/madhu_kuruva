@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import skillsBg from '../assets/skills background.mp4';
 
 const D = 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons';
 
@@ -54,6 +55,24 @@ export default function Skills() {
       ref={sectionRef}
       className="relative min-h-screen bg-[#080810] py-20 px-4 sm:px-6 overflow-hidden"
     >
+      {/* Background Video */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover opacity-40 pointer-events-none"
+      >
+        <source src={skillsBg} type="video/mp4" />
+      </video>
+      {/* Gradient fades for top and bottom edges */}
+      <div 
+        className="absolute inset-0 pointer-events-none" 
+        style={{ 
+          background: 'linear-gradient(to bottom, #080810 0%, transparent 20%, transparent 80%, #080810 100%)' 
+        }} 
+      />
+
       {/* Noise texture overlay */}
       <div className="absolute inset-0 opacity-[0.015]" style={{
         backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
@@ -69,11 +88,11 @@ export default function Skills() {
 
         {/* ── Header ── */}
         <div className={`text-center mb-12 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <p className="text-cyan-400/70 text-xs tracking-[0.4em] uppercase mb-3 font-medium">Arsenal</p>
-          <h2 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-4">
+          <p className="text-cyan-400/70 text-xs tracking-[0.4em] uppercase mb-3 font-medium"></p>
+          <h2 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-4 drop-shadow-lg">
             Tech Stack
           </h2>
-          <p className="text-gray-500 text-base max-w-md mx-auto">
+          <p className="text-gray-300 text-base max-w-md mx-auto drop-shadow-md">
             Technologies I work with daily to build fast, scalable, beautiful products.
           </p>
         </div>
