@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import CustomCursor from './components/CustomCursor';
+import LoadingScreen from './components/LoadingScreen';
+import CinematicIntro from './components/CinematicIntro';
 import Hero from './components/Hero';
 import About from './components/About';
 import Experience from './components/Experience';
@@ -19,8 +21,10 @@ function App() {
 
   return (
     <div className="bg-[#0a0a14]">
+      <LoadingScreen />
       <CustomCursor />
       <ScrollAnimations />
+      <CinematicIntro />
       <Hero />
       <About />
       <Experience />
