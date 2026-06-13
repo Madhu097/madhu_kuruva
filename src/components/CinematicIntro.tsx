@@ -72,24 +72,45 @@ export default function CinematicIntro() {
     loadedRef.current = loaded;
   }, []);
 
-  // ── Canvas: always CSS-pixel sized (no DPR complexity) ─────────────────────
+  // Logical viewport size (CSS pixels) — updated on resize
+  const vpRef = useRef({ w: window.innerWidth, h: window.innerHeight });
+
+  // ── Canvas: sized at physical pixels, displayed at CSS pixels ──────────────
   const resizeCanvas = useCallback(() => {
     const c = canvasRef.current;
     if (!c) return;
-    c.width = window.innerWidth;
-    c.height = window.innerHeight;
-    lastDrawnRef.current = -1; // must redraw after resize
-    dirtyRef.current = true;
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 3); // cap at 3x
+    const W   = window.innerWidth;
+    const H   = window.innerHeight;
+
+    vpRef.current = { w: W, h: H };
+
+    // Physical pixel dimensions → crisp on retina
+    c.width  = Math.round(W * dpr);
+    c.height = Math.round(H * dpr);
+
+    // CSS dimensions → canvas displayed at exactly viewport size (no browser upsampling)
+    c.style.width  = W + 'px';
+    c.style.height = H + 'px';
+
+    // Scale context so all draw calls use CSS pixel coordinates
+    const ctx = c.getContext('2d');
+    if (ctx) ctx.scale(dpr, dpr);
+
+    lastDrawnRef.current = -1;
+    dirtyRef.current     = true;
   }, []);
 
   // ── Draw one frame + overlays onto canvas ───────────────────────────────────
+  // All coordinates are in CSS pixels (ctx.scale(dpr,dpr) applied in resizeCanvas)
   const drawFrame = useCallback((frameIdx: number, p: number): boolean => {
     const canvas = canvasRef.current;
     if (!canvas) return false;
     const ctx = canvas.getContext('2d');
     if (!ctx) return false;
 
-    // Resolve best available image (walk back if not yet loaded)
+    // Resolve best available image
     let img: HTMLImageElement | null = null;
     let searchIdx = frameIdx;
     while (searchIdx >= 0) {
@@ -97,15 +118,29 @@ export default function CinematicIntro() {
       if (candidate && loadedRef.current[searchIdx]) { img = candidate; break; }
       searchIdx--;
     }
-    if (!img) return false; // nothing loaded yet
+    if (!img) return false;
 
-    const W = canvas.width;
-    const H = canvas.height;
+    // Use logical (CSS) viewport dimensions for all drawing
+    const { w: W, h: H } = vpRef.current;
 
-    // cover-fit
-    const iW = img.naturalWidth || 1920;
+    // ── Cover-fit ─────────────────────────────────────────────────────────────
+    // Compute scale so image fills the viewport without black bars.
+    // On very tall screens (mobile portrait) we avoid over-zooming by using
+    // `contain` when the frame would be scaled > 2x beyond its natural size.
+    const iW = img.naturalWidth  || 1920;
     const iH = img.naturalHeight || 1080;
-    const scale = Math.max(W / iW, H / iH);
+
+    const scaleX = W / iW;
+    const scaleY = H / iH;
+    // cover scale
+    let scale = Math.max(scaleX, scaleY);
+    // If the cover scale would zoom more than 1.8× the contain scale,
+    // blend toward contain to avoid extreme cropping on portrait screens.
+    const containScale = Math.min(scaleX, scaleY);
+    if (scale > containScale * 1.8) {
+      scale = containScale * 1.8;
+    }
+
     const dW = iW * scale;
     const dH = iH * scale;
     const dX = (W - dW) / 2;
@@ -113,6 +148,8 @@ export default function CinematicIntro() {
 
     ctx.clearRect(0, 0, W, H);
     ctx.drawImage(img, dX, dY, dW, dH);
+
+    // ── Cinematic overlays (all in CSS px coords) ────────────────────────────
 
     // top dark gradient
     const tg = ctx.createLinearGradient(0, 0, 0, H * 0.30);
@@ -140,9 +177,9 @@ export default function CinematicIntro() {
     if (p > 0.76) {
       const bt = clamp((p - 0.76) / 0.24, 0, 1);
       const bl = ctx.createRadialGradient(W / 2, H * 0.42, 0, W / 2, H * 0.42, Math.max(W, H) * 0.75);
-      bl.addColorStop(0, `rgba(200,220,255,${bt * 0.22})`);
+      bl.addColorStop(0,   `rgba(200,220,255,${bt * 0.22})`);
       bl.addColorStop(0.4, `rgba(100,155,255,${bt * 0.09})`);
-      bl.addColorStop(1, 'rgba(0,0,0,0)');
+      bl.addColorStop(1,   'rgba(0,0,0,0)');
       ctx.fillStyle = bl;
       ctx.fillRect(0, 0, W, H);
     }
@@ -150,13 +187,13 @@ export default function CinematicIntro() {
     // fog band
     const fo = lerp(0.15, 0.03, easeOut3(clamp(p * 1.6, 0, 1)));
     const fg = ctx.createLinearGradient(0, H * 0.57, 0, H * 0.82);
-    fg.addColorStop(0, `rgba(22,32,70,0)`);
+    fg.addColorStop(0,   `rgba(22,32,70,0)`);
     fg.addColorStop(0.5, `rgba(22,32,70,${fo})`);
-    fg.addColorStop(1, `rgba(22,32,70,0)`);
+    fg.addColorStop(1,   `rgba(22,32,70,0)`);
     ctx.fillStyle = fg;
     ctx.fillRect(0, 0, W, H);
 
-    return true; // draw succeeded
+    return true;
   }, []);
 
   // ── rAF loop ────────────────────────────────────────────────────────────────
