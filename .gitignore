@@ -21,3 +21,7 @@ dist-ssr
 *.sln
 *.sw?
 .env
+
+# Animation frames — large files, already committed once to GitHub
+# Excluding from future tracking to avoid push timeouts
+# public/frames/
