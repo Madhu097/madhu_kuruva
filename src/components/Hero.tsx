@@ -49,8 +49,8 @@ export default function Hero() {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 2);
-        gradient.addColorStop(0, 'rgba(34, 211, 238, 0.4)');
-        gradient.addColorStop(1, 'rgba(147, 51, 234, 0.1)');
+        gradient.addColorStop(0, 'rgba(10, 132, 255, 0.4)');
+        gradient.addColorStop(1, 'rgba(10, 132, 255, 0.05)');
         ctx.fillStyle = gradient;
         ctx.fill();
 
@@ -64,7 +64,7 @@ export default function Hero() {
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(34, 211, 238, ${0.1 * (1 - dist / 150)})`;
+            ctx.strokeStyle = `rgba(10, 132, 255, ${0.15 * (1 - dist / 150)})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }
@@ -132,7 +132,7 @@ export default function Hero() {
           </div>
 
           <div className="overflow-hidden">
-            <p className="text-sm sm:text-lg md:text-xl lg:text-2xl text-cyan-400 font-light tracking-[0.2em] sm:tracking-[0.3em] animate-fade-in-up opacity-0" style={{ animationDelay: '1.2s', animationFillMode: 'forwards' }}>
+            <p className="text-sm sm:text-lg md:text-xl lg:text-2xl text-accent font-light tracking-[0.2em] sm:tracking-[0.3em] animate-fade-in-up opacity-0" style={{ animationDelay: '1.2s', animationFillMode: 'forwards' }}>
               FULL STACK DEVELOPER
             </p>
           </div>
@@ -155,17 +155,17 @@ export default function Hero() {
             <a
               href="#portfolio"
               data-magnetic
-              className="group inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-full text-white font-medium relative overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(34,211,238,0.5)] text-sm sm:text-base"
+              className="group inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-accent to-accentHover rounded-full text-white font-medium relative overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(10,132,255,0.5)] text-sm sm:text-base"
             >
               <span className="relative z-10">View My Work</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="absolute inset-0 bg-gradient-to-r from-accentHover to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </a>
             <a
               href="/Madhu Resume.pdf"
               target="_blank"
               rel="noopener noreferrer"
               data-magnetic
-              className="group inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 border-2 border-cyan-400 text-cyan-400 rounded-full font-medium relative overflow-hidden transition-all duration-300 hover:bg-cyan-400/10 text-sm sm:text-base"
+              className="group inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 border-2 border-accent text-accent rounded-full font-medium relative overflow-hidden transition-all duration-300 hover:bg-accent/10 text-sm sm:text-base"
             >
               <span className="relative z-10">View Resume</span>
             </a>
@@ -174,7 +174,7 @@ export default function Hero() {
       </div>
 
       <div className="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-        <ChevronDown className="w-6 h-6 sm:w-8 sm:h-8 text-cyan-400" />
+        <ChevronDown className="w-6 h-6 sm:w-8 sm:h-8 text-accent" />
       </div>
 
       <style>{`

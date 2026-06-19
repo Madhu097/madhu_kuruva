@@ -73,23 +73,23 @@ export default function CustomCursor() {
       {/* Lagging outer ring */}
       <div 
         ref={cursorRef} 
-        className="fixed top-0 left-0 w-10 h-10 -ml-5 -mt-5 rounded-full border border-cyan-400/50 transition-[width,height,margin,border-color] duration-300 pointer-events-none"
+        className="fixed top-0 left-0 w-10 h-10 -ml-5 -mt-5 rounded-full border border-accent/50 transition-[width,height,margin,border-color] duration-300 pointer-events-none"
         style={{ 
           width: isHovered ? '60px' : '40px',
           height: isHovered ? '60px' : '40px',
           marginLeft: isHovered ? '-30px' : '-20px',
           marginTop: isHovered ? '-30px' : '-20px',
-          borderColor: isHovered ? 'rgba(34,211,238,0.8)' : 'rgba(34,211,238,0.4)',
-          backgroundColor: isHovered ? 'rgba(34,211,238,0.1)' : 'transparent',
+          borderColor: isHovered ? 'rgba(10,132,255,0.8)' : 'rgba(10,132,255,0.4)',
+          backgroundColor: isHovered ? 'rgba(10,132,255,0.1)' : 'transparent',
         }}
       />
       
       {/* Instant inner dot */}
       <div 
         ref={dotRef}
-        className="fixed top-0 left-0 w-1.5 h-1.5 -ml-[3px] -mt-[3px] bg-cyan-400 rounded-full z-10 pointer-events-none"
+        className="fixed top-0 left-0 w-1.5 h-1.5 -ml-[3px] -mt-[3px] bg-accent rounded-full z-10 pointer-events-none"
         style={{ 
-          filter: 'drop-shadow(0 0 5px rgba(34,211,238,0.8))'
+          filter: 'drop-shadow(0 0 5px rgba(10,132,255,0.8))'
         }}
       >
         {/* Shimmer inside for extra premium feel */}

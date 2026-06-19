@@ -40,7 +40,7 @@ export default function LoadingScreen() {
           position: fixed;
           inset: 0;
           z-index: 9999;
-          background: #06060e;
+          background: #000000;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -81,7 +81,7 @@ export default function LoadingScreen() {
           font-weight: 700;
           color: #fff;
           letter-spacing: 0.05em;
-          text-shadow: 0 0 30px rgba(100,180,255,0.6);
+          text-shadow: 0 0 30px rgba(10, 132, 255, 0.6);
         }
 
         /* Name */
@@ -94,7 +94,7 @@ export default function LoadingScreen() {
           text-transform: uppercase;
           opacity: 0;
           animation: ls-name-rise 0.7s 0.3s cubic-bezier(0.22,1,0.36,1) forwards;
-          text-shadow: 0 0 40px rgba(100,170,255,0.40);
+          text-shadow: 0 0 40px rgba(10, 132, 255, 0.40);
         }
         @keyframes ls-name-rise {
           from { opacity: 0; transform: translateY(14px); }
@@ -105,7 +105,7 @@ export default function LoadingScreen() {
           font-family: 'Plus Jakarta Sans', sans-serif;
           font-size: clamp(0.6rem, 1.4vw, 0.75rem);
           font-weight: 400;
-          color: rgba(130,200,255,0.55);
+          color: rgba(134, 134, 139, 0.7);
           letter-spacing: 0.40em;
           text-transform: uppercase;
           margin-top: 0.6em;
@@ -126,17 +126,17 @@ export default function LoadingScreen() {
           height: 100%;
           border-radius: 999px;
           background: linear-gradient(90deg,
-            rgba(80,160,255,0.9),
-            rgba(160,100,255,0.9)
+            #0A84FF,
+            #409CFF
           );
-          box-shadow: 0 0 12px rgba(100,160,255,0.5);
+          box-shadow: 0 0 12px rgba(10, 132, 255, 0.5);
           transition: width 0.05s linear;
         }
         .ls-pct {
           margin-top: 0.8em;
           font-family: 'Plus Jakarta Sans', sans-serif;
           font-size: 0.7rem;
-          color: rgba(130,200,255,0.45);
+          color: rgba(134, 134, 139, 0.6);
           letter-spacing: 0.22em;
         }
 
@@ -167,8 +167,8 @@ export default function LoadingScreen() {
             />
             <defs>
               <linearGradient id="ls-grad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%"   stopColor="rgba(80,160,255,0.95)" />
-                <stop offset="100%" stopColor="rgba(160,100,255,0.95)" />
+                <stop offset="0%"   stopColor="#0A84FF" />
+                <stop offset="100%" stopColor="#409CFF" />
               </linearGradient>
             </defs>
           </svg>

@@ -20,7 +20,7 @@ function App() {
   }, []);
 
   return (
-    <div className="bg-[#0a0a14]">
+    <div className="bg-background text-primaryText">
       <LoadingScreen />
       <CustomCursor />
       <ScrollAnimations />

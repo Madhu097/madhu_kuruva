@@ -121,10 +121,10 @@ export default function Contact() {
   ];
 
   return (
-    <section ref={sectionRef} className="min-h-screen bg-[#0a0a14] pt-16 sm:pt-24 md:pt-32 pb-4 sm:pb-6 px-4 sm:px-6 relative overflow-hidden flex flex-col justify-between">
+    <section ref={sectionRef} className="min-h-screen bg-background pt-16 sm:pt-24 md:pt-32 pb-4 sm:pb-6 px-4 sm:px-6 relative overflow-hidden flex flex-col justify-between">
       <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-20 left-1/4 w-64 sm:w-96 h-64 sm:h-96 bg-cyan-500 rounded-full blur-[150px]" />
-        <div className="absolute bottom-20 right-1/4 w-64 sm:w-96 h-64 sm:h-96 bg-purple-600 rounded-full blur-[150px]" />
+        <div className="absolute top-20 left-1/4 w-64 sm:w-96 h-64 sm:h-96 bg-accent rounded-full blur-[150px]" />
+        <div className="absolute bottom-20 right-1/4 w-64 sm:w-96 h-64 sm:h-96 bg-accentHover rounded-full blur-[150px]" />
       </div>
 
       <div className="max-w-6xl mx-auto relative z-10">
@@ -135,7 +135,7 @@ export default function Contact() {
           <p className="text-gray-400 text-sm sm:text-base md:text-lg max-w-2xl mx-auto">
             Have a project in mind? Let's create something extraordinary together
           </p>
-          <div className="h-1 w-24 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-full mx-auto mt-6" />
+          <div className="h-1 w-24 bg-gradient-to-r from-accent to-accentHover rounded-full mx-auto mt-6" />
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 md:gap-12">
@@ -152,24 +152,24 @@ export default function Contact() {
                 href="https://mail.google.com/mail/?view=cm&fs=1&to=madhukuruva20@gmail.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl hover:border-cyan-500/50 transition-all duration-300 group"
+                className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-card backdrop-blur-sm border border-border rounded-xl hover:border-accent/50 transition-all duration-300 group"
               >
-                <div className="w-10 sm:w-12 h-10 sm:h-12 bg-gradient-to-br from-cyan-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="w-10 sm:w-12 h-10 sm:h-12 bg-gradient-to-br from-accent to-accentHover rounded-lg flex items-center justify-center flex-shrink-0">
                   <Mail className="w-5 sm:w-6 h-5 sm:h-6 text-white" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-gray-400 text-xs sm:text-sm">Gmail</p>
-                  <p className="text-white font-medium text-sm sm:text-base group-hover:text-cyan-400 transition-colors">Madhukuruva20@gmail.com</p>
+                  <p className="text-secondaryText text-xs sm:text-sm">Gmail</p>
+                  <p className="text-primaryText font-medium text-sm sm:text-base group-hover:text-accent transition-colors">Madhukuruva20@gmail.com</p>
                 </div>
               </a>
 
-              <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl hover:border-cyan-500/50 transition-all duration-300">
-                <div className="w-10 sm:w-12 h-10 sm:h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center flex-shrink-0">
+              <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-card backdrop-blur-sm border border-border rounded-xl hover:border-accent/50 transition-all duration-300">
+                <div className="w-10 sm:w-12 h-10 sm:h-12 bg-gradient-to-br from-accent to-accentHover rounded-lg flex items-center justify-center flex-shrink-0">
                   <Linkedin className="w-5 sm:w-6 h-5 sm:h-6 text-white" />
                 </div>
                 <div>
-                  <p className="text-gray-400 text-xs sm:text-sm">Location</p>
-                  <p className="text-white font-medium text-sm sm:text-base">India</p>
+                  <p className="text-secondaryText text-xs sm:text-sm">Location</p>
+                  <p className="text-primaryText font-medium text-sm sm:text-base">India</p>
                 </div>
               </div>
             </div>
@@ -210,7 +210,7 @@ export default function Contact() {
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white placeholder-gray-500 text-sm sm:text-base focus:outline-none focus:border-cyan-500 transition-all duration-300"
+                  className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-card backdrop-blur-sm border border-border rounded-xl text-primaryText placeholder-secondaryText text-sm sm:text-base focus:outline-none focus:border-accent transition-all duration-300"
                   placeholder="Your name"
                 />
               </div>
@@ -226,7 +226,7 @@ export default function Contact() {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white placeholder-gray-500 text-sm sm:text-base focus:outline-none focus:border-cyan-500 transition-all duration-300"
+                  className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-card backdrop-blur-sm border border-border rounded-xl text-primaryText placeholder-secondaryText text-sm sm:text-base focus:outline-none focus:border-accent transition-all duration-300"
                   placeholder="your.email@example.com"
                 />
               </div>
@@ -242,7 +242,7 @@ export default function Contact() {
                   onChange={handleChange}
                   required
                   rows={4}
-                  className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white placeholder-gray-500 text-sm sm:text-base focus:outline-none focus:border-cyan-500 transition-all duration-300 resize-none"
+                  className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-card backdrop-blur-sm border border-border rounded-xl text-primaryText placeholder-secondaryText text-sm sm:text-base focus:outline-none focus:border-accent transition-all duration-300 resize-none"
                   placeholder="Tell me about your project or collabration..."
                 />
               </div>
@@ -251,7 +251,7 @@ export default function Contact() {
                 type="submit"
                 disabled={isSubmitting || submitted}
                 data-magnetic
-                className="group relative w-full px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-xl text-white font-medium text-sm sm:text-base overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(34,211,238,0.5)] disabled:opacity-50 disabled:cursor-not-allowed"
+                className="group relative w-full px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-accent to-accentHover rounded-xl text-white font-medium text-sm sm:text-base overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(10,132,255,0.5)] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">
                   {submitted ? (
@@ -281,7 +281,7 @@ export default function Contact() {
                     100% { transform: translate(150%, -150%) scale(1.2); opacity: 0; }
                   }
                 `}</style>
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-r from-accentHover to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
               </button>
               {error && (
                 <p className="text-sm text-red-400 text-center">{error}</p>
@@ -306,7 +306,7 @@ export default function Contact() {
           </p>
           <button 
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="w-10 h-10 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full flex items-center justify-center text-white hover:text-cyan-400 hover:border-cyan-400 hover:bg-white/20 hover:shadow-[0_0_15px_rgba(34,211,238,0.5)] transition-all duration-300 group cursor-pointer z-50 animate-bounce hover:animate-none"
+            className="w-10 h-10 bg-card backdrop-blur-sm border border-border rounded-full flex items-center justify-center text-primaryText hover:text-accent hover:border-accent hover:bg-card/80 hover:shadow-[0_0_15px_rgba(10,132,255,0.5)] transition-all duration-300 group cursor-pointer z-50 animate-bounce hover:animate-none"
             aria-label="Go to top"
           >
             <ArrowUp className="w-5 h-5 group-hover:-translate-y-1 transition-transform" />

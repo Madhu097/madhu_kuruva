@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-const TOTAL_FRAMES = 192;
+const TOTAL_FRAMES = 240;
 const SCROLL_VH    = 400;
 
 const TEXT_SEQUENCE = [
@@ -188,13 +188,13 @@ export default function CinematicIntro() {
     // ── Gradient overlays ────────────────────────────────────────────────────
     // On mobile: only 2 passes (top dark + bottom dark) — saves ~4ms per frame
     const tg = ctx.createLinearGradient(0, 0, 0, H * 0.30);
-    tg.addColorStop(0, 'rgba(8,8,16,0.88)');
-    tg.addColorStop(1, 'rgba(8,8,16,0)');
+    tg.addColorStop(0, 'rgba(0,0,0,0.88)');
+    tg.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.fillStyle = tg; ctx.fillRect(0, 0, W, H);
 
     const bg = ctx.createLinearGradient(0, H * 0.55, 0, H);
-    bg.addColorStop(0, 'rgba(8,8,16,0)');
-    bg.addColorStop(1, 'rgba(8,8,16,0.92)');
+    bg.addColorStop(0, 'rgba(0,0,0,0)');
+    bg.addColorStop(1, 'rgba(0,0,0,0.92)');
     ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
 
     // Desktop-only extras (vignette, bloom, fog — too expensive on mobile)
@@ -208,17 +208,17 @@ export default function CinematicIntro() {
       if (p > 0.76) {
         const bt = clamp((p - 0.76) / 0.24, 0, 1);
         const bl = ctx.createRadialGradient(W/2, H*0.42, 0, W/2, H*0.42, Math.max(W,H)*0.75);
-        bl.addColorStop(0,   `rgba(200,220,255,${bt*0.18})`);
-        bl.addColorStop(0.4, `rgba(100,155,255,${bt*0.07})`);
+        bl.addColorStop(0,   `rgba(10,132,255,${bt*0.18})`);
+        bl.addColorStop(0.4, `rgba(64,156,255,${bt*0.07})`);
         bl.addColorStop(1,   'rgba(0,0,0,0)');
         ctx.fillStyle = bl; ctx.fillRect(0, 0, W, H);
       }
 
       const fo = lerp(0.12, 0.02, easeOut3(clamp(p*1.6,0,1)));
       const fg = ctx.createLinearGradient(0, H*0.57, 0, H*0.82);
-      fg.addColorStop(0,   'rgba(22,32,70,0)');
-      fg.addColorStop(0.5, `rgba(22,32,70,${fo})`);
-      fg.addColorStop(1,   'rgba(22,32,70,0)');
+      fg.addColorStop(0,   'rgba(10,20,40,0)');
+      fg.addColorStop(0.5, `rgba(10,20,40,${fo})`);
+      fg.addColorStop(1,   'rgba(10,20,40,0)');
       ctx.fillStyle = fg; ctx.fillRect(0, 0, W, H);
     }
 
@@ -226,7 +226,7 @@ export default function CinematicIntro() {
     // Fades last 6% of scroll to match the portfolio background colour
     if (p > 0.94) {
       const fadeAmt = easeInOut4(clamp((p - 0.94) / 0.06, 0, 1));
-      ctx.fillStyle = `rgba(8,8,15,${fadeAmt.toFixed(3)})`;
+      ctx.fillStyle = `rgba(0,0,0,${fadeAmt.toFixed(3)})`;
       ctx.fillRect(0, 0, W, H);
     }
 
@@ -306,7 +306,7 @@ export default function CinematicIntro() {
     const loadOne = (i: number, cb?: () => void) => {
       const img = new Image();
       img.decoding = 'async';
-      img.src = `/frames/frame_${String(i).padStart(6, '0')}.png`;
+      img.src = `/frames/ezgif-frame-${String(i + 1).padStart(3, '0')}.png`;
       img.onload  = () => { loaded[i] = true; dirtyRef.current = true; cb?.(); };
       img.onerror = () => { loaded[i] = true; };
       frames[i] = img;
@@ -393,7 +393,7 @@ export default function CinematicIntro() {
         .ci-wrap {
           position: relative;
           height: ${SCROLL_VH}vh;
-          background: #08080f;
+          background: #000000;
           /* Isolation prevents scroll from bubbling and causing jank */
           isolation: isolate;
         }
@@ -405,7 +405,7 @@ export default function CinematicIntro() {
           height: 100vh;
           height: 100dvh;
           overflow: hidden;
-          background: #08080f;
+          background: #000000;
           /* Critical: tell browser this is independent — improves compositing */
           contain: layout style;
           will-change: transform;
@@ -453,7 +453,7 @@ export default function CinematicIntro() {
           letter-spacing: -0.02em;
           margin: 0;
           text-shadow:
-            0 0 55px rgba(100,155,255,0.45),
+            0 0 55px rgba(10,132,255,0.45),
             0 2px 24px rgba(0,0,0,0.98);
         }
 
@@ -461,11 +461,11 @@ export default function CinematicIntro() {
           font-family: 'Plus Jakarta Sans', sans-serif;
           font-weight: 300;
           font-size: clamp(0.75rem, 2vw, 2rem);
-          color: rgba(135,215,255,0.88);
+          color: rgba(10,132,255,0.88);
           letter-spacing: clamp(0.10em, 0.28em, 0.28em);
           text-transform: uppercase;
           margin: 0.4em 0 0;
-          text-shadow: 0 0 20px rgba(80,175,255,0.50);
+          text-shadow: 0 0 20px rgba(10,132,255,0.50);
         }
 
         .ci-panel-rule {
@@ -474,7 +474,7 @@ export default function CinematicIntro() {
           height: 1.5px;
           margin: 0.8em 0 0;
           background: linear-gradient(90deg,
-            rgba(120,200,255,0.70), rgba(180,120,255,0.50), transparent);
+            rgba(10,132,255,0.70), rgba(64,156,255,0.50), transparent);
           border: none;
         }
 
@@ -499,14 +499,14 @@ export default function CinematicIntro() {
           letter-spacing: -0.02em;
           line-height: 1.10;
           margin: 0;
-          text-shadow: 0 0 70px rgba(160,205,255,0.50), 0 2px 32px rgba(0,0,0,0.98);
+          text-shadow: 0 0 70px rgba(10,132,255,0.50), 0 2px 32px rgba(0,0,0,0.98);
         }
 
         .ci-welcome-cap {
           display: inline-block;
           font-family: 'Plus Jakarta Sans', sans-serif;
           font-size: clamp(0.6rem, 1.3vw, 0.82rem);
-          color: rgba(130,215,255,0.65);
+          color: rgba(10,132,255,0.65);
           letter-spacing: 0.38em;
           text-transform: uppercase;
           margin-top: 1.3em;
@@ -532,7 +532,7 @@ export default function CinematicIntro() {
           height: 40%;
           background: radial-gradient(
             ellipse 140% 65% at 50% 110%,
-            rgba(15,24,60,0.42) 0%, transparent 70%
+            rgba(10,20,40,0.42) 0%, transparent 70%
           );
           animation: ci-fog-drift 22s ease-in-out infinite;
           /* Separate compositing layer for animated element */
@@ -552,7 +552,7 @@ export default function CinematicIntro() {
           pointer-events: none;
           opacity: 0;
           will-change: opacity;
-          background: #08080f;
+          background: #000000;
         }
 
         /* ─── Mobile ≤ 480px ──────────────────────────────────────────── */
@@ -599,17 +599,17 @@ export default function CinematicIntro() {
           <div className="ci-flare" style={{
             width: 'clamp(80px,15vw,220px)', height: 'clamp(80px,15vw,220px)',
             top: '12%', left: '6%',
-            background: 'radial-gradient(circle,rgba(65,118,255,0.10) 0%,transparent 72%)',
+            background: 'radial-gradient(circle,rgba(10,132,255,0.10) 0%,transparent 72%)',
           }} />
           <div className="ci-flare" style={{
             width: 'clamp(60px,12vw,150px)', height: 'clamp(60px,12vw,150px)',
             top: '58%', right: '8%',
-            background: 'radial-gradient(circle,rgba(168,85,255,0.08) 0%,transparent 72%)',
+            background: 'radial-gradient(circle,rgba(64,156,255,0.08) 0%,transparent 72%)',
           }} />
           <div className="ci-flare" style={{
             width: 'clamp(30px,5vw,80px)', height: 'clamp(30px,5vw,80px)',
             top: '26%', right: '16%',
-            background: 'radial-gradient(circle,rgba(125,215,255,0.12) 0%,transparent 72%)',
+            background: 'radial-gradient(circle,rgba(10,132,255,0.12) 0%,transparent 72%)',
           }} />
 
           {TEXT_SEQUENCE.map((seg, i) => (

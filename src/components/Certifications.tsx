@@ -97,21 +97,21 @@ export default function Certifications() {
   }, [isAnimating]);
 
   return (
-    <section className="py-20 bg-[#080812] overflow-hidden min-h-[750px] flex flex-col justify-center relative" id="certifications">
+    <section className="py-20 bg-background overflow-hidden min-h-[750px] flex flex-col justify-center relative" id="certifications">
       {/* Background radial effects */}
-      <div className="absolute inset-x-0 top-0 h-[500px] bg-gradient-to-b from-cyan-500/5 to-transparent pointer-events-none" />
-      <div className="absolute inset-x-0 bottom-0 h-[500px] bg-gradient-to-t from-purple-500/5 to-transparent pointer-events-none" />
+      <div className="absolute inset-x-0 top-0 h-[500px] bg-gradient-to-b from-accent/5 to-transparent pointer-events-none" />
+      <div className="absolute inset-x-0 bottom-0 h-[500px] bg-gradient-to-t from-accentHover/5 to-transparent pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 w-full relative z-10">
         
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-7xl font-bold text-white mb-6 uppercase tracking-tight">
-            Certificates & <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-400 to-white animate-text-gradient">Awards</span>
+            Certificates & <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-accent to-white animate-text-gradient">Awards</span>
           </h2>
           <div className="flex items-center justify-center gap-4">
              <div className="h-[1px] w-12 bg-white/10" />
-             <div className="w-2 h-2 rounded-full border border-cyan-500 animate-ping" />
+             <div className="w-2 h-2 rounded-full border border-accent animate-ping" />
              <div className="h-[1px] w-12 bg-white/10" />
           </div>
         </div>
@@ -169,10 +169,10 @@ export default function Certifications() {
                   {/* The Card Plate */}
                   <div 
                     className={`relative w-[300px] sm:w-[380px] h-[420px] rounded-[3rem] p-1 border overflow-hidden transition-all duration-500 ${
-                        isActive ? 'shadow-[0_0_80px_rgba(34,211,238,0.15)] bg-white/10' : 'bg-white/5'
+                        isActive ? 'shadow-[0_0_80px_rgba(10,132,255,0.15)] bg-card' : 'bg-card/50'
                     }`}
                     style={{ 
-                      borderColor: isActive ? cert.color : 'rgba(255,255,255,0.05)',
+                      borderColor: isActive ? 'var(--color-accent)' : 'var(--color-border)',
                       backdropFilter: 'blur(20px)'
                     }}
                   >
@@ -207,26 +207,26 @@ export default function Certifications() {
                          <h3 className={`text-xl sm:text-3xl font-bold text-white mb-4 uppercase tracking-tight transition-all duration-700 ${isActive ? 'scale-100' : 'scale-75'}`}>
                             {cert.title}
                          </h3>
-                         <p className="text-gray-400 text-xs sm:text-sm leading-relaxed opacity-70 px-4">
+                         <p className="text-secondaryText text-xs sm:text-sm leading-relaxed opacity-70 px-4">
                            {cert.description}
                          </p>
                       </div>
 
                       {/* Detail Footer */}
-                      <div className="w-full mt-8 pt-8 border-t border-white/5 flex items-end justify-between">
+                      <div className="w-full mt-8 pt-8 border-t border-border flex items-end justify-between">
                          <div className="text-left">
-                           <p className="text-[10px] text-gray-600 uppercase tracking-widest mb-1">Issued By</p>
-                           <p className="text-sm font-bold text-white/80">{cert.issuer}</p>
+                            <p className="text-[10px] text-secondaryText uppercase tracking-widest mb-1">Issued By</p>
+                            <p className="text-sm font-bold text-primaryText">{cert.issuer}</p>
                          </div>
                          <div className="flex flex-col items-end gap-3">
-                           <span className="text-xs font-mono text-cyan-400/50">{cert.date}</span>
+                            <span className="text-xs font-mono text-accent/50">{cert.date}</span>
                            <a 
                              href={cert.url} 
                              target="_blank" 
                              rel="noopener noreferrer"
                              className="group/link flex items-center gap-2"
                            >
-                             <div className="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover/link:bg-white group-hover/link:text-black transition-all duration-300">
+                             <div className="w-10 h-10 rounded-2xl bg-card border border-border flex items-center justify-center group-hover/link:bg-accent group-hover/link:text-white transition-all duration-300">
                                <ExternalLink size={16} />
                              </div>
                            </a>
@@ -248,7 +248,7 @@ export default function Certifications() {
           <div className="absolute bottom-[-60px] flex items-center gap-12">
             <button 
               onClick={prev}
-              className="group p-4 rounded-full border border-white/10 hover:border-cyan-500/50 hover:bg-cyan-500/10 text-white/30 hover:text-cyan-400 transition-all"
+              className="group p-4 rounded-full border border-border hover:border-accent/50 hover:bg-accent/10 text-secondaryText hover:text-accent transition-all"
             >
               <ArrowLeft size={24} className="group-active:scale-90 transition-transform" />
             </button>
@@ -258,14 +258,14 @@ export default function Certifications() {
               {certifications.map((_, i) => (
                 <div 
                   key={i}
-                  className={`h-1.5 rounded-full transition-all duration-500 ${i === activeIndex ? 'w-10 bg-cyan-400' : 'w-2 bg-white/10'}`}
+                  className={`h-1.5 rounded-full transition-all duration-500 ${i === activeIndex ? 'w-10 bg-accent' : 'w-2 bg-border'}`}
                 />
               ))}
             </div>
 
             <button 
               onClick={next}
-              className="group p-4 rounded-full border border-white/10 hover:border-cyan-500/50 hover:bg-cyan-500/10 text-white/30 hover:text-cyan-400 transition-all"
+              className="group p-4 rounded-full border border-border hover:border-accent/50 hover:bg-accent/10 text-secondaryText hover:text-accent transition-all"
             >
               <ArrowRight size={24} className="group-active:scale-90 transition-transform" />
             </button>

@@ -86,16 +86,16 @@ export default function Portfolio() {
   };
 
   return (
-    <section ref={sectionRef} className="py-24 bg-[#080810] overflow-hidden relative" id="portfolio">
+    <section ref={sectionRef} className="py-24 bg-background overflow-hidden relative" id="portfolio">
       {/* Background Decor */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] -mr-64 -mt-64 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[120px] -ml-64 -mb-64 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[120px] -mr-64 -mt-64 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-accentHover/5 rounded-full blur-[120px] -ml-64 -mb-64 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
         <div className={`mb-20 space-y-4 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <div className="flex items-center gap-4">
-            <div className="h-[1px] w-12 bg-cyan-500" />
-            <span className="text-cyan-400 font-mono text-sm tracking-widest uppercase">Portfolio</span>
+            <div className="h-[1px] w-12 bg-accent" />
+            <span className="text-accent font-mono text-sm tracking-widest uppercase">Portfolio</span>
           </div>
           <h2 className="font-syne text-5xl sm:text-7xl font-bold text-white leading-none">
             CREATIVE <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/20">WORKS</span>
@@ -117,7 +117,7 @@ export default function Portfolio() {
             >
               {/* Parallax Container */}
               <div 
-                className="relative overflow-hidden rounded-3xl aspect-[16/10] sm:aspect-[16/9] bg-[#1a1a24] transition-transform duration-300 ease-out preserve-3d"
+                className="relative overflow-hidden rounded-3xl aspect-[16/10] sm:aspect-[16/9] bg-card transition-transform duration-300 ease-out preserve-3d"
                 style={{
                   transform: mousePos.id === project.id 
                     ? `rotateY(${mousePos.x * 15}deg) rotateX(${-mousePos.y * 15}deg)` 
@@ -135,9 +135,9 @@ export default function Portfolio() {
                 >
                   <img src={project.image} alt={project.title} className="w-full h-full object-cover opacity-40 grayscale group-hover:grayscale-0 group-hover:opacity-60 transition-all duration-700" />
                   {/* Better Contrast Overlays */}
-                  <div className="absolute inset-0 bg-[#080810]/40" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#080810] via-[#080810]/60 to-transparent opacity-100" />
-                  <div className="absolute inset-0 bg-gradient-to-tr from-[#080810]/50 to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 bg-background/40" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent opacity-100" />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-background/50 to-transparent pointer-events-none" />
                 </div>
 
                 {/* Floating Content (Z-layer 1) */}
@@ -146,20 +146,20 @@ export default function Portfolio() {
                   style={{ transform: 'translateZ(50px)' }}
                 >
                   <div className="space-y-4 relative z-10">
-                    <span className="inline-block px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-xs font-bold text-white backdrop-blur-md uppercase tracking-widest drop-shadow-sm">
+                    <span className="inline-block px-4 py-1.5 rounded-full bg-card border border-border text-xs font-bold text-primaryText backdrop-blur-md uppercase tracking-widest drop-shadow-sm">
                       {project.category}
                     </span>
-                    <h3 className="font-syne text-3xl sm:text-5xl font-bold text-white group-hover:text-cyan-400 transition-colors duration-300 drop-shadow-lg">
+                    <h3 className="font-syne text-3xl sm:text-5xl font-bold text-white group-hover:text-accent transition-colors duration-300 drop-shadow-lg">
                       {project.title}
                     </h3>
-                    <p className="max-w-md text-gray-300 text-sm sm:text-base line-clamp-2 transform translate-z-10 group-hover:text-white transition-colors duration-300 drop-shadow">
+                    <p className="max-w-md text-secondaryText text-sm sm:text-base line-clamp-2 transform translate-z-10 group-hover:text-primaryText transition-colors duration-300 drop-shadow">
                       {project.description}
                     </p>
                     
                     <div className="flex flex-wrap gap-x-4 gap-y-2 pt-2">
                       {project.tags.map(tag => (
-                        <span key={tag} className="text-[10px] text-cyan-400 font-mono font-bold flex items-center gap-1.5 drop-shadow-sm">
-                          <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full shadow-[0_0_8px_rgba(34,211,238,0.8)]" /> {tag}
+                        <span key={tag} className="text-[10px] text-accent font-mono font-bold flex items-center gap-1.5 drop-shadow-sm">
+                          <span className="w-1.5 h-1.5 bg-accent rounded-full shadow-[0_0_8px_rgba(10,132,255,0.8)]" /> {tag}
                         </span>
                       ))}
                     </div>
@@ -171,16 +171,16 @@ export default function Portfolio() {
                   className="absolute top-8 right-8 flex flex-col gap-3 transition-all duration-500 translate-x-10 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 preserve-3d"
                   style={{ transform: 'translateZ(80px)' }}
                 >
-                  <a href={project.github} target="_blank" rel="noopener noreferrer" className="p-4 rounded-full bg-white/10 hover:bg-cyan-500 text-white transition-all backdrop-blur-xl">
+                  <a href={project.github} target="_blank" rel="noopener noreferrer" className="p-4 rounded-full bg-card border border-border hover:bg-accent text-primaryText transition-all backdrop-blur-xl">
                     <Github size={20} />
                   </a>
-                  <a href={project.live} target="_blank" rel="noopener noreferrer" className="p-4 rounded-full bg-white/10 hover:bg-cyan-500 text-white transition-all backdrop-blur-xl">
+                  <a href={project.live} target="_blank" rel="noopener noreferrer" className="p-4 rounded-full bg-card border border-border hover:bg-accent text-primaryText transition-all backdrop-blur-xl">
                     <ExternalLink size={20} />
                   </a>
                 </div>
 
                 {/* Number Indicator */}
-                <div className="absolute top-8 left-8 text-white/10 font-bold text-8xl pointer-events-none select-none">
+                <div className="absolute top-8 left-8 text-border/30 font-bold text-8xl pointer-events-none select-none">
                   0{index + 1}
                 </div>
 

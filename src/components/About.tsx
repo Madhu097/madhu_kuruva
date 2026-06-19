@@ -232,21 +232,21 @@ function IDCard() {
           </div>
           {/* ── Card shell ── */}
           <div style={{ width: 'clamp(288px,80vw,360px)' }}
-            className="rounded-3xl overflow-hidden border border-white/10
-                       shadow-[0_40px_100px_rgba(0,0,0,0.85),0_0_80px_rgba(34,211,238,0.07)]">
+            className="rounded-3xl overflow-hidden border border-border
+                       shadow-[0_40px_100px_rgba(0,0,0,0.85),0_0_80px_rgba(10,132,255,0.07)]">
 
-            <div className="h-2 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600" />
+            <div className="h-2 bg-gradient-to-r from-accent to-accentHover" />
 
-            <div className="bg-gradient-to-b from-[#0f1829] via-[#0c1220] to-[#09090f]">
+            <div className="bg-card">
               {/* header */}
               <div className="flex items-center justify-between px-5 py-3">
                 <div>
-                  <p className="text-[9px] tracking-[0.28em] text-cyan-400/60 uppercase font-semibold">Portfolio</p>
+                  <p className="text-[9px] tracking-[0.28em] text-accent/60 uppercase font-semibold">Portfolio</p>
                   <p className="text-[8px] text-gray-600 tracking-widest">Developer ID</p>
                 </div>
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500 to-purple-600
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-accent to-accentHover
                                 flex items-center justify-center
-                                shadow-[0_0_18px_rgba(34,211,238,0.45)]">
+                                shadow-[0_0_18px_rgba(10,132,255,0.45)]">
                   <span className="text-white text-xs font-bold">MK</span>
                 </div>
               </div>
@@ -256,8 +256,8 @@ function IDCard() {
                 <div className="w-full rounded-2xl overflow-hidden"
                   style={{
                     aspectRatio: '3/4',
-                    boxShadow: '0 0 35px rgba(34,211,238,0.14),inset 0 0 30px rgba(0,0,0,0.5)',
-                    border: '1px solid rgba(255,255,255,0.07)'
+                    boxShadow: '0 0 35px rgba(10,132,255,0.14),inset 0 0 30px rgba(0,0,0,0.5)',
+                    border: '1px solid var(--color-border)'
                   }}>
                   <img
                     src={profilePic} alt="Madhu Kuruva"
@@ -271,7 +271,7 @@ function IDCard() {
               <div className="text-center px-5 pt-4 pb-5">
                 <h3 className="text-white font-bold text-xl sm:text-2xl tracking-wide">Madhu Kuruva</h3>
                 <p className="mt-1.5 text-sm tracking-[0.2em] uppercase font-semibold
-                              bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                              bg-gradient-to-r from-accent to-accentHover bg-clip-text text-transparent">
                   Full Stack Developer
                 </p>
                 {/* ── Recruiter-attention badge ── */}
@@ -296,7 +296,7 @@ function IDCard() {
 
               </div>
 
-              <div className="h-1.5 bg-gradient-to-r from-cyan-500 via-purple-500 to-cyan-500" />
+              <div className="h-1.5 bg-gradient-to-r from-accent via-accentHover to-accent" />
             </div>
           </div>
 
@@ -324,9 +324,9 @@ export default function About() {
   }, []);
 
   const stats = [
-    { icon: Code2, value: '5+', label: 'Projects', color: 'text-cyan-400' },
-    { icon: Palette, value: '10+', label: 'Skills', color: 'text-purple-400' },
-    { icon: Zap, value: '1+', label: 'Internships', color: 'text-yellow-400' },
+    { icon: Code2, value: '5+', label: 'Projects', color: 'text-accent' },
+    { icon: Palette, value: '10+', label: 'Skills', color: 'text-accentHover' },
+    { icon: Zap, value: '1+', label: 'Internships', color: 'text-accent' },
   ];
 
   const education = [
@@ -347,13 +347,13 @@ export default function About() {
   return (
     <section
       ref={sectionRef}
-      className="bg-[#0a0a14] px-4 sm:px-6 relative"
+      className="bg-background px-4 sm:px-6 relative"
       style={{ paddingTop: 0, paddingBottom: '6rem', overflow: 'visible' }}
     >
       {/* background glows */}
       <div className="absolute inset-0 opacity-10 pointer-events-none">
-        <div className="absolute top-20 left-10 w-64 sm:w-96 h-64 sm:h-96 bg-cyan-500 rounded-full blur-[150px]" />
-        <div className="absolute bottom-20 right-10 w-64 sm:w-96 h-64 sm:h-96 bg-purple-600 rounded-full blur-[150px]" />
+        <div className="absolute top-20 left-10 w-64 sm:w-96 h-64 sm:h-96 bg-accent rounded-full blur-[150px]" />
+        <div className="absolute bottom-20 right-10 w-64 sm:w-96 h-64 sm:h-96 bg-accentHover rounded-full blur-[150px]" />
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
@@ -363,10 +363,10 @@ export default function About() {
           <div ref={leftRef} className="space-y-6 about-left pt-20 md:pt-16">
             <div>
               <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4">About Me</h2>
-              <div className="h-1 w-24 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-full" />
+              <div className="h-1 w-24 bg-gradient-to-r from-accent to-accentHover rounded-full" />
             </div>
 
-            <p className="text-gray-300 text-sm sm:text-base md:text-lg leading-relaxed">
+            <p className="text-secondaryText text-sm sm:text-base md:text-lg leading-relaxed">
               I'm a final year BTech student passionate about building innovative solutions through
               full-stack development. With a strong foundation in computer science fundamentals,
               I love crafting elegant applications that solve real-world problems.
@@ -380,12 +380,12 @@ export default function About() {
             <div className="grid grid-cols-3 gap-3 sm:gap-6 pt-2">
               {stats.map(({ icon: Icon, value, label, color }) => (
                 <div key={label}
-                  className="text-center p-4 sm:p-6 bg-white/5 backdrop-blur-sm rounded-xl
-                             border border-white/10 hover:border-cyan-500/50
+                  className="text-center p-4 sm:p-6 bg-card backdrop-blur-sm rounded-xl
+                             border border-border hover:border-accent/50
                              transition-all duration-300 hover:scale-105">
                   <Icon className={`w-6 sm:w-8 h-6 sm:h-8 ${color} mx-auto mb-2 sm:mb-3`} />
-                  <p className="text-xl sm:text-2xl font-bold text-white">{value}</p>
-                  <p className="text-xs sm:text-sm text-gray-400">{label}</p>
+                  <p className="text-xl sm:text-2xl font-bold text-primaryText">{value}</p>
+                  <p className="text-xs sm:text-sm text-secondaryText">{label}</p>
                 </div>
               ))}
             </div>
@@ -395,18 +395,18 @@ export default function About() {
               {education.map((item, i) => (
                 <div key={i}
                   className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4
-                             bg-white/5 backdrop-blur-sm rounded-xl border border-white/10
-                             hover:border-cyan-500/50 transition-all duration-300"
+                             bg-card backdrop-blur-sm rounded-xl border border-border
+                             hover:border-accent/50 transition-all duration-300"
                   style={{ transitionDelay: `${i * 80}ms` }}>
                   <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14
-                                  bg-gradient-to-br from-cyan-500 to-purple-600
+                                  bg-gradient-to-br from-accent to-accentHover
                                   rounded-lg flex items-center justify-center">
                     <span className="text-white font-bold text-xs sm:text-sm">{item.year}</span>
                   </div>
                   <div className="min-w-0">
-                    <p className="text-white font-semibold text-sm sm:text-base">{item.title}</p>
-                    <p className="text-gray-400 text-xs sm:text-sm">{item.institute}</p>
-                    <p className="text-cyan-400 text-xs mt-1">{item.status}</p>
+                    <p className="text-primaryText font-semibold text-sm sm:text-base">{item.title}</p>
+                    <p className="text-secondaryText text-xs sm:text-sm">{item.institute}</p>
+                    <p className="text-accent text-xs mt-1">{item.status}</p>
                   </div>
                 </div>
               ))}

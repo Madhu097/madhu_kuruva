@@ -53,7 +53,7 @@ export default function Skills() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen bg-[#080810] py-20 px-4 sm:px-6 overflow-hidden"
+      className="relative min-h-screen bg-background py-20 px-4 sm:px-6 overflow-hidden"
     >
       {/* Background Video */}
       <video
@@ -69,7 +69,7 @@ export default function Skills() {
       <div 
         className="absolute inset-0 pointer-events-none" 
         style={{ 
-          background: 'linear-gradient(to bottom, #080810 0%, transparent 20%, transparent 80%, #080810 100%)' 
+          background: 'linear-gradient(to bottom, var(--color-background) 0%, transparent 20%, transparent 80%, var(--color-background) 100%)' 
         }} 
       />
 
@@ -80,9 +80,9 @@ export default function Skills() {
 
       {/* Ambient glow blobs */}
       <div className="absolute top-24 left-1/4 w-96 h-96 rounded-full blur-[160px] pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(34,211,238,0.07) 0%, transparent 70%)' }} />
+        style={{ background: 'radial-gradient(circle, rgba(10,132,255,0.07) 0%, transparent 70%)' }} />
       <div className="absolute bottom-24 right-1/4 w-96 h-96 rounded-full blur-[160px] pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(167,139,250,0.07) 0%, transparent 70%)' }} />
+        style={{ background: 'radial-gradient(circle, rgba(64,156,255,0.07) 0%, transparent 70%)' }} />
 
       <div className="max-w-7xl mx-auto relative z-10">
 
@@ -92,7 +92,7 @@ export default function Skills() {
           <h2 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-4 drop-shadow-lg">
             Tech Stack
           </h2>
-          <p className="text-gray-300 text-base max-w-md mx-auto drop-shadow-md">
+          <p className="text-secondaryText text-base max-w-md mx-auto drop-shadow-md">
             Technologies I work with daily to build fast, scalable, beautiful products.
           </p>
         </div>
@@ -105,11 +105,11 @@ export default function Skills() {
               onClick={() => setActiveFilter(cat)}
               className="relative px-5 py-2 rounded-full text-xs font-semibold tracking-wider uppercase transition-all duration-300 overflow-hidden"
               style={{
-                color: activeFilter === cat ? '#080810' : 'rgba(255,255,255,0.4)',
+                color: activeFilter === cat ? 'var(--color-background)' : 'var(--color-secondary-text)',
                 background: activeFilter === cat
-                  ? 'linear-gradient(135deg, #22d3ee, #8b5cf6)'
-                  : 'rgba(255,255,255,0.04)',
-                border: `1px solid ${activeFilter === cat ? 'transparent' : 'rgba(255,255,255,0.08)'}`,
+                  ? 'linear-gradient(135deg, var(--color-accent), var(--color-accent-hover))'
+                  : 'var(--color-card)',
+                border: `1px solid ${activeFilter === cat ? 'transparent' : 'var(--color-border)'}`,
               }}
             >
               {cat}
@@ -141,8 +141,8 @@ export default function Skills() {
                 <div
                   className="relative w-24 sm:w-28 h-24 sm:h-28 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all duration-300 cursor-pointer overflow-hidden"
                   style={{
-                    background: isHovered ? tech.bg : 'rgba(255,255,255,0.03)',
-                    border: `1px solid ${isHovered ? tech.color + '55' : 'rgba(255,255,255,0.07)'}`,
+                    background: isHovered ? tech.bg : 'var(--color-card)',
+                    border: `1px solid ${isHovered ? tech.color + '55' : 'var(--color-border)'}`,
                     transform: isHovered ? 'translateY(-10px) scale(1.08)' : 'translateY(0px) scale(1)',
                     boxShadow: isHovered ? `0 20px 60px ${tech.color}30, 0 0 0 1px ${tech.color}22` : 'none',
                   }}
@@ -201,7 +201,7 @@ export default function Skills() {
                   {/* Name */}
                   <span
                     className="relative z-10 text-[11px] font-semibold tracking-wide transition-all duration-300"
-                    style={{ color: isHovered ? tech.color : 'rgba(255,255,255,0.5)' }}
+                    style={{ color: isHovered ? tech.color : 'var(--color-secondary-text)' }}
                   >
                     {tech.name}
                   </span>

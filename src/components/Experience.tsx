@@ -70,23 +70,23 @@ export default function Experience() {
   return (
     <section
       ref={sectionRef}
-      className="relative bg-[#060610] py-20 px-4 sm:px-6 overflow-hidden min-h-screen flex flex-col justify-center"
+      className="relative bg-background py-20 px-4 sm:px-6 overflow-hidden min-h-screen flex flex-col justify-center"
     >
       {/* Grid background */}
       <div className="absolute inset-0 opacity-[0.035]" style={{
-        backgroundImage: 'linear-gradient(rgba(34,211,238,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(34,211,238,0.6) 1px, transparent 1px)',
+        backgroundImage: 'linear-gradient(rgba(10,132,255,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(10,132,255,0.15) 1px, transparent 1px)',
         backgroundSize: '50px 50px',
       }} />
 
       {/* Ambient glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse, rgba(34,211,238,0.04) 0%, transparent 70%)' }} />
+        style={{ background: 'radial-gradient(ellipse, rgba(10,132,255,0.04) 0%, transparent 70%)' }} />
 
       <div className="max-w-7xl mx-auto relative z-10 w-full">
 
         {/* ── Header ── */}
         <div className={`text-center mb-12 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <p className="text-cyan-400/60 text-xs tracking-[0.5em] uppercase mb-3">Work History</p>
+          <p className="text-accent/60 text-xs tracking-[0.5em] uppercase mb-3">Work History</p>
           <h2 className="text-5xl sm:text-6xl font-bold text-white">Experience</h2>
         </div>
 
@@ -95,8 +95,8 @@ export default function Experience() {
           <div
             className={`max-w-xl mx-auto rounded-xl p-6 font-mono text-sm transition-all duration-500 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
             style={{
-              background: 'rgba(0,255,200,0.03)',
-              border: '1px solid rgba(34,211,238,0.2)',
+              background: 'var(--color-card)',
+              border: '1px solid var(--color-border)',
             }}
           >
             {bootLines.map((line, i) => (
@@ -104,7 +104,7 @@ export default function Experience() {
                 key={i}
                 className="leading-7"
                 style={{
-                  color: line.includes('ACTIVE') ? '#4ade80' : line.includes('F1RSTLOOK') ? '#22d3ee' : 'rgba(255,255,255,0.55)',
+                  color: line.includes('ACTIVE') ? '#4ade80' : line.includes('F1RSTLOOK') ? '#0A84FF' : 'var(--color-secondary-text)',
                   animation: 'fadeSlideIn 0.3s ease forwards',
                 }}
               >
@@ -112,7 +112,7 @@ export default function Experience() {
               </div>
             ))}
             {bootLines.length < BOOT_LINES.length && (
-              <span className="text-cyan-400 blink-cursor">█</span>
+              <span className="text-accent blink-cursor">█</span>
             )}
           </div>
         )}
@@ -136,8 +136,8 @@ export default function Experience() {
             <div
               className="relative overflow-hidden rounded-2xl"
               style={{
-                background: 'linear-gradient(135deg, rgba(12,12,28,0.97) 0%, rgba(8,8,20,0.97) 100%)',
-                border: '1px solid rgba(34,211,238,0.12)',
+                background: 'var(--color-surface)',
+                border: '1px solid var(--color-border)',
                 zIndex: 1,
               }}
             >
@@ -158,8 +158,8 @@ export default function Experience() {
                       className="group inline-flex items-center gap-3 mb-3"
                     >
                       <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                        style={{ background: 'linear-gradient(135deg, #22d3ee22, #8b5cf622)', border: '1px solid rgba(34,211,238,0.3)' }}>
-                        <span className="text-cyan-400 font-black text-xs">F1</span>
+                        style={{ background: 'rgba(10,132,255,0.1)', border: '1px solid rgba(10,132,255,0.3)' }}>
+                        <span className="text-accent font-black text-xs">F1</span>
                       </div>
                       <span
                         className="text-xl sm:text-2xl font-black tracking-wide inline-flex"
@@ -197,7 +197,7 @@ export default function Experience() {
                           </span>
                         ))}
                       </span>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-cyan-400/40 group-hover:text-cyan-400 transition-colors">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent/40 group-hover:text-accent transition-colors">
                         <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
                       </svg>
                     </a>
@@ -221,23 +221,23 @@ export default function Experience() {
                 {/* Dual Roles */}
                 <div className="grid sm:grid-cols-2 gap-4 mb-8">
                   {/* Role 1 */}
-                  <div className="p-5 rounded-xl" style={{ background: 'rgba(139,92,246,0.07)', border: '1px solid rgba(139,92,246,0.2)' }}>
+                  <div className="p-5 rounded-xl" style={{ background: 'var(--color-card)', border: '1px solid var(--color-border)' }}>
                     <div className="flex items-center gap-2 mb-3">
-                      <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(139,92,246,0.2)' }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+                      <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(10,132,255,0.2)' }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0A84FF" strokeWidth="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
                       </div>
-                      <span className="text-purple-400 text-xs tracking-widest uppercase font-semibold">Operations</span>
+                      <span className="text-accent text-xs tracking-widest uppercase font-semibold">Operations</span>
                     </div>
                     <h3 className="text-xl sm:text-2xl font-bold text-white mb-1">Operations Head</h3>
                     <p className="text-gray-500 text-xs">Digital Startup · Full-time</p>
                   </div>
                   {/* Role 2 */}
-                  <div className="p-5 rounded-xl" style={{ background: 'rgba(34,211,238,0.07)', border: '1px solid rgba(34,211,238,0.2)' }}>
+                  <div className="p-5 rounded-xl" style={{ background: 'var(--color-card)', border: '1px solid var(--color-border)' }}>
                     <div className="flex items-center gap-2 mb-3">
-                      <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(34,211,238,0.2)' }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" strokeWidth="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                      <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(10,132,255,0.2)' }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0A84FF" strokeWidth="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
                       </div>
-                      <span className="text-cyan-400 text-xs tracking-widest uppercase font-semibold">Engineering</span>
+                      <span className="text-accent text-xs tracking-widest uppercase font-semibold">Engineering</span>
                     </div>
                     <h3 className="text-xl sm:text-2xl font-bold text-white mb-1">Web Developer</h3>
                     <p className="text-gray-500 text-xs">Designed & built firstlook.digital</p>
@@ -246,7 +246,7 @@ export default function Experience() {
 
                 {/* Responsibilities */}
                 <div>
-                  <p className="text-xs text-cyan-400/60 tracking-widest uppercase mb-4 font-mono">— Key Responsibilities</p>
+                  <p className="text-xs text-accent/60 tracking-widest uppercase mb-4 font-mono">— Key Responsibilities</p>
                   <div className="space-y-3">
                     {responsibilities.map((item, i) => (
                       <div
@@ -259,8 +259,8 @@ export default function Experience() {
                         }}
                       >
                         <div className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0 group-hover:scale-150 transition-transform duration-300"
-                          style={{ background: 'linear-gradient(135deg, #22d3ee, #8b5cf6)' }} />
-                        <span className="text-gray-400 text-sm leading-relaxed group-hover:text-gray-200 transition-colors duration-300">{item}</span>
+                          style={{ background: 'linear-gradient(135deg, #0A84FF, #409CFF)' }} />
+                        <span className="text-secondaryText text-sm leading-relaxed group-hover:text-primaryText transition-colors duration-300">{item}</span>
                       </div>
                     ))}
                   </div>
@@ -269,8 +269,8 @@ export default function Experience() {
                 {/* Bottom row */}
                 <div className="mt-8 pt-6 border-t border-white/5 flex flex-wrap gap-2">
                   {['Operations', 'Strategy', 'Digital Marketing', 'React', 'Web Dev', 'UI/UX', 'Team Leadership', 'Growth'].map(tag => (
-                    <span key={tag} className="px-3 py-1 rounded-full text-xs font-medium text-gray-400 transition-all duration-300 hover:text-cyan-400"
-                      style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                    <span key={tag} className="px-3 py-1 rounded-full text-xs font-medium text-secondaryText transition-all duration-300 hover:text-accent hover:border-accent/50"
+                      style={{ background: 'var(--color-card)', border: '1px solid var(--color-border)' }}>
                       {tag}
                     </span>
                   ))}
@@ -283,7 +283,7 @@ export default function Experience() {
               <div key={i}
                 className="absolute w-1 h-1 rounded-full pointer-events-none"
                 style={{
-                  background: i % 2 === 0 ? '#22d3ee' : '#8b5cf6',
+                  background: i % 2 === 0 ? '#0A84FF' : '#409CFF',
                   opacity: 0.35,
                   top: `${20 + (i * 22)}%`,
                   left: i % 2 === 0 ? `-6px` : `auto`,

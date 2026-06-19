@@ -4,10 +4,21 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 
+:root {
+  --color-background: #000000;
+  --color-surface: #111111;
+  --color-card: #1C1C1E;
+  --color-primary-text: #F5F5F7;
+  --color-secondary-text: #86868B;
+  --color-border: #2C2C2E;
+  --color-accent: #0A84FF;
+  --color-accent-hover: #409CFF;
+}
+
 @layer base {
   body {
     font-family: 'Plus Jakarta Sans', sans-serif;
-    @apply text-[#f8fafc] antialiased;
+    @apply text-primaryText bg-background antialiased;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply tracking-tight;
@@ -92,6 +103,6 @@
 .flying-envelope-icon {
   width: 28px;
   height: 28px;
-  color: #f8fafc;
+  color: var(--color-primary-text);
   animation: envelope-glow 1.2s ease-in-out infinite;
 }
