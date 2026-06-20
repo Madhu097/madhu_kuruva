@@ -367,9 +367,9 @@ export default function About() {
             </div>
 
             <p className="text-secondaryText text-sm sm:text-base md:text-lg leading-relaxed">
-              I'm a final year BTech student passionate about building innovative solutions through
-              full-stack development. With a strong foundation in computer science fundamentals,
-              I love crafting elegant applications that solve real-world problems.
+             I'm a Computer Science graduate and Full-Stack Developer passionate about building innovative solutions. 
+             With a strong foundation in software development and problem-solving, 
+             I enjoy creating scalable applications that address real-world challenges.
             </p>
             <p className="text-gray-400 text-sm sm:text-base leading-relaxed">
               My journey in tech has taught me the importance of continuous learning and staying

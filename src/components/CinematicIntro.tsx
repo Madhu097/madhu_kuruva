@@ -38,10 +38,7 @@ const getTierDPR = () => {
 
 // How many ms between canvas draws (throttle on mobile to save main thread)
 const getDrawInterval = () => {
-  const tier = getDeviceTier();
-  if (tier === 'mobile')  return 1000 / 30;  // 30 fps cap on mobile
-  if (tier === 'tablet')  return 1000 / 45;  // 45 fps cap on tablet
-  return 0;                                   // uncapped on desktop
+  return 0; // Uncapped on all devices for buttery-smooth high refresh rate rendering
 };
 
 // Real viewport height (accounts for mobile browser chrome bar)
@@ -53,6 +50,8 @@ export default function CinematicIntro() {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const canvasRef  = useRef<HTMLCanvasElement>(null);
   const rafRef     = useRef<number>(0);
+  const isLoopRunningRef = useRef<boolean>(false);
+  const hasStartedPreloadRef = useRef<boolean>(false);
 
   // Frame store
   const framesRef = useRef<(HTMLImageElement | null)[]>(new Array(TOTAL_FRAMES).fill(null));
@@ -75,6 +74,8 @@ export default function CinematicIntro() {
   // DOM refs updated by rAF (avoids React re-renders)
   const panelRefs  = useRef<(HTMLDivElement | null)[]>([]);
   const welcomeRef = useRef<HTMLDivElement>(null);
+  const lastOpacitiesRef = useRef<number[]>(new Array(6).fill(-999));
+  const lastWelcomeOpRef = useRef<number>(-999);
 
   // ── 1. Scroll to top on mount (consistent refresh behaviour) ────────────────
   useEffect(() => {
@@ -91,7 +92,173 @@ export default function CinematicIntro() {
     wrapHRef.current   = w.offsetHeight;
   }, []);
 
-  // ── 3. Passive scroll listener — no layout reads, pure arithmetic ───────────
+  // ── 3. Draw frame (all coords in CSS px; DPR handled by ctx.scale) ──────────
+  const drawFrame = useCallback((frameIdx: number, p: number, mobile: boolean): boolean => {
+    const canvas = canvasRef.current;
+    if (!canvas) return false;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return false;
+
+    // Walk back to nearest loaded frame
+    let img: HTMLImageElement | null = null;
+    let si = frameIdx;
+    while (si >= 0) {
+      const c = framesRef.current[si];
+      if (c && loadedRef.current[si] && c.naturalWidth > 0) { img = c; break; }
+      si--;
+    }
+    if (!img) return false;
+
+    const { w: W, h: H } = vpRef.current;
+
+    // ── Cover-fit: always fill the full screen ────────────────────────────────
+    const iW = img.naturalWidth  || 1920;
+    const iH = img.naturalHeight || 1080;
+
+    let scale = Math.max(W / iW, H / iH);
+
+    if (W < H) scale *= 0.88;
+
+    const dW = iW * scale;
+    const dH = iH * scale;
+
+    const dX = (W - dW) / 2;
+    const dY = (H - dH) * 0.38;
+
+    ctx.clearRect(0, 0, W, H);
+    ctx.drawImage(img, dX, dY, dW, dH);
+
+    // Note: Static top and bottom gradients moved to CSS overlay (.ci-gradient-overlay)
+    // to save canvas layout invalidations and drawing overhead.
+
+    // Desktop-only extras (vignette, bloom, fog — too expensive on mobile)
+    if (!mobile) {
+      const vr = Math.max(W, H) * 0.9;
+      const vg = ctx.createRadialGradient(W/2, H/2, vr*0.35, W/2, H/2, vr);
+      vg.addColorStop(0, 'rgba(0,0,0,0)');
+      vg.addColorStop(1, `rgba(0,0,0,${lerp(0.55, 0.22, easeInOut4(clamp(p*1.3,0,1)))})`);
+      ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+
+      if (p > 0.76) {
+        const bt = clamp((p - 0.76) / 0.24, 0, 1);
+        const bl = ctx.createRadialGradient(W/2, H*0.42, 0, W/2, H*0.42, Math.max(W,H)*0.75);
+        bl.addColorStop(0,   `rgba(10,132,255,${bt*0.18})`);
+        bl.addColorStop(0.4, `rgba(64,156,255,${bt*0.07})`);
+        bl.addColorStop(1,   'rgba(0,0,0,0)');
+        ctx.fillStyle = bl; ctx.fillRect(0, 0, W, H);
+      }
+
+      const fo = lerp(0.12, 0.02, easeOut3(clamp(p*1.6,0,1)));
+      const fg = ctx.createLinearGradient(0, H*0.57, 0, H*0.82);
+      fg.addColorStop(0,   'rgba(10,20,40,0)');
+      fg.addColorStop(0.5, `rgba(10,20,40,${fo})`);
+      fg.addColorStop(1,   'rgba(10,20,40,0)');
+      ctx.fillStyle = fg; ctx.fillRect(0, 0, W, H);
+    }
+
+    // End-fade
+    if (p > 0.94) {
+      const fadeAmt = easeInOut4(clamp((p - 0.94) / 0.06, 0, 1));
+      ctx.fillStyle = `rgba(0,0,0,${fadeAmt.toFixed(3)})`;
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    return true;
+  }, []);
+
+  // ── 4. rAF loop ─────────────────────────────────────────────────────────────
+  const tick = useCallback((now: number) => {
+    const tier    = getDeviceTier();
+    const mobile  = tier === 'mobile';
+    const lerpFac = mobile ? 0.28 : 0.24; // Faster catch-up speed for responsive scroll
+
+    // Smooth progress
+    smoothPRef.current = lerp(smoothPRef.current, rawPRef.current, lerpFac);
+    
+    // Snap progress if extremely close to settle animation
+    const diff = Math.abs(smoothPRef.current - rawPRef.current);
+    const settled = diff < 0.001;
+    if (settled) {
+      smoothPRef.current = rawPRef.current;
+    }
+    
+    const p = smoothPRef.current;
+    const frameIdx = Math.min(Math.floor(p * (TOTAL_FRAMES - 1)), TOTAL_FRAMES - 1);
+
+    // Throttle canvas draws by device tier
+    const interval = getDrawInterval();
+    const canDraw  = now - lastDrawTime.current >= interval;
+
+    if (canDraw && (frameIdx !== lastDrawnRef.current || dirtyRef.current)) {
+      const ok = drawFrame(frameIdx, p, mobile);
+      if (ok) {
+        lastDrawnRef.current  = frameIdx;
+        dirtyRef.current      = false;
+        lastDrawTime.current  = now;
+      }
+    }
+
+    // ── Text panels (cheap DOM writes — always at 60fps) ──────────────────────
+    const RISE = 0.035; // Smoother, longer transition rise
+    const FADE = 0.035; // Smoother, longer transition fade
+
+    TEXT_SEQUENCE.forEach((seg, i) => {
+      const panel = panelRefs.current[i];
+      if (!panel) return;
+      const rEnd = seg.start + RISE;
+      const fSt  = seg.end   - FADE;
+
+      let op = 0, ty = 0, sc = 1;
+      if      (p < seg.start) { op=0;   ty=28;  sc=0.96; }
+      else if (p < rEnd)      { const t=easeOut3((p-seg.start)/RISE);    op=t;   ty=lerp(28,0,t);  sc=lerp(0.96,1,t); }
+      else if (p < fSt)       { op=1;   ty=0;   sc=1; }
+      else if (p < seg.end)   { const t=easeInOut4((p-fSt)/FADE);        op=1-t; ty=lerp(0,-20,t); sc=lerp(1,1.03,t); }
+      else                    { op=0;   ty=-20; sc=1.03; }
+
+      // Only write to the DOM if the panel is currently visible, OR just transitioned to 0
+      const lastOp = lastOpacitiesRef.current[i];
+      if (op !== 0 || lastOp !== 0) {
+        panel.style.opacity   = op.toFixed(3);
+        panel.style.transform = `translateY(${ty.toFixed(1)}px) scale(${sc.toFixed(3)})`;
+        lastOpacitiesRef.current[i] = op;
+      }
+    });
+
+    // Welcome panel
+    const wEl = welcomeRef.current;
+    if (wEl) {
+      let op = 0, ty = 28;
+      if (p >= 0.88) {
+        const t = easeOut3(clamp((p-0.88)/0.08, 0, 1));
+        op = t;
+        ty = lerp(28, 0, t);
+      }
+      
+      const lastWelcomeOp = lastWelcomeOpRef.current;
+      if (op !== 0 || lastWelcomeOp !== 0) {
+        wEl.style.opacity   = op.toFixed(3);
+        wEl.style.transform = `translateY(${ty.toFixed(1)}px)`;
+        lastWelcomeOpRef.current = op;
+      }
+    }
+
+    // Keep running if animation hasn't settled or a redraw is forced (e.g. newly loaded image)
+    if (!settled || dirtyRef.current) {
+      rafRef.current = requestAnimationFrame(tick);
+    } else {
+      isLoopRunningRef.current = false;
+    }
+  }, [drawFrame]);
+
+  // ── 5. Wake up loop ─────────────────────────────────────────────────────────
+  const wakeUpLoop = useCallback(() => {
+    if (!isLoopRunningRef.current) {
+      isLoopRunningRef.current = true;
+      rafRef.current = requestAnimationFrame(tick);
+    }
+  }, [tick]);
+
+  // ── 6. Passive scroll listener — no layout reads, pure arithmetic ───────────
   useEffect(() => {
     const onScroll = () => {
       const scrolled = clamp(
@@ -101,13 +268,14 @@ export default function CinematicIntro() {
       );
       const denom = wrapHRef.current - window.innerHeight;
       rawPRef.current = denom > 0 ? scrolled / denom : 0;
+      wakeUpLoop();
     };
 
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  }, [wakeUpLoop]);
 
-  // ── 4. Canvas resize ── reads sticky container dimensions (not window) so canvas
+  // ── 7. Canvas resize ── reads sticky container dimensions (not window) so canvas
   //    ALWAYS fills its parent regardless of dvh/svh/visualViewport discrepancies
   const resizeCanvas = useCallback(() => {
     const c = canvasRef.current;
@@ -141,206 +309,119 @@ export default function CinematicIntro() {
     dirtyRef.current     = true;
   }, []);
 
-  // ── 5. Draw frame (all coords in CSS px; DPR handled by ctx.scale) ──────────
-  const drawFrame = useCallback((frameIdx: number, p: number, mobile: boolean): boolean => {
-    const canvas = canvasRef.current;
-    if (!canvas) return false;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return false;
-
-    // Walk back to nearest loaded frame
-    let img: HTMLImageElement | null = null;
-    let si = frameIdx;
-    while (si >= 0) {
-      const c = framesRef.current[si];
-      if (c && loadedRef.current[si] && c.naturalWidth > 0) { img = c; break; }
-      si--;
-    }
-    if (!img) return false;
-
-    const { w: W, h: H } = vpRef.current;
-
-    // ── Cover-fit: always fill the full screen ────────────────────────────────
-    // Pure cover — scales so BOTH dimensions are >= viewport.
-    // On portrait mobile a 16:9 frame will crop sides (center-anchored) but
-    // the image fully covers the screen height. No letterboxing.
-    const iW = img.naturalWidth  || 1920;
-    const iH = img.naturalHeight || 1080;
-
-    // Pure cover scale (larger of the two ratios)
-    let scale = Math.max(W / iW, H / iH);
-
-    // On portrait screens (phones/tablets held vertically) pull back slightly
-    // so the image is less aggressively cropped on the sides
-    if (W < H) scale *= 0.88;
-
-    const dW = iW * scale;
-    const dH = iH * scale;
-
-    // Center crop — for portrait phones the horizontal overflow is cropped
-    // Shift anchor slightly toward top (cinematic framing, not dead-center)
-    const dX = (W - dW) / 2;
-    const dY = (H - dH) * 0.38; // 38% from top (slightly above center = cinematic)
-
-    ctx.clearRect(0, 0, W, H);
-    ctx.drawImage(img, dX, dY, dW, dH);
-
-    // ── Gradient overlays ────────────────────────────────────────────────────
-    // On mobile: only 2 passes (top dark + bottom dark) — saves ~4ms per frame
-    const tg = ctx.createLinearGradient(0, 0, 0, H * 0.30);
-    tg.addColorStop(0, 'rgba(0,0,0,0.88)');
-    tg.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = tg; ctx.fillRect(0, 0, W, H);
-
-    const bg = ctx.createLinearGradient(0, H * 0.55, 0, H);
-    bg.addColorStop(0, 'rgba(0,0,0,0)');
-    bg.addColorStop(1, 'rgba(0,0,0,0.92)');
-    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
-
-    // Desktop-only extras (vignette, bloom, fog — too expensive on mobile)
-    if (!mobile) {
-      const vr = Math.max(W, H) * 0.9;
-      const vg = ctx.createRadialGradient(W/2, H/2, vr*0.35, W/2, H/2, vr);
-      vg.addColorStop(0, 'rgba(0,0,0,0)');
-      vg.addColorStop(1, `rgba(0,0,0,${lerp(0.55, 0.22, easeInOut4(clamp(p*1.3,0,1)))})`);
-      ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
-
-      if (p > 0.76) {
-        const bt = clamp((p - 0.76) / 0.24, 0, 1);
-        const bl = ctx.createRadialGradient(W/2, H*0.42, 0, W/2, H*0.42, Math.max(W,H)*0.75);
-        bl.addColorStop(0,   `rgba(10,132,255,${bt*0.18})`);
-        bl.addColorStop(0.4, `rgba(64,156,255,${bt*0.07})`);
-        bl.addColorStop(1,   'rgba(0,0,0,0)');
-        ctx.fillStyle = bl; ctx.fillRect(0, 0, W, H);
-      }
-
-      const fo = lerp(0.12, 0.02, easeOut3(clamp(p*1.6,0,1)));
-      const fg = ctx.createLinearGradient(0, H*0.57, 0, H*0.82);
-      fg.addColorStop(0,   'rgba(10,20,40,0)');
-      fg.addColorStop(0.5, `rgba(10,20,40,${fo})`);
-      fg.addColorStop(1,   'rgba(10,20,40,0)');
-      ctx.fillStyle = fg; ctx.fillRect(0, 0, W, H);
-    }
-
-    // End-fade — drawn on canvas (can NEVER cover Hero section)
-    // Fades last 6% of scroll to match the portfolio background colour
-    if (p > 0.94) {
-      const fadeAmt = easeInOut4(clamp((p - 0.94) / 0.06, 0, 1));
-      ctx.fillStyle = `rgba(0,0,0,${fadeAmt.toFixed(3)})`;
-      ctx.fillRect(0, 0, W, H);
-    }
-
-    return true;
-  }, []);
-
-  // ── 6. rAF loop — scroll reading separated, draw throttled on mobile ─────────
-  const tick = useCallback((now: number) => {
-    const tier    = getDeviceTier();
-    const mobile  = tier === 'mobile';
-    const lerpFac = mobile ? 0.18 : 0.15; // slightly more responsive on mobile
-
-    // Smooth progress (cheap arithmetic, no DOM reads)
-    smoothPRef.current = lerp(smoothPRef.current, rawPRef.current, lerpFac);
-    const p = smoothPRef.current;
-
-    const frameIdx = Math.min(Math.floor(p * (TOTAL_FRAMES - 1)), TOTAL_FRAMES - 1);
-
-    // Throttle canvas draws by device tier
-    const interval = getDrawInterval();
-    const canDraw  = now - lastDrawTime.current >= interval;
-
-    if (canDraw && (frameIdx !== lastDrawnRef.current || dirtyRef.current)) {
-      const ok = drawFrame(frameIdx, p, mobile);
-      if (ok) {
-        lastDrawnRef.current  = frameIdx;
-        dirtyRef.current      = false;
-        lastDrawTime.current  = now;
-      }
-    }
-
-    // ── Text panels (cheap DOM writes — always at 60fps) ──────────────────────
-    const RISE = 0.022;
-    const FADE = 0.022;
-
-    TEXT_SEQUENCE.forEach((seg, i) => {
-      const panel = panelRefs.current[i];
-      if (!panel) return;
-      const rEnd = seg.start + RISE;
-      const fSt  = seg.end   - FADE;
-
-      let op = 0, ty = 0, sc = 1, bl = 0;
-      if      (p < seg.start) { op=0;   ty=28;  sc=0.96; bl=6; }
-      else if (p < rEnd)      { const t=easeOut3((p-seg.start)/RISE);    op=t;   ty=lerp(28,0,t);  sc=lerp(0.96,1,t);   bl=lerp(6,0,t); }
-      else if (p < fSt)       { op=1;   ty=0;   sc=1;    bl=0; }
-      else if (p < seg.end)   { const t=easeInOut4((p-fSt)/FADE);        op=1-t; ty=lerp(0,-20,t); sc=lerp(1,1.03,t);   bl=lerp(0,4,t); }
-      else                    { op=0;   ty=-20; sc=1.03; bl=4; }
-
-      panel.style.opacity   = op.toFixed(3);
-      panel.style.transform = `translateY(${ty.toFixed(1)}px) scale(${sc.toFixed(3)})`;
-      panel.style.filter    = bl > 0.05 ? `blur(${bl.toFixed(2)}px)` : 'none';
-    });
-
-    // Welcome panel
-    const wEl = welcomeRef.current;
-    if (wEl) {
-      if (p >= 0.88) {
-        const t = easeOut3(clamp((p-0.88)/0.08, 0, 1));
-        wEl.style.opacity   = t.toFixed(3);
-        wEl.style.transform = `translateY(${lerp(28,0,t).toFixed(1)}px)`;
-        wEl.style.filter    = `blur(${lerp(7,0,t).toFixed(2)}px)`;
-      } else {
-        wEl.style.opacity   = '0';
-        wEl.style.transform = 'translateY(28px)';
-        wEl.style.filter    = 'blur(7px)';
-      }
-    }
-
-    rafRef.current = requestAnimationFrame(tick);
-  }, [drawFrame]);
-
-  // ── 7. Preload — frame 0 critical path, then staggered batches ──────────────
+  // ── 8. Preload — frame 0 critical path, then staggered batches ──────────────
   useEffect(() => {
-    const frames = new Array<HTMLImageElement | null>(TOTAL_FRAMES).fill(null);
-    const loaded = new Array<boolean>(TOTAL_FRAMES).fill(false);
+    if (hasStartedPreloadRef.current) return;
+    hasStartedPreloadRef.current = true;
 
-    const loadOne = (i: number, cb?: () => void) => {
-      const img = new Image();
-      img.decoding = 'async';
-      img.src = `/frames/ezgif-frame-${String(i + 1).padStart(3, '0')}.png`;
-      img.onload  = () => { loaded[i] = true; dirtyRef.current = true; cb?.(); };
-      img.onerror = () => { loaded[i] = true; };
-      frames[i] = img;
+    console.log('[CinematicIntro] Preloader hook mounted.');
+    const frames = framesRef.current;
+    const loaded = loadedRef.current;
+
+    // Helper to asynchronously decode images in background before marking them loaded
+    const markLoaded = (img: HTMLImageElement, i: number, cb?: () => void) => {
+      const finish = () => {
+        loaded[i] = true;
+        if (i === 0) {
+          frames[0] = img;
+          dirtyRef.current = true;
+          resizeCanvas();
+          cacheWrapperMetrics();
+          drawFrame(0, 0, getDeviceTier() === 'mobile');
+          lastDrawnRef.current = 0;
+        } else {
+          dirtyRef.current = true;
+        }
+        cb?.();
+        wakeUpLoop();
+      };
+
+      if ('decode' in img) {
+        img.decode().catch(() => {}).then(finish);
+      } else {
+        finish();
+      }
     };
 
-    framesRef.current = frames;
-    loadedRef.current = loaded;
+    // Detect if WebP frames are available by checking frame 1 (index 0)
+    const testImg = new Image();
+    testImg.decoding = 'async';
 
-    // Frame 0: highest priority — draw immediately for refresh
-    loadOne(0, () => {
-      resizeCanvas();
-      cacheWrapperMetrics();
-      drawFrame(0, 0, getDeviceTier() === 'mobile');
-      lastDrawnRef.current = 0;
-    });
-
-    // Frames 1-24: load right away (covers first 25% of scroll)
-    for (let i = 1; i < 25; i++) loadOne(i);
-
-    // Rest in batches — stagger so they don't all fight for bandwidth
-    let cursor = 25;
-    const batch = () => {
-      const end = Math.min(cursor + 15, TOTAL_FRAMES);
-      for (let i = cursor; i < end; i++) loadOne(i);
-      cursor = end;
-      if (cursor < TOTAL_FRAMES) setTimeout(batch, 200);
+    testImg.onload = () => {
+      console.log('[CinematicIntro] WebP detection SUCCEEDED. Loading frames as WebP...');
+      markLoaded(testImg, 0, () => startPreloadFlow('.webp'));
     };
-    setTimeout(batch, 500);
-  }, [drawFrame, cacheWrapperMetrics]);
+
+    testImg.onerror = (e) => {
+      console.log('[CinematicIntro] WebP detection FAILED (expected in local dev). Falling back to PNG...', e);
+      const pngImg = new Image();
+      pngImg.decoding = 'async';
+      
+      pngImg.onload = () => {
+        console.log('[CinematicIntro] Fallback PNG frame 0 LOADED successfully.');
+        markLoaded(pngImg, 0, () => startPreloadFlow('.png'));
+      };
+      
+      pngImg.onerror = (err) => {
+        console.error('[CinematicIntro] Fallback PNG frame 0 FAILED to load:', err);
+        loaded[0] = true;
+        wakeUpLoop();
+      };
+
+      // Set src after registering onload/onerror
+      pngImg.src = `/frames/ezgif-frame-001.png`;
+    };
+
+    // Trigger WebP detection request after registering onload/onerror
+    testImg.src = `/frames/ezgif-frame-001.webp`;
+
+    const startPreloadFlow = (ext: string) => {
+      console.log(`[CinematicIntro] Starting preload flow for extension: ${ext}`);
+      const loadOne = (i: number) => {
+        const img = new Image();
+        img.decoding = 'async';
+        
+        img.onload = () => {
+          markLoaded(img, i);
+        };
+        
+        img.onerror = (err) => {
+          console.error(`[CinematicIntro] Failed to load frame ${i + 1} (${ext}):`, err);
+          loaded[i] = true;
+          wakeUpLoop();
+        };
+        
+        frames[i] = img;
+        
+        // Trigger loading after handlers are registered
+        img.src = `/frames/ezgif-frame-${String(i + 1).padStart(3, '0')}${ext}`;
+      };
+
+      // Frames 1-24: load right away (covers first 25% of scroll)
+      console.log('[CinematicIntro] Triggering fast preload for frames 1-24');
+      for (let i = 1; i < 25; i++) {
+        loadOne(i);
+      }
+
+      // Rest in batches — stagger so they don't fight for bandwidth
+      let cursor = 25;
+      const batch = () => {
+        const end = Math.min(cursor + 15, TOTAL_FRAMES);
+        console.log(`[CinematicIntro] Preloading batch frames ${cursor} to ${end - 1}`);
+        for (let i = cursor; i < end; i++) {
+          loadOne(i);
+        }
+        cursor = end;
+        if (cursor < TOTAL_FRAMES) {
+          setTimeout(batch, 200);
+        }
+      };
+      setTimeout(batch, 500);
+    };
+  }, [drawFrame, cacheWrapperMetrics, resizeCanvas, wakeUpLoop]);
 
   // ── 8. Mount: resize, cache metrics, start rAF ──────────────────────────────
   useEffect(() => {
-    // Use the STICKY container's dimensions (not the scroll wrapper)
-    // The sticky is always viewport-sized; the wrapper is 380vh
     const doResize = () => {
       const c = canvasRef.current;
       if (!c) return;
@@ -368,21 +449,19 @@ export default function CinematicIntro() {
 
     doResize();
     cacheWrapperMetrics();
+    wakeUpLoop();
 
-    const onResize = () => { doResize(); cacheWrapperMetrics(); };
+    const onResize = () => { doResize(); cacheWrapperMetrics(); wakeUpLoop(); };
     window.addEventListener('resize', onResize, { passive: true });
     window.visualViewport?.addEventListener('resize', onResize);
 
-    rafRef.current = requestAnimationFrame(tick);
-
     return () => {
       cancelAnimationFrame(rafRef.current);
+      isLoopRunningRef.current = false;
       window.removeEventListener('resize', onResize);
       window.visualViewport?.removeEventListener('resize', onResize);
     };
-  }, [cacheWrapperMetrics, tick]);
-
-
+  }, [cacheWrapperMetrics, tick, wakeUpLoop]);
 
   // ─────────────────────────────────────────────────────────────────────────────
   return (
@@ -419,6 +498,17 @@ export default function CinematicIntro() {
           will-change: contents;
         }
 
+        /* Static gradients overlay — hardware accelerated */
+        .ci-gradient-overlay {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          z-index: 5;
+          background: 
+            linear-gradient(to bottom, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0) 30%),
+            linear-gradient(to bottom, rgba(0,0,0,0) 55%, rgba(0,0,0,0.92) 100%);
+        }
+
         /* Decorative flares */
         .ci-flare {
           position: absolute;
@@ -436,10 +526,9 @@ export default function CinematicIntro() {
           padding: 0 clamp(1.2rem, 5vw, 6vw) clamp(4vh, 6vh, 7vh);
           z-index: 15;
           pointer-events: none;
-          will-change: opacity, transform, filter;
+          will-change: opacity, transform;
           opacity: 0;
           transform: translateY(28px);
-          filter: blur(6px);
           /* translateZ forces GPU compositing — prevents layout jank on mobile */
           transform-style: flat;
         }
@@ -485,10 +574,9 @@ export default function CinematicIntro() {
           padding: 0 clamp(1.2rem, 5vw, 6vw) clamp(4vh, 6vh, 7vh);
           z-index: 15;
           pointer-events: none;
-          will-change: opacity, transform, filter;
+          will-change: opacity, transform;
           opacity: 0;
           transform: translateY(28px);
-          filter: blur(7px);
         }
 
         .ci-welcome-h {
@@ -592,6 +680,7 @@ export default function CinematicIntro() {
         <div className="ci-sticky">
 
           <canvas ref={canvasRef} className="ci-canvas" />
+          <div className="ci-gradient-overlay" />
 
           <div className="ci-fog" />
 

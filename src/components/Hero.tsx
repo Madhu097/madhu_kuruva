@@ -140,7 +140,7 @@ export default function Hero() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-400 animate-fade-in-up opacity-0" style={{ animationDelay: '1.35s', animationFillMode: 'forwards' }}>
             <span>BTech Computer Science</span>
             <span className="hidden sm:inline">•</span>
-            <span>Final Year</span>
+            <span>2026 Graduate</span>
             <span className="hidden sm:inline">•</span>
             <span>Hyderabad, India</span>
           </div>
