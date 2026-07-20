@@ -19,6 +19,12 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom'],
           icons: ['lucide-react'],
+          about: ['./src/components/About'],
+          experience: ['./src/components/Experience'],
+          skills: ['./src/components/Skills'],
+          portfolio: ['./src/components/Portfolio'],
+          certifications: ['./src/components/Certifications'],
+          contact: ['./src/components/Contact'],
         },
         assetFileNames: (assetInfo) => {
           const info = assetInfo.name?.split('.');

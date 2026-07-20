@@ -4,109 +4,117 @@ import heroVideo from '../assets/hero.mp4';
 
 export default function Hero() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const nameRef = useRef<HTMLHeadingElement>(null);
+  const nameRef   = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    // Reduce particle count on lower-end screens
+    const isMobile = window.innerWidth < 768;
+    const COUNT    = isMobile ? 35 : 55;
+    const MAX_DIST = 130;
 
-    const particles: Array<{
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      size: number;
-    }> = [];
+    const resize = () => {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
 
-    for (let i = 0; i < 80; i++) {
+    type Particle = { x: number; y: number; vx: number; vy: number; size: number };
+    const particles: Particle[] = [];
+    for (let i = 0; i < COUNT; i++) {
       particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        size: Math.random() * 2 + 1,
+        x:    Math.random() * canvas.width,
+        y:    Math.random() * canvas.height,
+        vx:   (Math.random() - 0.5) * 0.4,
+        vy:   (Math.random() - 0.5) * 0.4,
+        size: Math.random() * 1.5 + 0.8,
       });
     }
 
-    let animationId: number;
+    // Pre-bake a single particle glow image onto an offscreen canvas
+    // so we never call createRadialGradient inside the hot loop
+    const GLOW_SIZE = 10;
+    const glowCanvas = document.createElement('canvas');
+    glowCanvas.width  = GLOW_SIZE * 2;
+    glowCanvas.height = GLOW_SIZE * 2;
+    const gc = glowCanvas.getContext('2d')!;
+    const grad = gc.createRadialGradient(GLOW_SIZE, GLOW_SIZE, 0, GLOW_SIZE, GLOW_SIZE, GLOW_SIZE);
+    grad.addColorStop(0,   'rgba(10,132,255,0.55)');
+    grad.addColorStop(0.5, 'rgba(10,132,255,0.15)');
+    grad.addColorStop(1,   'rgba(10,132,255,0)');
+    gc.fillStyle = grad;
+    gc.fillRect(0, 0, GLOW_SIZE * 2, GLOW_SIZE * 2);
+
+    let animId: number;
 
     const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const W = canvas.width;
+      const H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
 
-      particles.forEach((p, i) => {
+      // ── Move + draw nodes ─────────────────────────────────────────────────
+      for (let i = 0; i < COUNT; i++) {
+        const p = particles[i];
         p.x += p.vx;
         p.y += p.vy;
+        if (p.x < 0 || p.x > W) p.vx *= -1;
+        if (p.y < 0 || p.y > H) p.vy *= -1;
 
-        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+        // Draw pre-baked glow — one drawImage call instead of createRadialGradient
+        ctx.globalAlpha = 0.8;
+        ctx.drawImage(glowCanvas, p.x - GLOW_SIZE, p.y - GLOW_SIZE);
+        ctx.globalAlpha = 1;
+      }
 
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 2);
-        gradient.addColorStop(0, 'rgba(10, 132, 255, 0.4)');
-        gradient.addColorStop(1, 'rgba(10, 132, 255, 0.05)');
-        ctx.fillStyle = gradient;
-        ctx.fill();
-
-        particles.forEach((p2, j) => {
-          if (i === j) return;
-          const dx = p.x - p2.x;
-          const dy = p.y - p2.y;
+      // ── Draw edges ────────────────────────────────────────────────────────
+      // Batch all edges under a single beginPath per opacity level would be
+      // complex; instead we just set strokeStyle once and stroke per pair
+      ctx.lineWidth = 0.5;
+      for (let i = 0; i < COUNT; i++) {
+        for (let j = i + 1; j < COUNT; j++) {
+          const dx   = particles[i].x - particles[j].x;
+          const dy   = particles[i].y - particles[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist >= MAX_DIST) continue;
 
-          if (dist < 150) {
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(10, 132, 255, ${0.15 * (1 - dist / 150)})`;
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-          }
-        });
-      });
+          const alpha = (1 - dist / MAX_DIST) * 0.18;
+          ctx.strokeStyle = `rgba(10,132,255,${alpha.toFixed(3)})`;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
 
-      animationId = requestAnimationFrame(animate);
+      animId = requestAnimationFrame(animate);
     };
-
     animate();
 
-    const handleResize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
+    window.addEventListener('resize', resize, { passive: true });
 
-    window.addEventListener('resize', handleResize);
-
+    // Letter entrance animation
     if (nameRef.current) {
-      const letters = nameRef.current.children;
-      Array.from(letters).forEach((letter, i) => {
-        setTimeout(() => {
-          (letter as HTMLElement).classList.add('animate-in');
-        }, i * 80);
+      Array.from(nameRef.current.children).forEach((letter, i) => {
+        setTimeout(() => (letter as HTMLElement).classList.add('animate-in'), i * 80);
       });
     }
 
     return () => {
-      cancelAnimationFrame(animationId);
-      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(animId);
+      window.removeEventListener('resize', resize);
     };
   }, []);
 
   return (
     <section className="relative h-screen w-full overflow-hidden bg-black">
       <video
-        autoPlay
-        loop
-        muted
-        playsInline
+        autoPlay loop muted playsInline
         className="absolute inset-0 w-full h-full object-cover opacity-60"
-        style={{ objectPosition: 'center 20%' }} // Adjust this percentage to move video up/down (0% shows top, 100% shows bottom)
+        style={{ objectPosition: 'center 20%' }}
       >
         <source src={heroVideo} type="video/mp4" />
       </video>
@@ -120,11 +128,7 @@ export default function Hero() {
           <div className="overflow-hidden">
             <h1 ref={nameRef} className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-extrabold tracking-[-0.02em] text-white leading-tight">
               {'MADHU KURUVA'.split('').map((char, i) => (
-                <span
-                  key={i}
-                  className="inline-block opacity-0 translate-y-full letter"
-                  style={{ transitionDelay: `${i * 0.05}s` }}
-                >
+                <span key={i} className="inline-block opacity-0 translate-y-full letter" style={{ transitionDelay: `${i * 0.05}s` }}>
                   {char === ' ' ? '\u00A0' : char}
                 </span>
               ))}
@@ -152,21 +156,11 @@ export default function Hero() {
           </div>
 
           <div className="pt-6 sm:pt-8 animate-fade-in-up opacity-0 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center" style={{ animationDelay: '1.8s', animationFillMode: 'forwards' }}>
-            <a
-              href="#portfolio"
-              data-magnetic
-              className="group inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-accent to-accentHover rounded-full text-white font-medium relative overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(10,132,255,0.5)] text-sm sm:text-base"
-            >
+            <a href="#portfolio" data-magnetic className="group inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-accent to-accentHover rounded-full text-white font-medium relative overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(10,132,255,0.5)] text-sm sm:text-base">
               <span className="relative z-10">View My Work</span>
               <div className="absolute inset-0 bg-gradient-to-r from-accentHover to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </a>
-            <a
-              href="/Madhu Resume.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              data-magnetic
-              className="group inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 border-2 border-accent text-accent rounded-full font-medium relative overflow-hidden transition-all duration-300 hover:bg-accent/10 text-sm sm:text-base"
-            >
+            <a href="/Madhu Resume.pdf" target="_blank" rel="noopener noreferrer" data-magnetic className="group inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 border-2 border-accent text-accent rounded-full font-medium relative overflow-hidden transition-all duration-300 hover:bg-accent/10 text-sm sm:text-base">
               <span className="relative z-10">View Resume</span>
             </a>
           </div>
@@ -179,30 +173,13 @@ export default function Hero() {
 
       <style>{`
         @keyframes fade-in-up {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(30px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
-
-        .animate-fade-in-up {
-          animation: fade-in-up 0.8s ease-out;
-        }
-
-        .letter {
-          transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        .letter.animate-in {
-          opacity: 1;
-          transform: translateY(0);
-        }
+        .animate-fade-in-up { animation: fade-in-up 0.8s ease-out; }
+        .letter { transition: all 0.6s cubic-bezier(0.68,-0.55,0.265,1.55); }
+        .letter.animate-in { opacity: 1; transform: translateY(0); }
       `}</style>
     </section>
   );
 }
-

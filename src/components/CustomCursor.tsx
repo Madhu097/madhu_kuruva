@@ -1,100 +1,111 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 export default function CustomCursor() {
-  const cursorRef = useRef<HTMLDivElement>(null);
-  const innerRef = useRef<HTMLDivElement>(null);
-  const dotRef = useRef<HTMLDivElement>(null);
-  
-  const mouse = useRef({ x: -100, y: -100 });
-  const pos = useRef({ x: -100, y: -100 });
-  const [isHovered, setIsHovered] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  const [isTouch, setIsTouch] = useState(false);
+  const outerRef = useRef<HTMLDivElement>(null);
+  const dotRef   = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Check if device is touch or mobile-sized to disable cursor
-    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    const isSmallScreen = window.innerWidth <= 1024;
-    if (isTouchDevice || isSmallScreen) {
-      setIsTouch(true);
+    // Disable on touch / small screens
+    if ('ontouchstart' in window || navigator.maxTouchPoints > 0 || window.innerWidth <= 1024) {
       document.body.style.cursor = 'auto';
       return;
     }
 
-    const mouseMove = (e: MouseEvent) => {
-      mouse.current.x = e.clientX;
-      mouse.current.y = e.clientY;
-      if (!isVisible) setIsVisible(true);
-    };
-
-    const handleHover = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      const isSelectable = target.closest('a, button, [role="button"], input, textarea, [data-magnetic]');
-      setIsHovered(!!isSelectable);
-    };
-
-    const updateCursor = () => {
-      // Smooth following effect (Lerp)
-      const speed = 0.15;
-      pos.current.x += (mouse.current.x - pos.current.x) * speed;
-      pos.current.y += (mouse.current.y - pos.current.y) * speed;
-
-      if (cursorRef.current) {
-        cursorRef.current.style.transform = `translate3d(${pos.current.x}px, ${pos.current.y}px, 0)`;
-      }
-      
-      // The inner dot follows instantly
-      if (dotRef.current) {
-        dotRef.current.style.transform = `translate3d(${mouse.current.x}px, ${mouse.current.y}px, 0)`;
-      }
-
-      requestAnimationFrame(updateCursor);
-    };
-
-    window.addEventListener('mousemove', mouseMove);
-    window.addEventListener('mouseover', handleHover);
-    const animationFrame = requestAnimationFrame(updateCursor);
-
-    // Hide original cursor
     document.body.style.cursor = 'none';
 
+    const mouse  = { x: -200, y: -200 };
+    const smooth = { x: -200, y: -200 };
+    let   hovered  = false;
+    let   rafId: number;
+
+    // ── Direct DOM writes — zero React re-renders ─────────────────────────────
+    const applyHover = (on: boolean) => {
+      if (on === hovered) return;
+      hovered = on;
+      const outer = outerRef.current;
+      if (!outer) return;
+      if (on) {
+        outer.style.width           = '56px';
+        outer.style.height          = '56px';
+        outer.style.marginLeft      = '-28px';
+        outer.style.marginTop       = '-28px';
+        outer.style.borderColor     = 'rgba(10,132,255,0.85)';
+        outer.style.backgroundColor = 'rgba(10,132,255,0.08)';
+      } else {
+        outer.style.width           = '38px';
+        outer.style.height          = '38px';
+        outer.style.marginLeft      = '-19px';
+        outer.style.marginTop       = '-19px';
+        outer.style.borderColor     = 'rgba(10,132,255,0.40)';
+        outer.style.backgroundColor = 'transparent';
+      }
+    };
+
+    // ── rAF loop — smooth ring, instant dot ───────────────────────────────────
+    const tick = () => {
+      // Lerp the ring — fast enough to not feel sluggish
+      smooth.x += (mouse.x - smooth.x) * 0.18;
+      smooth.y += (mouse.y - smooth.y) * 0.18;
+
+      outerRef.current!.style.transform = `translate3d(${smooth.x}px,${smooth.y}px,0)`;
+      dotRef.current!.style.transform   = `translate3d(${mouse.x}px,${mouse.y}px,0)`;
+
+      rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+
+    // ── Mouse events ──────────────────────────────────────────────────────────
+    const onMove = (e: MouseEvent) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+
+      // Detect hover in the same handler — avoid expensive mouseover listener
+      const el = e.target as HTMLElement;
+      applyHover(!!el.closest('a, button, [role="button"], input, textarea, [data-magnetic]'));
+    };
+
+    window.addEventListener('mousemove', onMove, { passive: true });
+
     return () => {
-      window.removeEventListener('mousemove', mouseMove);
-      window.removeEventListener('mouseover', handleHover);
-      cancelAnimationFrame(animationFrame);
+      cancelAnimationFrame(rafId);
+      window.removeEventListener('mousemove', onMove);
       document.body.style.cursor = 'auto';
     };
   }, []);
 
-  if (isTouch || !isVisible) return null;
-
   return (
     <div className="fixed inset-0 pointer-events-none z-[99999]">
-      {/* Lagging outer ring */}
-      <div 
-        ref={cursorRef} 
-        className="fixed top-0 left-0 w-10 h-10 -ml-5 -mt-5 rounded-full border border-accent/50 transition-[width,height,margin,border-color] duration-300 pointer-events-none"
-        style={{ 
-          width: isHovered ? '60px' : '40px',
-          height: isHovered ? '60px' : '40px',
-          marginLeft: isHovered ? '-30px' : '-20px',
-          marginTop: isHovered ? '-30px' : '-20px',
-          borderColor: isHovered ? 'rgba(10,132,255,0.8)' : 'rgba(10,132,255,0.4)',
-          backgroundColor: isHovered ? 'rgba(10,132,255,0.1)' : 'transparent',
+      {/* Smooth-lagging ring */}
+      <div
+        ref={outerRef}
+        style={{
+          position: 'fixed',
+          top: 0, left: 0,
+          width: '38px', height: '38px',
+          marginLeft: '-19px', marginTop: '-19px',
+          borderRadius: '50%',
+          border: '1px solid rgba(10,132,255,0.40)',
+          backgroundColor: 'transparent',
+          pointerEvents: 'none',
+          willChange: 'transform',
+          transition: 'width 0.2s ease, height 0.2s ease, margin 0.2s ease, border-color 0.2s ease, background-color 0.2s ease',
         }}
       />
-      
-      {/* Instant inner dot */}
-      <div 
+      {/* Instant dot */}
+      <div
         ref={dotRef}
-        className="fixed top-0 left-0 w-1.5 h-1.5 -ml-[3px] -mt-[3px] bg-accent rounded-full z-10 pointer-events-none"
-        style={{ 
-          filter: 'drop-shadow(0 0 5px rgba(10,132,255,0.8))'
+        style={{
+          position: 'fixed',
+          top: 0, left: 0,
+          width: '5px', height: '5px',
+          marginLeft: '-2.5px', marginTop: '-2.5px',
+          borderRadius: '50%',
+          background: '#0A84FF',
+          boxShadow: '0 0 6px rgba(10,132,255,0.9)',
+          pointerEvents: 'none',
+          willChange: 'transform',
         }}
-      >
-        {/* Shimmer inside for extra premium feel */}
-        {isHovered && <span className="absolute inset-0 bg-white rounded-full animate-ping opacity-50" />}
-      </div>
+      />
     </div>
   );
 }
