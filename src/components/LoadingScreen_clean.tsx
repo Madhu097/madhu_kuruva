@@ -459,3 +459,4 @@ const STYLES = `
 }
 .ls-botbar-sep { font-size: 0.35rem; color: rgba(34,211,238,0.15); }
 `;
+

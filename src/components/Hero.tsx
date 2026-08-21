@@ -12,10 +12,10 @@ export default function Hero() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Reduce particle count on lower-end screens
     const isMobile = window.innerWidth < 768;
-    const COUNT    = isMobile ? 35 : 55;
-    const MAX_DIST = 130;
+    const COUNT    = isMobile ? 30 : 45;
+    const MAX_DIST = 120;
+    const MAX_DIST_SQ = MAX_DIST * MAX_DIST; // avoid sqrt in hot loop
 
     const resize = () => {
       canvas.width  = window.innerWidth;
@@ -35,64 +35,62 @@ export default function Hero() {
       });
     }
 
-    // Pre-bake a single particle glow image onto an offscreen canvas
-    // so we never call createRadialGradient inside the hot loop
-    const GLOW_SIZE = 10;
+    // Pre-bake particle glow into an offscreen canvas — avoids
+    // createRadialGradient() inside the per-frame loop (expensive)
+    const GLOW = 10;
     const glowCanvas = document.createElement('canvas');
-    glowCanvas.width  = GLOW_SIZE * 2;
-    glowCanvas.height = GLOW_SIZE * 2;
-    const gc = glowCanvas.getContext('2d')!;
-    const grad = gc.createRadialGradient(GLOW_SIZE, GLOW_SIZE, 0, GLOW_SIZE, GLOW_SIZE, GLOW_SIZE);
-    grad.addColorStop(0,   'rgba(10,132,255,0.55)');
-    grad.addColorStop(0.5, 'rgba(10,132,255,0.15)');
-    grad.addColorStop(1,   'rgba(10,132,255,0)');
+    glowCanvas.width = glowCanvas.height = GLOW * 2;
+    const gc   = glowCanvas.getContext('2d')!;
+    const grad = gc.createRadialGradient(GLOW, GLOW, 0, GLOW, GLOW, GLOW);
+    grad.addColorStop(0,   'rgba(34,211,238,0.55)');
+    grad.addColorStop(0.5, 'rgba(34,211,238,0.12)');
+    grad.addColorStop(1,   'rgba(34,211,238,0)');
     gc.fillStyle = grad;
-    gc.fillRect(0, 0, GLOW_SIZE * 2, GLOW_SIZE * 2);
+    gc.fillRect(0, 0, GLOW * 2, GLOW * 2);
 
-    let animId: number;
+    let rafId: number;
+    let lastTime = 0;
+    const FRAME_MS = 1000 / 50; // cap to 50 fps — keeps GPU idle between frames
 
-    const animate = () => {
+    const animate = (now: number) => {
+      rafId = requestAnimationFrame(animate);
+      if (now - lastTime < FRAME_MS) return;
+      lastTime = now;
+
       const W = canvas.width;
       const H = canvas.height;
       ctx.clearRect(0, 0, W, H);
 
-      // ── Move + draw nodes ─────────────────────────────────────────────────
+      // Move + draw nodes
       for (let i = 0; i < COUNT; i++) {
         const p = particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
+        p.x += p.vx; p.y += p.vy;
         if (p.x < 0 || p.x > W) p.vx *= -1;
         if (p.y < 0 || p.y > H) p.vy *= -1;
 
-        // Draw pre-baked glow — one drawImage call instead of createRadialGradient
-        ctx.globalAlpha = 0.8;
-        ctx.drawImage(glowCanvas, p.x - GLOW_SIZE, p.y - GLOW_SIZE);
+        ctx.globalAlpha = 0.85;
+        ctx.drawImage(glowCanvas, p.x - GLOW, p.y - GLOW);
         ctx.globalAlpha = 1;
       }
 
-      // ── Draw edges ────────────────────────────────────────────────────────
-      // Batch all edges under a single beginPath per opacity level would be
-      // complex; instead we just set strokeStyle once and stroke per pair
+      // Draw edges — use squared distance to skip sqrt
       ctx.lineWidth = 0.5;
       for (let i = 0; i < COUNT; i++) {
         for (let j = i + 1; j < COUNT; j++) {
-          const dx   = particles[i].x - particles[j].x;
-          const dy   = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist >= MAX_DIST) continue;
-
-          const alpha = (1 - dist / MAX_DIST) * 0.18;
-          ctx.strokeStyle = `rgba(10,132,255,${alpha.toFixed(3)})`;
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dSq = dx * dx + dy * dy;
+          if (dSq >= MAX_DIST_SQ) continue;
+          const alpha = (1 - Math.sqrt(dSq) / MAX_DIST) * 0.14;
+          ctx.strokeStyle = `rgba(34,211,238,${alpha.toFixed(3)})`;
           ctx.beginPath();
           ctx.moveTo(particles[i].x, particles[i].y);
           ctx.lineTo(particles[j].x, particles[j].y);
           ctx.stroke();
         }
       }
-
-      animId = requestAnimationFrame(animate);
     };
-    animate();
+    rafId = requestAnimationFrame(animate);
 
     window.addEventListener('resize', resize, { passive: true });
 
@@ -104,10 +102,11 @@ export default function Hero() {
     }
 
     return () => {
-      cancelAnimationFrame(animId);
+      cancelAnimationFrame(rafId);
       window.removeEventListener('resize', resize);
     };
   }, []);
+
 
   return (
     <section className="relative h-screen w-full overflow-hidden bg-black">

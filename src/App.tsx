@@ -1,5 +1,4 @@
-import { useEffect, lazy, Suspense } from 'react';
-import CustomCursor from './components/CustomCursor';
+import { lazy, Suspense } from 'react';
 import LoadingScreen from './components/LoadingScreen';
 import CinematicIntro from './components/CinematicIntro';
 import Hero from './components/Hero';
@@ -14,15 +13,9 @@ const Certifications = lazy(() => import('./components/Certifications'));
 const Contact       = lazy(() => import('./components/Contact'));
 
 function App() {
-  useEffect(() => {
-    document.body.style.cursor = 'none';
-    return () => { document.body.style.cursor = 'auto'; };
-  }, []);
-
   return (
     <div className="bg-background text-primaryText">
       <LoadingScreen />
-      <CustomCursor />
       <ScrollAnimations />
       <CinematicIntro />
       <Hero />
