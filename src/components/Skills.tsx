@@ -9,6 +9,8 @@ const techs = [
   { name: 'HTML5',       logo: `${D}/html5/html5-original.svg`,                          color: '#E34F26', bg: 'rgba(227,79,38,0.1)',    category: 'Frontend'  },
   { name: 'CSS3',        logo: `${D}/css3/css3-original.svg`,                            color: '#1572B6', bg: 'rgba(21,114,182,0.1)',   category: 'Frontend'  },
   { name: 'Python',      logo: `${D}/python/python-original.svg`,                        color: '#3776AB', bg: 'rgba(55,118,171,0.1)',   category: 'Backend'   },
+  { name: 'Node.js',     logo: `${D}/nodejs/nodejs-original.svg`,                        color: '#68A063', bg: 'rgba(104,160,99,0.1)',   category: 'Backend'   },
+  { name: 'Express.js',  logo: 'https://cdn.simpleicons.org/express/FFFFFF',             color: '#FFFFFF', bg: 'rgba(255,255,255,0.08)', category: 'Backend'   },
   { name: 'MongoDB',     logo: `${D}/mongodb/mongodb-original.svg`,                     color: '#47A248', bg: 'rgba(71,162,72,0.1)',    category: 'Database'  },
   { name: 'MySQL',       logo: `${D}/mysql/mysql-original.svg`,                         color: '#4479A1', bg: 'rgba(68,121,161,0.1)',   category: 'Database'  },
   { name: 'Firebase',    logo: `${D}/firebase/firebase-plain.svg`,                      color: '#FFCA28', bg: 'rgba(255,202,40,0.1)',   category: 'Database'  },

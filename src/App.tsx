@@ -5,12 +5,12 @@ import Hero from './components/Hero';
 import ScrollAnimations from './components/ScrollAnimations';
 
 // Lazy-load below-the-fold sections — they download in parallel while loading screen plays
-const About         = lazy(() => import('./components/About'));
-const Experience    = lazy(() => import('./components/Experience'));
-const Skills        = lazy(() => import('./components/Skills'));
-const Portfolio     = lazy(() => import('./components/Portfolio'));
+const About = lazy(() => import('./components/About'));
+const Experience = lazy(() => import('./components/Experience'));
+const Skills = lazy(() => import('./components/Skills'));
+const Portfolio = lazy(() => import('./components/Portfolio'));
 const Certifications = lazy(() => import('./components/Certifications'));
-const Contact       = lazy(() => import('./components/Contact'));
+const Contact = lazy(() => import('./components/Contact'));
 
 function App() {
   return (

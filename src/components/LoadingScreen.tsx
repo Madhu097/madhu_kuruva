@@ -11,9 +11,10 @@ const rand = (n: number) => Math.floor(Math.random() * n);
 // Fake compile log — each line appears 190ms apart after decode completes
 const LOG_LINES = [
   { sym: '✔', text: 'react@18.3.1',              col: '#4ade80' },
+  { sym: '✔', text: 'node@20.x  (lts)',           col: '#4ade80' },
+  { sym: '✔', text: 'express@4.19.2',             col: '#4ade80' },
   { sym: '✔', text: 'typescript@5.5.3',           col: '#4ade80' },
   { sym: '✔', text: 'vite@5.4.21',                col: '#4ade80' },
-  { sym: '✔', text: 'node@20.x  (lts)',           col: '#4ade80' },
   { sym: '⟳', text: 'bundling /portfolio...',     col: '#22d3ee' },
   { sym: '✓', text: 'built in 847ms',             col: '#a78bfa' },
 ];
@@ -21,8 +22,9 @@ const LOG_LINES = [
 // Tech-stack badges
 const BADGES = [
   { label: 'React',       color: '#61dafb' },
-  { label: 'TypeScript',  color: '#3b82f6' },
   { label: 'Node.js',     color: '#68a063' },
+  { label: 'Express.js',  color: '#ffffff' },
+  { label: 'TypeScript',  color: '#3b82f6' },
   { label: 'Python',      color: '#f7c948' },
   { label: 'PostgreSQL',  color: '#336791' },
   { label: 'Tailwind',    color: '#38bdf8' },
@@ -138,7 +140,7 @@ export default function LoadingScreen() {
   useEffect(() => {
     if (progress < 100) return;
     const t1 = setTimeout(() => setExiting(true), 500);
-    const t2 = setTimeout(() => setDone(true),    1350);
+    const t2 = setTimeout(() => setDone(true),    1600);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [progress]);
 
@@ -260,7 +262,7 @@ export default function LoadingScreen() {
 
         {/* ── Bottom tech stack bar ─────────────────────────────────────── */}
         <div className="ls-botbar" aria-hidden="true">
-          {['React', 'TypeScript', 'Node.js', 'Python', 'PostgreSQL', 'Tailwind', 'Vite', 'AI/ML'].map((t, i) => (
+          {['React', 'Node.js', 'Express', 'TypeScript', 'Python', 'PostgreSQL', 'Tailwind', 'Vite', 'AI/ML'].map((t, i) => (
             <span key={t}>
               {i > 0 && <span className="ls-bsep"> · </span>}
               {t}
@@ -275,12 +277,13 @@ export default function LoadingScreen() {
 // ─── Faint code watermark text ────────────────────────────────────────────────
 const CODE_WM = `
 import { Developer } from '@madhu/core';
+import express from 'express';
 import React, { useState, useEffect } from 'react';
 
 const portfolio = new Developer({
   name: 'Madhu Kuruva',
   role: 'Full Stack Developer',
-  stack: ['React','TypeScript','Node.js','Python'],
+  stack: ['React','Node.js','Express','TypeScript','Python'],
   location: 'Hyderabad, India',
 });
 
@@ -301,16 +304,15 @@ const CSS = `
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   overflow: hidden; user-select: none;
-  will-change: transform, opacity;
+  will-change: transform, opacity, filter;
 }
 
-/* CRT monitor turn-off exit */
-.ls--exit { animation: ls-crt 0.78s cubic-bezier(0.4,0,1,1) forwards; }
-@keyframes ls-crt {
-  0%   { transform: scaleY(1)     scaleX(1);    opacity: 1; }
-  45%  { transform: scaleY(0.003) scaleX(1);    opacity: 1; }
-  68%  { transform: scaleY(0.003) scaleX(0.6);  opacity: 0.85; }
-  100% { transform: scaleY(0)     scaleX(0.1);  opacity: 0; }
+/* ── Exit: smooth portal open — expands + floats up + fades out ── */
+.ls--exit { animation: ls-exit 1.0s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+@keyframes ls-exit {
+  0%   { opacity: 1; transform: scale(1)    translateY(0);    filter: blur(0px);   }
+  40%  { opacity: 1; transform: scale(1.04) translateY(-1%);  filter: blur(0px);   }
+  100% { opacity: 0; transform: scale(1.12) translateY(-4%);  filter: blur(8px);   }
 }
 
 /* === BACKGROUND === */

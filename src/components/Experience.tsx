@@ -1,332 +1,466 @@
 import { useEffect, useRef, useState } from 'react';
 
-const BOOT_LINES = [
-  { text: '> Connecting to career database...', delay: 0 },
-  { text: '> Loading experience records...', delay: 320 },
-  { text: '> Found: 2 active roles', delay: 640 },
-  { text: '> Organization: F1RSTLOOK DIGITAL', delay: 960 },
-  { text: '> Roles: Operations Head · Web Developer', delay: 1280 },
-  { text: '> Status: ██████████ ACTIVE', delay: 1600 },
-  { text: '> Rendering profile...', delay: 1920 },
+// ─── Data ─────────────────────────────────────────────────────────────────────
+const EXPERIENCES = [
+  {
+    id: 1,
+    company: 'F1RSTLOOK DIGITAL',
+    companyShort: 'F1',
+    website: 'https://firstlook.digital/',
+    domain: 'firstlook.digital',
+    period: '2025 — Present',
+    status: 'active',
+    roles: [
+      {
+        title: 'Operations Head',
+        type: 'Leadership',
+        icon: (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+          </svg>
+        ),
+        color: '#38BDF8',
+        desc: 'Digital Startup · Full-time',
+      },
+      {
+        title: 'Web Developer',
+        type: 'Engineering',
+        icon: (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="16 18 22 12 16 6"/>
+            <polyline points="8 6 2 12 8 18"/>
+          </svg>
+        ),
+        color: '#FB923C',
+        desc: 'Designed & built firstlook.digital',
+      },
+    ],
+    highlights: [
+      { icon: '⚙', text: 'Led day-to-day digital operations and internal workflows' },
+      { icon: '🌐', text: 'Designed & developed the official F1RSTLOOK website' },
+      { icon: '⚡', text: 'Built responsive UI, integrated brand identity, optimized performance' },
+      { icon: '🎯', text: 'Bridged brand strategy with execution via digital tools' },
+      { icon: '🚀', text: 'Oversaw product launches, campaigns, and client deliverables' },
+      { icon: '🤖', text: 'Drove growth systems, automation, and process optimization' },
+    ],
+    tags: ['Operations', 'React', 'Web Dev', 'UI/UX', 'Strategy', 'Digital Marketing', 'Leadership'],
+  },
 ];
 
-const responsibilities = [
-  'Leading day-to-day digital operations and managing internal workflows',
-  'Designed and developed the official F1RSTLOOK website (firstlook.digital)',
-  'Built responsive UI, integrated brand identity and optimized performance',
-  'Bridging brand strategy with execution through digital tools and tech',
-  'Overseeing product launches, campaigns and client deliverables',
-  'Driving growth systems, automation and process optimization',
-];
-
+// ─── Component ─────────────────────────────────────────────────────────────────
 export default function Experience() {
   const sectionRef = useRef<HTMLElement>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
-  const [bootLines, setBootLines] = useState<string[]>([]);
-  const [isBooted, setIsBooted] = useState(false);
-  const [mouse, setMouse] = useState({ x: 0, y: 0 });
-  const [glitching, setGlitching] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [revealed, setRevealed] = useState<Record<number, boolean>>({});
 
-  // Intersection observer triggers boot
+  // Section entrance
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !isVisible) {
-          setIsVisible(true);
-          BOOT_LINES.forEach(({ text, delay }) => {
-            setTimeout(() => {
-              setBootLines(prev => [...prev, text]);
-            }, delay);
-          });
-          setTimeout(() => setIsBooted(true), 2600);
-        }
-      },
-      { threshold: 0.2 }
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) setVisible(true); },
+      { threshold: 0.1 }
     );
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
-  }, [isVisible]);
+    if (sectionRef.current) obs.observe(sectionRef.current);
+    return () => obs.disconnect();
+  }, []);
 
-  // Random glitch trigger — less frequent
+  // Card reveal stagger
   useEffect(() => {
-    if (!isBooted) return;
-    const id = setInterval(() => {
-      setGlitching(true);
-      setTimeout(() => setGlitching(false), 150);
-    }, 6000);
-    return () => clearInterval(id);
-  }, [isBooted]);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const card = cardRef.current;
-    if (!card) return;
-    const rect = card.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-    setMouse({ x, y });
-  };
+    if (!visible) return;
+    EXPERIENCES.forEach((_, i) => {
+      setTimeout(() => setRevealed(r => ({ ...r, [i]: true })), 200 + i * 150);
+    });
+  }, [visible]);
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative bg-background py-20 px-4 sm:px-6 overflow-hidden min-h-screen flex flex-col justify-center"
-    >
-      {/* Grid background */}
-      <div className="absolute inset-0 opacity-[0.035]" style={{
-        backgroundImage: 'linear-gradient(rgba(10,132,255,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(10,132,255,0.15) 1px, transparent 1px)',
-        backgroundSize: '50px 50px',
-      }} />
+    <section ref={sectionRef} className="exp-section">
+      <style>{CSS}</style>
 
-      {/* Ambient glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse, rgba(10,132,255,0.04) 0%, transparent 70%)' }} />
+      {/* Ambient */}
+      <div className="exp-grid" aria-hidden="true" />
+      <div className="exp-glow" aria-hidden="true" />
 
-      <div className="max-w-7xl mx-auto relative z-10 w-full">
+      <div className="exp-container">
 
-        {/* ── Header ── */}
-        <div className={`text-center mb-12 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <p className="text-accent/60 text-xs tracking-[0.5em] uppercase mb-3">Work History</p>
-          <h2 className="text-5xl sm:text-6xl font-bold text-white">Experience</h2>
+        {/* Header */}
+        <div className={`exp-header${visible ? ' exp-header--in' : ''}`}>
+          <span className="exp-eyebrow">Work History</span>
+          <h2 className="exp-title">Experience</h2>
+          <p className="exp-subtitle">Building things that matter, end to end.</p>
         </div>
 
-        {/* ── Boot Terminal ── */}
-        {!isBooted && (
-          <div
-            className={`max-w-xl mx-auto rounded-xl p-6 font-mono text-sm transition-all duration-500 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
-            style={{
-              background: 'var(--color-card)',
-              border: '1px solid var(--color-border)',
-            }}
-          >
-            {bootLines.map((line, i) => (
-              <div
-                key={i}
-                className="leading-7"
-                style={{
-                  color: line.includes('ACTIVE') ? '#4ade80' : line.includes('F1RSTLOOK') ? '#0A84FF' : 'var(--color-secondary-text)',
-                  animation: 'fadeSlideIn 0.3s ease forwards',
-                }}
-              >
-                {line}
-              </div>
-            ))}
-            {bootLines.length < BOOT_LINES.length && (
-              <span className="text-accent blink-cursor">█</span>
-            )}
-          </div>
-        )}
-
-        {/* ── Main Experience Card ── */}
-        {isBooted && (
-          <div
-            ref={cardRef}
-            className="relative mx-auto w-full experience-card-wrap"
-            onMouseMove={handleMouseMove}
-            onMouseLeave={() => setMouse({ x: 0, y: 0 })}
-            style={{
-              transform: `perspective(1200px) rotateY(${mouse.x * 14}deg) rotateX(${-mouse.y * 14}deg)`,
-              transition: 'transform 0.1s linear',
-              transformStyle: 'preserve-3d',
-              animation: 'cardReveal 0.8s cubic-bezier(0.22,1,0.36,1) forwards',
-            }}
-          >
-
-            {/* Card body */}
+        {/* Timeline */}
+        <div className="exp-timeline">
+          {EXPERIENCES.map((exp, idx) => (
             <div
-              className="relative overflow-hidden rounded-2xl"
-              style={{
-                background: 'var(--color-surface)',
-                border: '1px solid var(--color-border)',
-                zIndex: 1,
-              }}
+              key={exp.id}
+              className={`exp-entry${revealed[idx] ? ' exp-entry--in' : ''}`}
+              style={{ transitionDelay: `${idx * 120}ms` }}
             >
-              {/* Scan line — pure CSS, no JS state */}
-              <div className="scan-line absolute left-0 right-0 pointer-events-none" style={{ zIndex: 20 }} />
+              {/* Timeline spine: dot + line */}
+              <div className="exp-spine" aria-hidden="true">
+                <div className="exp-spine-dot">
+                  {exp.status === 'active' && <span className="exp-spine-ping" />}
+                </div>
+                {idx < EXPERIENCES.length - 1 && <div className="exp-spine-line" />}
+              </div>
 
-              {/* Content */}
-              <div className="p-8 sm:p-10">
+              {/* Card */}
+              <div className="exp-card">
 
-                {/* Top row */}
-                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 mb-8">
-                  <div>
-                    {/* Company */}
+                {/* Card top */}
+                <div className="exp-card-top">
+                  {/* Company */}
+                  <div className="exp-company-block">
                     <a
-                      href="https://firstlook.digital/"
+                      href={exp.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group inline-flex items-center gap-3 mb-3"
+                      className="exp-company-link"
+                      aria-label={`Visit ${exp.company}`}
                     >
-                      <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                        style={{ background: 'rgba(10,132,255,0.1)', border: '1px solid rgba(10,132,255,0.3)' }}>
-                        <span className="text-accent font-black text-xs">F1</span>
+                      <div className="exp-logo">
+                        <span className="exp-logo-text">{exp.companyShort}</span>
                       </div>
-                      <span
-                        className="text-xl sm:text-2xl font-black tracking-wide inline-flex"
-                        style={{
-                          transform: glitching ? 'skewX(-4deg)' : 'none',
-                          transition: 'all 0.05s',
-                          letterSpacing: glitching ? '0.12em' : '0.04em',
-                          filter: glitching ? 'drop-shadow(2px 0 #ff6b00) drop-shadow(-2px 0 #fff)' : 'none',
-                        }}
-                      >
-                        {/* F1RSTLOOK — F,R,S,T = orange · 1,L,O,O,K = white */}
-                        {[
-                          { char: 'F', orange: true  },
-                          { char: '1', orange: false },
-                          { char: 'R', orange: true  },
-                          { char: 'S', orange: true  },
-                          { char: 'T', orange: true  },
-                          { char: 'L', orange: false },
-                          { char: 'O', orange: false },
-                          { char: 'O', orange: false },
-                          { char: 'K', orange: false },
-                        ].map(({ char, orange }, i) => (
-                          <span
-                            key={i}
-                            style={{
-                              color: orange
-                                ? (glitching ? '#ff0000' : '#FF6B00')
-                                : (glitching ? '#ff9900' : '#ffffff'),
-                              textShadow: orange
-                                ? `0 0 18px rgba(255,107,0,${glitching ? 1 : 0.5})`
-                                : 'none',
-                            }}
-                          >
-                            {char}
-                          </span>
-                        ))}
-                      </span>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent/40 group-hover:text-accent transition-colors">
-                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
-                      </svg>
+                      <div>
+                        <span className="exp-company-name">{exp.company}</span>
+                        <span className="exp-company-domain">{exp.domain} ↗</span>
+                      </div>
                     </a>
-                    <p className="text-gray-500 text-sm tracking-widest uppercase">firstlook.digital</p>
                   </div>
 
-                  {/* Status badge */}
-                  <div className="flex flex-col items-start sm:items-end gap-2">
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full"
-                      style={{ background: 'rgba(74,222,128,0.08)', border: '1px solid rgba(74,222,128,0.3)' }}>
-                      <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400" />
+                  {/* Period + status */}
+                  <div className="exp-meta">
+                    {exp.status === 'active' && (
+                      <span className="exp-badge exp-badge--active">
+                        <span className="exp-badge-dot" />
+                        Active
                       </span>
-                      <span className="text-green-400 text-xs font-semibold tracking-widest uppercase">Active</span>
-                    </div>
-                    <p className="text-gray-600 text-xs font-mono">2025 — Present</p>
+                    )}
+                    <span className="exp-period">{exp.period}</span>
                   </div>
                 </div>
 
-                {/* Dual Roles */}
-                <div className="grid sm:grid-cols-2 gap-4 mb-8">
-                  {/* Role 1 */}
-                  <div className="p-5 rounded-xl" style={{ background: 'var(--color-card)', border: '1px solid var(--color-border)' }}>
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(10,132,255,0.2)' }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0A84FF" strokeWidth="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+                {/* Divider */}
+                <div className="exp-divider" />
+
+                {/* Roles row */}
+                <div className="exp-roles">
+                  {exp.roles.map((role) => (
+                    <div key={role.title} className="exp-role-pill" style={{ '--role-color': role.color } as React.CSSProperties}>
+                      <span className="exp-role-icon" style={{ color: role.color }}>{role.icon}</span>
+                      <div>
+                        <p className="exp-role-title">{role.title}</p>
+                        <p className="exp-role-desc">{role.desc}</p>
                       </div>
-                      <span className="text-accent text-xs tracking-widest uppercase font-semibold">Operations</span>
+                      <span className="exp-role-type" style={{ color: role.color }}>{role.type}</span>
                     </div>
-                    <h3 className="text-xl sm:text-2xl font-bold text-white mb-1">Operations Head</h3>
-                    <p className="text-gray-500 text-xs">Digital Startup · Full-time</p>
-                  </div>
-                  {/* Role 2 */}
-                  <div className="p-5 rounded-xl" style={{ background: 'var(--color-card)', border: '1px solid var(--color-border)' }}>
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(10,132,255,0.2)' }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0A84FF" strokeWidth="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-                      </div>
-                      <span className="text-accent text-xs tracking-widest uppercase font-semibold">Engineering</span>
-                    </div>
-                    <h3 className="text-xl sm:text-2xl font-bold text-white mb-1">Web Developer</h3>
-                    <p className="text-gray-500 text-xs">Designed & built firstlook.digital</p>
-                  </div>
+                  ))}
                 </div>
 
-                {/* Responsibilities */}
-                <div>
-                  <p className="text-xs text-accent/60 tracking-widest uppercase mb-4 font-mono">— Key Responsibilities</p>
-                  <div className="space-y-3">
-                    {responsibilities.map((item, i) => (
+                {/* Highlights */}
+                <div className="exp-highlights">
+                  <p className="exp-highlights-label">— Key Contributions</p>
+                  <div className="exp-highlights-grid">
+                    {exp.highlights.map((h, i) => (
                       <div
                         key={i}
-                        className="flex items-start gap-3 group"
-                        style={{
-                          animation: `slideInRight 0.5s ease forwards`,
-                          animationDelay: `${i * 80}ms`,
-                          opacity: 0,
-                        }}
+                        className="exp-hl"
+                        style={{ animationDelay: revealed[idx] ? `${300 + i * 60}ms` : '0ms' }}
                       >
-                        <div className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0 group-hover:scale-150 transition-transform duration-300"
-                          style={{ background: 'linear-gradient(135deg, #0A84FF, #409CFF)' }} />
-                        <span className="text-secondaryText text-sm leading-relaxed group-hover:text-primaryText transition-colors duration-300">{item}</span>
+                        <span className="exp-hl-icon">{h.icon}</span>
+                        <span className="exp-hl-text">{h.text}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Bottom row */}
-                <div className="mt-8 pt-6 border-t border-white/5 flex flex-wrap gap-2">
-                  {['Operations', 'Strategy', 'Digital Marketing', 'React', 'Web Dev', 'UI/UX', 'Team Leadership', 'Growth'].map(tag => (
-                    <span key={tag} className="px-3 py-1 rounded-full text-xs font-medium text-secondaryText transition-all duration-300 hover:text-accent hover:border-accent/50"
-                      style={{ background: 'var(--color-card)', border: '1px solid var(--color-border)' }}>
-                      {tag}
-                    </span>
+                {/* Tags */}
+                <div className="exp-tags">
+                  {exp.tags.map(tag => (
+                    <span key={tag} className="exp-tag">{tag}</span>
                   ))}
                 </div>
               </div>
             </div>
-
-            {/* Floating particles — reduced to 4 */}
-            {[...Array(4)].map((_, i) => (
-              <div key={i}
-                className="absolute w-1 h-1 rounded-full pointer-events-none"
-                style={{
-                  background: i % 2 === 0 ? '#0A84FF' : '#409CFF',
-                  opacity: 0.35,
-                  top: `${20 + (i * 22)}%`,
-                  left: i % 2 === 0 ? `-6px` : `auto`,
-                  right: i % 2 !== 0 ? `-6px` : `auto`,
-                  animation: `floatParticle ${4 + i * 0.6}s ease-in-out infinite alternate`,
-                  animationDelay: `${i * 0.5}s`,
-                }}
-              />
-            ))}
-          </div>
-        )}
+          ))}
+        </div>
       </div>
-
-      <style>{`
-        @keyframes fadeSlideIn {
-          from { opacity: 0; transform: translateX(-8px); }
-          to   { opacity: 1; transform: translateX(0); }
-        }
-
-        @keyframes cardReveal {
-          from { opacity: 0; transform: perspective(1200px) translateY(40px) scale(0.95); }
-          to   { opacity: 1; transform: perspective(1200px) translateY(0) scale(1); }
-        }
-
-        @keyframes slideInRight {
-          from { opacity: 0; transform: translateX(20px); }
-          to   { opacity: 1; transform: translateX(0); }
-        }
-
-        @keyframes floatParticle {
-          from { transform: translateY(-10px) scale(1); }
-          to   { transform: translateY(10px) scale(1.4); }
-        }
-
-        .blink-cursor {
-          animation: blink 1s step-end infinite;
-        }
-        @keyframes blink {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0; }
-        }
-
-      `}</style>
     </section>
   );
 }
+
+// ─── Styles ────────────────────────────────────────────────────────────────────
+const CSS = `
+/* === SECTION === */
+.exp-section {
+  position: relative;
+  background: var(--color-background, #080810);
+  padding: 100px 16px 120px;
+  overflow: hidden;
+}
+.exp-grid {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(56,189,248,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56,189,248,0.05) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+.exp-glow {
+  position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
+  width: min(900px, 100vw); height: 500px; pointer-events: none;
+  background: radial-gradient(ellipse at center, rgba(56,189,248,0.08) 0%, transparent 65%);
+}
+.exp-container {
+  max-width: 900px; margin: 0 auto;
+  position: relative; z-index: 1;
+}
+
+/* === HEADER === */
+.exp-header {
+  text-align: center;
+  margin-bottom: 72px;
+  opacity: 0; transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.exp-header--in { opacity: 1; transform: translateY(0); }
+.exp-eyebrow {
+  display: inline-block;
+  font-family: 'Courier New', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  color: #38BDF8;
+  margin-bottom: 12px;
+}
+.exp-title {
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 800; color: #fff;
+  letter-spacing: -0.02em; line-height: 1.1;
+  margin: 0 0 12px;
+}
+.exp-subtitle {
+  font-size: 0.95rem; color: #94A3B8;
+  letter-spacing: 0.02em; margin: 0;
+}
+
+/* === TIMELINE === */
+.exp-timeline { display: flex; flex-direction: column; gap: 0; }
+
+.exp-entry {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 0 24px;
+  opacity: 0; transform: translateY(32px);
+  transition: opacity 0.65s cubic-bezier(0.22,1,0.36,1), transform 0.65s cubic-bezier(0.22,1,0.36,1);
+}
+.exp-entry--in { opacity: 1; transform: translateY(0); }
+
+/* === SPINE === */
+.exp-spine {
+  display: flex; flex-direction: column; align-items: center;
+  padding-top: 6px;
+}
+.exp-spine-dot {
+  position: relative;
+  width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, #38BDF8, #60A5FA);
+  box-shadow: 0 0 14px rgba(56,189,248,0.8), 0 0 30px rgba(56,189,248,0.3);
+  z-index: 1;
+}
+.exp-spine-ping {
+  position: absolute; inset: -4px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(56,189,248,0.6);
+  animation: exp-ping 2s ease-out infinite;
+}
+@keyframes exp-ping {
+  0%   { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(2); opacity: 0; }
+}
+.exp-spine-line {
+  width: 1px; flex: 1; min-height: 24px; margin-top: 6px;
+  background: linear-gradient(to bottom, rgba(56,189,248,0.4), transparent);
+}
+
+/* === CARD === */
+.exp-card {
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  padding: 28px;
+  margin-bottom: 40px;
+  backdrop-filter: blur(12px);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.exp-card:hover {
+  border-color: rgba(56,189,248,0.4);
+  box-shadow: 0 0 40px rgba(56,189,248,0.12), 0 8px 32px rgba(0,0,0,0.3);
+}
+
+/* === CARD TOP === */
+.exp-card-top {
+  display: flex; flex-wrap: wrap;
+  align-items: flex-start; justify-content: space-between;
+  gap: 16px; margin-bottom: 20px;
+}
+.exp-company-block { display: flex; flex-direction: column; gap: 0; }
+.exp-company-link {
+  display: inline-flex; align-items: center; gap: 12px;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+.exp-company-link:hover { opacity: 0.85; }
+.exp-logo {
+  width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(56,189,248,0.15);
+  border: 1px solid rgba(56,189,248,0.4);
+}
+.exp-logo-text {
+  font-size: 0.8rem; font-weight: 900; color: #38BDF8;
+  letter-spacing: 0.05em;
+}
+.exp-company-name {
+  display: block;
+  font-size: 1.15rem; font-weight: 800; color: #FFFFFF;
+  letter-spacing: 0.05em; line-height: 1.2;
+}
+.exp-company-domain {
+  display: block;
+  font-size: 0.75rem; color: #38BDF8;
+  font-weight: 600;
+  letter-spacing: 0.08em; margin-top: 3px;
+  font-family: 'Courier New', monospace;
+}
+.exp-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.exp-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: 20px;
+  background: rgba(74,222,128,0.12);
+  border: 1px solid rgba(74,222,128,0.4);
+  font-size: 0.68rem; font-weight: 600;
+  color: #4ADE80; letter-spacing: 0.15em; text-transform: uppercase;
+}
+.exp-badge-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: #4ADE80;
+  box-shadow: 0 0 8px rgba(74,222,128,0.9);
+  animation: exp-ping 1.5s ease-out infinite;
+}
+.exp-period {
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem; color: #94A3B8; letter-spacing: 0.1em;
+}
+
+/* === DIVIDER === */
+.exp-divider {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(56,189,248,0.3), rgba(255,255,255,0.1), rgba(251,146,60,0.2));
+  margin-bottom: 20px;
+}
+
+/* === ROLES === */
+.exp-roles {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px; margin-bottom: 24px;
+}
+.exp-role-pill {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; border-radius: 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: border-color 0.25s ease, background 0.25s ease;
+}
+.exp-role-pill:hover {
+  background: rgba(255,255,255,0.07);
+  border-color: color-mix(in srgb, var(--role-color) 50%, transparent);
+}
+.exp-role-icon {
+  width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--role-color) 18%, transparent);
+}
+.exp-role-title {
+  font-size: 0.95rem; font-weight: 700; color: #FFFFFF;
+  margin: 0 0 2px;
+}
+.exp-role-desc {
+  font-size: 0.72rem; color: #94A3B8;
+  margin: 0; letter-spacing: 0.02em;
+}
+.exp-role-type {
+  margin-left: auto; flex-shrink: 0;
+  font-size: 0.6rem; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  font-family: 'Courier New', monospace;
+}
+
+/* === HIGHLIGHTS === */
+.exp-highlights { margin-bottom: 22px; }
+.exp-highlights-label {
+  font-family: 'Courier New', monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #38BDF8;
+  margin: 0 0 12px;
+}
+.exp-highlights-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 8px;
+}
+.exp-hl {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 11px 13px; border-radius: 10px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.08);
+  opacity: 0; animation: exp-hlIn 0.4s ease both;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+.exp-hl:hover {
+  background: rgba(56,189,248,0.08);
+  border-color: rgba(56,189,248,0.25);
+}
+@keyframes exp-hlIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.exp-hl-icon { font-size: 0.95rem; flex-shrink: 0; margin-top: 1px; line-height: 1; }
+.exp-hl-text {
+  font-size: 0.82rem; color: #E2E8F0; line-height: 1.5;
+  letter-spacing: 0.01em;
+}
+
+/* === TAGS === */
+.exp-tags {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.exp-tag {
+  padding: 4px 10px; border-radius: 20px;
+  font-size: 0.68rem; font-weight: 500;
+  color: #CBD5E1;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  letter-spacing: 0.06em;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  cursor: default;
+}
+.exp-tag:hover {
+  color: #38BDF8;
+  background: rgba(56,189,248,0.12);
+  border-color: rgba(56,189,248,0.4);
+}
+
+/* Responsive tweaks */
+@media (max-width: 600px) {
+  .exp-card { padding: 20px 16px; }
+  .exp-card-top { flex-direction: column; }
+  .exp-meta { align-items: flex-start; }
+  .exp-entry { grid-template-columns: 24px 1fr; gap: 0 16px; }
+}
+`;
