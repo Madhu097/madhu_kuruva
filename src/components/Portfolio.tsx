@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ExternalLink, Github, Eye } from 'lucide-react';
+import { ExternalLink, Github } from 'lucide-react';
 import DesignerImg from '../assets/Designer.jpg';
 import FoodImg from '../assets/food remainder.png';
 import HomecoImg from '../assets/homeco.png';
@@ -11,12 +11,12 @@ const projects = [
     id: 1,
     title: 'E-Commerce Platform',
     category: 'Full Stack',
-    description: 'A modern e-commerce platform with real-time inventory management',
+    description: 'MartVibe – Grocery E-commerce Platform: Built a responsive grocery shopping website with product browsing, cart management, and online ordering.',
     image: DesignerImg,
-    tags: ['HTML', 'CSS', 'JavaScript'],
+    tags: ['React', 'Nodejs', 'Express', 'MongoDB'],
     color: '#22d3ee',
-    github: 'https://github.com/Madhu097/shopify',
-    live: 'https://madhu097.github.io/shopify/',
+    github: 'https://github.com/Madhu097/martvibe',
+    live: 'https://mart-vibe.vercel.app/',
   },
   {
     id: 2,
@@ -67,7 +67,6 @@ const projects = [
 export default function Portfolio() {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0, id: null });
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -78,11 +77,27 @@ export default function Portfolio() {
     return () => observer.disconnect();
   }, []);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>, id: number | null) => {
-    const rect = e.currentTarget.getBoundingClientRect();
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
     const y = (e.clientY - rect.top) / rect.height - 0.5;
-    setMousePos({ x, y, id });
+    card.style.setProperty('--rx', `${-y * 12}deg`);
+    card.style.setProperty('--ry', `${x * 12}deg`);
+    card.style.setProperty('--tx', `${x * -14}px`);
+    card.style.setProperty('--ty', `${y * -14}px`);
+    card.style.setProperty('--mx', `${(x + 0.5) * 100}%`);
+    card.style.setProperty('--my', `${(y + 0.5) * 100}%`);
+  };
+
+  const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    card.style.setProperty('--rx', '0deg');
+    card.style.setProperty('--ry', '0deg');
+    card.style.setProperty('--tx', '0px');
+    card.style.setProperty('--ty', '0px');
+    card.style.setProperty('--mx', '50%');
+    card.style.setProperty('--my', '50%');
   };
 
   return (
@@ -111,26 +126,30 @@ export default function Portfolio() {
                   ? 'opacity-100 translate-y-0 translate-x-0' 
                   : `opacity-0 translate-y-20 ${index % 2 === 0 ? '-translate-x-10' : 'translate-x-10'}`
               }`}
-              style={{ transitionDelay: `${index * 150}ms`, perspective: '1000px' }}
-              onMouseMove={(e) => handleMouseMove(e, project.id)}
-              onMouseLeave={() => setMousePos({ x: 0, y: 0, id: null })}
+              style={{
+                transitionDelay: `${index * 120}ms`,
+                perspective: '1000px',
+                '--rx': '0deg',
+                '--ry': '0deg',
+                '--tx': '0px',
+                '--ty': '0px',
+              } as React.CSSProperties}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
             >
               {/* Parallax Container */}
               <div 
-                className="relative overflow-hidden rounded-3xl aspect-[16/10] sm:aspect-[16/9] bg-card transition-transform duration-300 ease-out preserve-3d"
+                className="relative overflow-hidden rounded-3xl aspect-[16/10] sm:aspect-[16/9] bg-card transition-transform duration-200 ease-out preserve-3d"
                 style={{
-                  transform: mousePos.id === project.id 
-                    ? `rotateY(${mousePos.x * 15}deg) rotateX(${-mousePos.y * 15}deg)` 
-                    : 'rotateY(0deg) rotateX(0deg)'
+                  transform: 'rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))',
+                  transformStyle: 'preserve-3d',
                 }}
               >
                 {/* Background Image with Deep Parallax */}
                 <div 
-                  className="absolute inset-[-10%] transition-transform duration-500 ease-out"
+                  className="absolute inset-[-10%] transition-transform duration-300 ease-out"
                   style={{
-                    transform: mousePos.id === project.id 
-                      ? `translate3d(${mousePos.x * -20}px, ${mousePos.y * -20}px, 0) scale(1.1)` 
-                      : 'translate3d(0, 0, 0) scale(1)'
+                    transform: 'translate3d(var(--tx, 0px), var(--ty, 0px), 0) scale(1.06)',
                   }}
                 >
                   <img src={project.image} alt={project.title} className="w-full h-full object-cover opacity-40 grayscale group-hover:grayscale-0 group-hover:opacity-60 transition-all duration-700" />
@@ -191,8 +210,8 @@ export default function Portfolio() {
                     background: 'radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, transparent 70%)',
                     width: '300px',
                     height: '300px',
-                    left: `${(mousePos.x + 0.5) * 100}%`,
-                    top: `${(mousePos.y + 0.5) * 100}%`,
+                    left: 'var(--mx, 50%)',
+                    top: 'var(--my, 50%)',
                     transform: 'translate(-50%, -50%)',
                     mixBlendMode: 'soft-light'
                   }}

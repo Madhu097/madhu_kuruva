@@ -10,33 +10,31 @@ const rand = (n: number) => Math.floor(Math.random() * n);
 
 // Fake compile log — each line appears 190ms apart after decode completes
 const LOG_LINES = [
-  { sym: '✔', text: 'react@18.3.1',              col: '#4ade80' },
-  { sym: '✔', text: 'node@20.x  (lts)',           col: '#4ade80' },
-  { sym: '✔', text: 'express@4.19.2',             col: '#4ade80' },
-  { sym: '✔', text: 'typescript@5.5.3',           col: '#4ade80' },
-  { sym: '✔', text: 'vite@5.4.21',                col: '#4ade80' },
-  { sym: '⟳', text: 'bundling /portfolio...',     col: '#22d3ee' },
-  { sym: '✓', text: 'built in 847ms',             col: '#a78bfa' },
+  { sym: '✔', text: 'react@18.3.1', col: '#4ade80' },
+  { sym: '✔', text: 'typescript@5.5.3', col: '#4ade80' },
+  { sym: '✔', text: 'vite@5.4.21', col: '#4ade80' },
+  { sym: '✔', text: 'node@20.x  (lts)', col: '#4ade80' },
+  { sym: '⟳', text: 'bundling /portfolio...', col: '#22d3ee' },
+  { sym: '✓', text: 'built in 847ms', col: '#a78bfa' },
 ];
 
 // Tech-stack badges
 const BADGES = [
-  { label: 'React',       color: '#61dafb' },
-  { label: 'Node.js',     color: '#68a063' },
-  { label: 'Express.js',  color: '#ffffff' },
-  { label: 'TypeScript',  color: '#3b82f6' },
-  { label: 'Python',      color: '#f7c948' },
-  { label: 'PostgreSQL',  color: '#336791' },
-  { label: 'Tailwind',    color: '#38bdf8' },
-  { label: 'Vite',        color: '#bd34fe' },
+  { label: 'React', color: '#61dafb' },
+  { label: 'TypeScript', color: '#3b82f6' },
+  { label: 'Node.js', color: '#68a063' },
+  { label: 'Python', color: '#f7c948' },
+  { label: 'PostgreSQL', color: '#336791' },
+  { label: 'Tailwind', color: '#38bdf8' },
+  { label: 'Vite', color: '#bd34fe' },
 ];
 
 // Dynamic build-stage label driven by progress value
 const stageLabel = (p: number) => {
-  if (p <  20) return 'INITIALIZING REACT APP...';
-  if (p <  40) return 'COMPILING TYPESCRIPT...';
-  if (p <  65) return 'BUNDLING ASSETS...';
-  if (p <  85) return 'OPTIMIZING CHUNKS...';
+  if (p < 20) return 'INITIALIZING REACT APP...';
+  if (p < 40) return 'COMPILING TYPESCRIPT...';
+  if (p < 65) return 'BUNDLING ASSETS...';
+  if (p < 85) return 'OPTIMIZING CHUNKS...';
   if (p < 100) return 'GENERATING OUTPUT...';
   return 'BUILD SUCCESSFUL ✓';
 };
@@ -71,17 +69,17 @@ function Corner({ pos }: { pos: 'tl' | 'tr' | 'bl' | 'br' }) {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function LoadingScreen() {
-  const [display, setDisplay]         = useState<string[]>(() =>
+  const [display, setDisplay] = useState<string[]>(() =>
     NAME.split('').map(c => c === ' ' ? ' ' : POOL[rand(POOL.length)])
   );
-  const [locked,       setLocked]     = useState<boolean[]>(() => NAME.split('').map(() => false));
-  const [flash,        setFlash]      = useState<number | null>(null);
-  const [progress,     setProgress]   = useState(0);
-  const [showRole,     setShowRole]   = useState(false);
-  const [showProgress, setShowProg]   = useState(false);
-  const [logCount,     setLogCount]   = useState(0);
-  const [exiting,      setExiting]    = useState(false);
-  const [done,         setDone]       = useState(false);
+  const [locked, setLocked] = useState<boolean[]>(() => NAME.split('').map(() => false));
+  const [flash, setFlash] = useState<number | null>(null);
+  const [progress, setProgress] = useState(0);
+  const [showRole, setShowRole] = useState(false);
+  const [showProgress, setShowProg] = useState(false);
+  const [logCount, setLogCount] = useState(0);
+  const [exiting, setExiting] = useState(false);
+  const [done, setDone] = useState(false);
 
   const lockedRef = useRef<boolean[]>(NAME.split('').map(() => false));
 
@@ -140,7 +138,7 @@ export default function LoadingScreen() {
   useEffect(() => {
     if (progress < 100) return;
     const t1 = setTimeout(() => setExiting(true), 500);
-    const t2 = setTimeout(() => setDone(true),    1600);
+    const t2 = setTimeout(() => setDone(true), 1600);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [progress]);
 
@@ -152,8 +150,8 @@ export default function LoadingScreen() {
       <div className={`ls${exiting ? ' ls--exit' : ''}`} role="status" aria-label="Loading portfolio">
 
         {/* Ambient layers */}
-        <div className="ls-grid"     aria-hidden="true" />
-        <div className="ls-orb"      aria-hidden="true" />
+        <div className="ls-grid" aria-hidden="true" />
+        <div className="ls-orb" aria-hidden="true" />
         <div className="ls-vignette" aria-hidden="true" />
 
         {/* Faint code watermark */}
@@ -199,9 +197,9 @@ export default function LoadingScreen() {
             {NAME.split('').map((orig, i) => (
               <span key={i} className={[
                 'ls-ch',
-                orig === ' '  ? 'ls-ch--sp'  : '',
-                locked[i]     ? 'ls-ch--on'  : 'ls-ch--off',
-                flash === i   ? 'ls-ch--fx'  : '',
+                orig === ' ' ? 'ls-ch--sp' : '',
+                locked[i] ? 'ls-ch--on' : 'ls-ch--off',
+                flash === i ? 'ls-ch--fx' : '',
               ].filter(Boolean).join(' ')}>
                 {display[i]}
               </span>
@@ -250,8 +248,8 @@ export default function LoadingScreen() {
           {/* Progress bar */}
           <div className={`ls-prog${showProgress ? ' ls-prog--in' : ''}`}>
             <div className="ls-track">
-              <div className="ls-fill"    style={{ width: `${progress}%` }} />
-              <div className="ls-glowtip" style={{ left:  `${progress}%` }} />
+              <div className="ls-fill" style={{ width: `${progress}%` }} />
+              <div className="ls-glowtip" style={{ left: `${progress}%` }} />
             </div>
             <div className="ls-meta">
               <span className="ls-stage">{stageLabel(progress)}</span>
@@ -262,7 +260,7 @@ export default function LoadingScreen() {
 
         {/* ── Bottom tech stack bar ─────────────────────────────────────── */}
         <div className="ls-botbar" aria-hidden="true">
-          {['React', 'Node.js', 'Express', 'TypeScript', 'Python', 'PostgreSQL', 'Tailwind', 'Vite', 'AI/ML'].map((t, i) => (
+          {['React', 'TypeScript', 'Node.js', 'Python', 'PostgreSQL', 'Tailwind', 'Vite', 'AI/ML'].map((t, i) => (
             <span key={t}>
               {i > 0 && <span className="ls-bsep"> · </span>}
               {t}
@@ -277,13 +275,12 @@ export default function LoadingScreen() {
 // ─── Faint code watermark text ────────────────────────────────────────────────
 const CODE_WM = `
 import { Developer } from '@madhu/core';
-import express from 'express';
 import React, { useState, useEffect } from 'react';
 
 const portfolio = new Developer({
   name: 'Madhu Kuruva',
   role: 'Full Stack Developer',
-  stack: ['React','Node.js','Express','TypeScript','Python'],
+  stack: ['React','TypeScript','Node.js','Python'],
   location: 'Hyderabad, India',
 });
 

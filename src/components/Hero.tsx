@@ -3,8 +3,10 @@ import { ChevronDown } from 'lucide-react';
 import heroVideo from '../assets/hero.mp4';
 
 export default function Hero() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const nameRef   = useRef<HTMLHeadingElement>(null);
+  const nameRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -13,46 +15,45 @@ export default function Hero() {
     if (!ctx) return;
 
     const isMobile = window.innerWidth < 768;
-    const COUNT    = isMobile ? 30 : 45;
-    const MAX_DIST = 120;
-    const MAX_DIST_SQ = MAX_DIST * MAX_DIST; // avoid sqrt in hot loop
+    const COUNT = isMobile ? 24 : 36;
+    const MAX_DIST = 110;
+    const MAX_DIST_SQ = MAX_DIST * MAX_DIST;
 
     const resize = () => {
-      canvas.width  = window.innerWidth;
+      canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
     resize();
 
-    type Particle = { x: number; y: number; vx: number; vy: number; size: number };
+    type Particle = { x: number; y: number; vx: number; vy: number };
     const particles: Particle[] = [];
     for (let i = 0; i < COUNT; i++) {
       particles.push({
-        x:    Math.random() * canvas.width,
-        y:    Math.random() * canvas.height,
-        vx:   (Math.random() - 0.5) * 0.4,
-        vy:   (Math.random() - 0.5) * 0.4,
-        size: Math.random() * 1.5 + 0.8,
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: (Math.random() - 0.5) * 0.35,
       });
     }
 
-    // Pre-bake particle glow into an offscreen canvas — avoids
-    // createRadialGradient() inside the per-frame loop (expensive)
-    const GLOW = 10;
+    const GLOW = 8;
     const glowCanvas = document.createElement('canvas');
     glowCanvas.width = glowCanvas.height = GLOW * 2;
-    const gc   = glowCanvas.getContext('2d')!;
+    const gc = glowCanvas.getContext('2d')!;
     const grad = gc.createRadialGradient(GLOW, GLOW, 0, GLOW, GLOW, GLOW);
-    grad.addColorStop(0,   'rgba(34,211,238,0.55)');
+    grad.addColorStop(0, 'rgba(34,211,238,0.55)');
     grad.addColorStop(0.5, 'rgba(34,211,238,0.12)');
-    grad.addColorStop(1,   'rgba(34,211,238,0)');
+    grad.addColorStop(1, 'rgba(34,211,238,0)');
     gc.fillStyle = grad;
     gc.fillRect(0, 0, GLOW * 2, GLOW * 2);
 
     let rafId: number;
     let lastTime = 0;
-    const FRAME_MS = 1000 / 50; // cap to 50 fps — keeps GPU idle between frames
+    const FRAME_MS = 1000 / 45;
+    let isVisible = true;
 
     const animate = (now: number) => {
+      if (!isVisible) return;
       rafId = requestAnimationFrame(animate);
       if (now - lastTime < FRAME_MS) return;
       lastTime = now;
@@ -68,12 +69,10 @@ export default function Hero() {
         if (p.x < 0 || p.x > W) p.vx *= -1;
         if (p.y < 0 || p.y > H) p.vy *= -1;
 
-        ctx.globalAlpha = 0.85;
         ctx.drawImage(glowCanvas, p.x - GLOW, p.y - GLOW);
-        ctx.globalAlpha = 1;
       }
 
-      // Draw edges — use squared distance to skip sqrt
+      // Draw edges
       ctx.lineWidth = 0.5;
       for (let i = 0; i < COUNT; i++) {
         for (let j = i + 1; j < COUNT; j++) {
@@ -81,7 +80,7 @@ export default function Hero() {
           const dy = particles[i].y - particles[j].y;
           const dSq = dx * dx + dy * dy;
           if (dSq >= MAX_DIST_SQ) continue;
-          const alpha = (1 - Math.sqrt(dSq) / MAX_DIST) * 0.14;
+          const alpha = (1 - Math.sqrt(dSq) / MAX_DIST) * 0.12;
           ctx.strokeStyle = `rgba(34,211,238,${alpha.toFixed(3)})`;
           ctx.beginPath();
           ctx.moveTo(particles[i].x, particles[i].y);
@@ -90,6 +89,23 @@ export default function Hero() {
         }
       }
     };
+
+    // Observer to pause canvas and video when scrolled away
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+        if (isVisible) {
+          rafId = requestAnimationFrame(animate);
+          videoRef.current?.play().catch(() => { });
+        } else {
+          cancelAnimationFrame(rafId);
+          videoRef.current?.pause();
+        }
+      },
+      { threshold: 0.05 }
+    );
+
+    if (sectionRef.current) observer.observe(sectionRef.current);
     rafId = requestAnimationFrame(animate);
 
     window.addEventListener('resize', resize, { passive: true });
@@ -102,15 +118,16 @@ export default function Hero() {
     }
 
     return () => {
+      observer.disconnect();
       cancelAnimationFrame(rafId);
       window.removeEventListener('resize', resize);
     };
   }, []);
 
-
   return (
-    <section className="relative h-screen w-full overflow-hidden bg-black">
+    <section ref={sectionRef} className="relative h-screen w-full overflow-hidden bg-black">
       <video
+        ref={videoRef}
         autoPlay loop muted playsInline
         className="absolute inset-0 w-full h-full object-cover opacity-60"
         style={{ objectPosition: 'center 20%' }}
@@ -125,7 +142,7 @@ export default function Hero() {
       <div className="relative z-10 flex flex-col items-center justify-center h-full px-4 sm:px-6">
         <div className="text-center space-y-4 sm:space-y-6">
           <div className="overflow-hidden">
-            <h1 ref={nameRef} className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-extrabold tracking-[-0.02em] text-white leading-tight">
+            <h1 ref={nameRef} className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl xl:text-9xl font-extrabold tracking-[-0.02em] text-white leading-tight">
               {'MADHU KURUVA'.split('').map((char, i) => (
                 <span key={i} className="inline-block opacity-0 translate-y-full letter" style={{ transitionDelay: `${i * 0.05}s` }}>
                   {char === ' ' ? '\u00A0' : char}

@@ -1,25 +1,24 @@
 import { useEffect, useRef, useState } from 'react';
-import skillsBg from '../assets/skills background.mp4';
 
 const D = 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons';
 
 const techs = [
-  { name: 'React',       logo: `${D}/react/react-original.svg`,                          color: '#61DAFB', bg: 'rgba(97,218,251,0.1)',   category: 'Frontend'  },
-  { name: 'JavaScript',  logo: `${D}/javascript/javascript-original.svg`,                color: '#F7DF1E', bg: 'rgba(247,223,30,0.1)',   category: 'Frontend'  },
-  { name: 'HTML5',       logo: `${D}/html5/html5-original.svg`,                          color: '#E34F26', bg: 'rgba(227,79,38,0.1)',    category: 'Frontend'  },
-  { name: 'CSS3',        logo: `${D}/css3/css3-original.svg`,                            color: '#1572B6', bg: 'rgba(21,114,182,0.1)',   category: 'Frontend'  },
-  { name: 'Python',      logo: `${D}/python/python-original.svg`,                        color: '#3776AB', bg: 'rgba(55,118,171,0.1)',   category: 'Backend'   },
-  { name: 'Node.js',     logo: `${D}/nodejs/nodejs-original.svg`,                        color: '#68A063', bg: 'rgba(104,160,99,0.1)',   category: 'Backend'   },
-  { name: 'Express.js',  logo: 'https://cdn.simpleicons.org/express/FFFFFF',             color: '#FFFFFF', bg: 'rgba(255,255,255,0.08)', category: 'Backend'   },
-  { name: 'MongoDB',     logo: `${D}/mongodb/mongodb-original.svg`,                     color: '#47A248', bg: 'rgba(71,162,72,0.1)',    category: 'Database'  },
-  { name: 'MySQL',       logo: `${D}/mysql/mysql-original.svg`,                         color: '#4479A1', bg: 'rgba(68,121,161,0.1)',   category: 'Database'  },
-  { name: 'Firebase',    logo: `${D}/firebase/firebase-plain.svg`,                      color: '#FFCA28', bg: 'rgba(255,202,40,0.1)',   category: 'Database'  },
-  { name: 'Git',         logo: `${D}/git/git-original.svg`,                             color: '#F05032', bg: 'rgba(240,80,50,0.1)',    category: 'Tools'     },
-  { name: 'GitHub',      logo: 'https://cdn.simpleicons.org/github/FFFFFF',             color: '#FFFFFF', bg: 'rgba(255,255,255,0.08)', category: 'Tools'     },
-  { name: 'AWS',         logo: `${D}/amazonwebservices/amazonwebservices-plain-wordmark.svg`, color: '#FF9900', bg: 'rgba(255,153,0,0.1)', category: 'Tools'  },
-  { name: 'Vercel',      logo: 'https://cdn.simpleicons.org/vercel/FFFFFF',              color: '#FFFFFF', bg: 'rgba(255,255,255,0.08)', category: 'Tools'     },
-  { name: 'Figma',       logo: `${D}/figma/figma-original.svg`,                         color: '#F24E1E', bg: 'rgba(242,78,30,0.1)',    category: 'Design'    },
-  { name: 'VS Code',     logo: `${D}/vscode/vscode-original.svg`,                       color: '#007ACC', bg: 'rgba(0,122,204,0.1)',    category: 'Tools'     },
+  { name: 'React', logo: `${D}/react/react-original.svg`, color: '#61DAFB', bg: 'rgba(97,218,251,0.1)', category: 'Frontend' },
+  { name: 'JavaScript', logo: `${D}/javascript/javascript-original.svg`, color: '#F7DF1E', bg: 'rgba(247,223,30,0.1)', category: 'Frontend' },
+  { name: 'HTML5', logo: `${D}/html5/html5-original.svg`, color: '#E34F26', bg: 'rgba(227,79,38,0.1)', category: 'Frontend' },
+  { name: 'CSS3', logo: `${D}/css3/css3-original.svg`, color: '#1572B6', bg: 'rgba(21,114,182,0.1)', category: 'Frontend' },
+  { name: 'Python', logo: `${D}/python/python-original.svg`, color: '#3776AB', bg: 'rgba(55,118,171,0.1)', category: 'Backend' },
+  { name: 'Node.js', logo: `${D}/nodejs/nodejs-original.svg`, color: '#68A063', bg: 'rgba(104,160,99,0.1)', category: 'Backend' },
+  { name: 'Express.js', logo: 'https://cdn.simpleicons.org/express/FFFFFF', color: '#FFFFFF', bg: 'rgba(255,255,255,0.08)', category: 'Backend' },
+  { name: 'MongoDB', logo: `${D}/mongodb/mongodb-original.svg`, color: '#47A248', bg: 'rgba(71,162,72,0.1)', category: 'Database' },
+  { name: 'MySQL', logo: `${D}/mysql/mysql-original.svg`, color: '#4479A1', bg: 'rgba(68,121,161,0.1)', category: 'Database' },
+  { name: 'Firebase', logo: `${D}/firebase/firebase-plain.svg`, color: '#FFCA28', bg: 'rgba(255,202,40,0.1)', category: 'Database' },
+  { name: 'Git', logo: `${D}/git/git-original.svg`, color: '#F05032', bg: 'rgba(240,80,50,0.1)', category: 'Tools' },
+  { name: 'GitHub', logo: 'https://cdn.simpleicons.org/github/FFFFFF', color: '#FFFFFF', bg: 'rgba(255,255,255,0.08)', category: 'Tools' },
+  { name: 'AWS', logo: `${D}/amazonwebservices/amazonwebservices-plain-wordmark.svg`, color: '#FF9900', bg: 'rgba(255,153,0,0.1)', category: 'Tools' },
+  { name: 'Vercel', logo: 'https://cdn.simpleicons.org/vercel/FFFFFF', color: '#FFFFFF', bg: 'rgba(255,255,255,0.08)', category: 'Tools' },
+  { name: 'Figma', logo: `${D}/figma/figma-original.svg`, color: '#F24E1E', bg: 'rgba(242,78,30,0.1)', category: 'Design' },
+  { name: 'VS Code', logo: `${D}/vscode/vscode-original.svg`, color: '#007ACC', bg: 'rgba(0,122,204,0.1)', category: 'Tools' },
 ];
 
 const categories = ['All', 'Frontend', 'Backend', 'Database', 'Tools', 'Design'];
@@ -32,8 +31,8 @@ export default function Skills() {
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setIsVisible(true); },
-      { threshold: 0.08 }
+      ([entry]) => { setIsVisible(entry.isIntersecting); },
+      { threshold: 0.05 }
     );
     if (sectionRef.current) observer.observe(sectionRef.current);
     return () => observer.disconnect();
@@ -51,34 +50,38 @@ export default function Skills() {
       ref={sectionRef}
       className="relative min-h-screen bg-background py-20 px-4 sm:px-6 overflow-hidden"
     >
-      {/* Background Video */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover opacity-40 pointer-events-none"
-      >
-        <source src={skillsBg} type="video/mp4" />
-      </video>
-      {/* Gradient fades for top and bottom edges */}
-      <div 
-        className="absolute inset-0 pointer-events-none" 
-        style={{ 
-          background: 'linear-gradient(to bottom, var(--color-background) 0%, transparent 20%, transparent 80%, var(--color-background) 100%)' 
-        }} 
-      />
+      {/* Floating tech logos as minimal background decoration */}
+      {[
+        { logo: techs[0].logo, top: '8%',  left: '4%',  size: 36, opacity: 0.07 },
+        { logo: techs[1].logo, top: '18%', left: '91%', size: 30, opacity: 0.06 },
+        { logo: techs[4].logo, top: '35%', left: '3%',  size: 28, opacity: 0.06 },
+        { logo: techs[2].logo, top: '55%', left: '93%', size: 34, opacity: 0.07 },
+        { logo: techs[7].logo, top: '70%', left: '6%',  size: 30, opacity: 0.05 },
+        { logo: techs[5].logo, top: '82%', left: '88%', size: 32, opacity: 0.06 },
+        { logo: techs[10].logo,top: '12%', left: '50%', size: 26, opacity: 0.05 },
+        { logo: techs[14].logo,top: '90%', left: '45%', size: 28, opacity: 0.05 },
+      ].map((item, i) => (
+        <img
+          key={i}
+          src={item.logo}
+          alt=""
+          aria-hidden="true"
+          style={{
+            position: 'absolute', top: item.top, left: item.left,
+            width: item.size, height: item.size,
+            opacity: item.opacity,
+            filter: 'grayscale(1) brightness(2)',
+            pointerEvents: 'none',
+            userSelect: 'none',
+          }}
+        />
+      ))}
 
-      {/* Noise texture overlay */}
-      <div className="absolute inset-0 opacity-[0.015]" style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-      }} />
-
-      {/* Ambient glow blobs */}
-      <div className="absolute top-24 left-1/4 w-96 h-96 rounded-full blur-[160px] pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(10,132,255,0.07) 0%, transparent 70%)' }} />
-      <div className="absolute bottom-24 right-1/4 w-96 h-96 rounded-full blur-[160px] pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(64,156,255,0.07) 0%, transparent 70%)' }} />
+      {/* Subtle ambient glows */}
+      <div className="absolute top-1/4 left-1/4 w-80 h-80 rounded-full blur-[140px] pointer-events-none"
+        style={{ background: 'rgba(10,132,255,0.05)' }} />
+      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full blur-[140px] pointer-events-none"
+        style={{ background: 'rgba(99,102,241,0.04)' }} />
 
       <div className="max-w-7xl mx-auto relative z-10">
 

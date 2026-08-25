@@ -2,28 +2,28 @@ import { useEffect, useRef, useCallback } from 'react';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const TOTAL_FRAMES = 240;
-const SCROLL_VH    = 400;
+const SCROLL_VH = 400;
 
 const TEXT_SEQUENCE = [
-  { text: 'Madhu Kuruva',            sub: '',            start: 0.02, end: 0.16 },
-  { text: 'Creative Developer',      sub: '',            start: 0.19, end: 0.33 },
-  { text: 'Immersive Digital',       sub: 'Experiences', start: 0.36, end: 0.50 },
-  { text: 'Interactive Experiences', sub: '',            start: 0.53, end: 0.64 },
-  { text: 'Motion Design',           sub: '',            start: 0.67, end: 0.76 },
-  { text: 'Creative Technology',     sub: '',            start: 0.79, end: 0.87 },
+  { text: 'Madhu Kuruva', sub: '', start: 0.02, end: 0.16 },
+  { text: 'Creative Developer', sub: '', start: 0.19, end: 0.33 },
+  { text: 'Immersive Digital', sub: 'Experiences', start: 0.36, end: 0.50 },
+  { text: 'Interactive Experiences', sub: '', start: 0.53, end: 0.64 },
+  { text: 'Motion Design', sub: '', start: 0.67, end: 0.76 },
+  { text: 'Creative Technology', sub: '', start: 0.79, end: 0.87 },
 ];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-const clamp      = (v: number, lo: number, hi: number) => Math.min(Math.max(v, lo), hi);
-const lerp       = (a: number, b: number, t: number)   => a + (b - a) * t;
-const easeOut3   = (t: number) => 1 - Math.pow(1 - t, 3);
+const clamp = (v: number, lo: number, hi: number) => Math.min(Math.max(v, lo), hi);
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+const easeOut3 = (t: number) => 1 - Math.pow(1 - t, 3);
 const easeInOut4 = (t: number) =>
   t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2;
 
 // Device tier — determines rendering quality vs performance tradeoff
 const getDeviceTier = () => {
   const w = window.innerWidth;
-  if (w < 768)  return 'mobile';   // phones
+  if (w < 768) return 'mobile';   // phones
   if (w < 1024) return 'tablet';   // tablets
   return 'desktop';
 };
@@ -31,8 +31,8 @@ const getDeviceTier = () => {
 // DPR capped by device tier to avoid over-rendering on mobile
 const getTierDPR = () => {
   const tier = getDeviceTier();
-  if (tier === 'mobile')  return 1;                                 // 1× — CSS pixels only
-  if (tier === 'tablet')  return Math.min(window.devicePixelRatio || 1, 1.5);
+  if (tier === 'mobile') return 1;                                 // 1× — CSS pixels only
+  if (tier === 'tablet') return Math.min(window.devicePixelRatio || 1, 1.5);
   return Math.min(window.devicePixelRatio || 1, 2);                 // desktop up to 2×
 };
 
@@ -43,13 +43,13 @@ const getDrawInterval = () => {
 
 // Real viewport height (accounts for mobile browser chrome bar)
 const getVH = () => window.visualViewport?.height ?? window.innerHeight;
-const getVW = () => window.visualViewport?.width  ?? window.innerWidth;
+const getVW = () => window.visualViewport?.width ?? window.innerWidth;
 
 // ─── Component ───────────────────────────────────────────────────────────────
 export default function CinematicIntro() {
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const canvasRef  = useRef<HTMLCanvasElement>(null);
-  const rafRef     = useRef<number>(0);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const rafRef = useRef<number>(0);
   const isLoopRunningRef = useRef<boolean>(false);
   const hasStartedPreloadRef = useRef<boolean>(false);
 
@@ -58,29 +58,30 @@ export default function CinematicIntro() {
   const loadedRef = useRef<boolean[]>(new Array(TOTAL_FRAMES).fill(false));
 
   // Scroll progress — written by passive scroll listener, read by rAF
-  const rawPRef    = useRef(0);
+  const rawPRef = useRef(0);
   const smoothPRef = useRef(0);
 
   // Wrapper metrics cached to avoid layout reads during scroll
-  const wrapTopRef  = useRef(0);
-  const wrapHRef    = useRef(0);
+  const wrapTopRef = useRef(0);
+  const wrapHRef = useRef(0);
 
   // Canvas state
-  const vpRef        = useRef({ w: getVW(), h: getVH() });
+  const vpRef = useRef({ w: getVW(), h: getVH() });
   const lastDrawnRef = useRef(-1);
-  const dirtyRef     = useRef(true);
+  const dirtyRef = useRef(true);
   const lastDrawTime = useRef(0);
+  const lastDrawnImgRef = useRef<HTMLImageElement | null>(null);
+  const isInViewRef = useRef(true);
 
   // DOM refs updated by rAF (avoids React re-renders)
-  const panelRefs  = useRef<(HTMLDivElement | null)[]>([]);
+  const panelRefs = useRef<(HTMLDivElement | null)[]>([]);
   const welcomeRef = useRef<HTMLDivElement>(null);
   const lastOpacitiesRef = useRef<number[]>(new Array(6).fill(-999));
   const lastWelcomeOpRef = useRef<number>(-999);
 
-  // ── 1. Scroll to top on mount (consistent refresh behaviour) ────────────────
+  // ── 1. Removed Scroll to top on mount to fix refresh behavior ────────────────
   useEffect(() => {
-    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-    window.scrollTo(0, 0);
+    // Let the browser handle scroll restoration natively so sections aren't hidden on refresh
   }, []);
 
   // ── 2. Cache wrapper metrics (read once, not every scroll) ──────────────────
@@ -89,7 +90,7 @@ export default function CinematicIntro() {
     if (!w) return;
     // Use offsetTop + offsetHeight — no layout thrash, just property read
     wrapTopRef.current = w.offsetTop;
-    wrapHRef.current   = w.offsetHeight;
+    wrapHRef.current = w.offsetHeight;
   }, []);
 
   // ── 3. Draw frame (all coords in CSS px; DPR handled by ctx.scale) ──────────
@@ -101,18 +102,28 @@ export default function CinematicIntro() {
 
     // Walk back to nearest loaded frame
     let img: HTMLImageElement | null = null;
-    let si = frameIdx;
-    while (si >= 0) {
-      const c = framesRef.current[si];
-      if (c && loadedRef.current[si] && c.naturalWidth > 0) { img = c; break; }
-      si--;
+    const currentFrame = framesRef.current[frameIdx];
+    
+    if (currentFrame && loadedRef.current[frameIdx] && currentFrame.naturalWidth > 0) {
+      img = currentFrame;
+    } else if (lastDrawnImgRef.current) {
+      img = lastDrawnImgRef.current;
+    } else {
+      let si = frameIdx;
+      while (si >= 0) {
+        const c = framesRef.current[si];
+        if (c && loadedRef.current[si] && c.naturalWidth > 0) { img = c; break; }
+        si--;
+      }
     }
+    
     if (!img) return false;
+    lastDrawnImgRef.current = img;
 
     const { w: W, h: H } = vpRef.current;
 
     // ── Cover-fit: always fill the full screen ────────────────────────────────
-    const iW = img.naturalWidth  || 1920;
+    const iW = img.naturalWidth || 1920;
     const iH = img.naturalHeight || 1080;
 
     let scale = Math.max(W / iW, H / iH);
@@ -134,25 +145,25 @@ export default function CinematicIntro() {
     // Desktop-only extras (vignette, bloom, fog — too expensive on mobile)
     if (!mobile) {
       const vr = Math.max(W, H) * 0.9;
-      const vg = ctx.createRadialGradient(W/2, H/2, vr*0.35, W/2, H/2, vr);
+      const vg = ctx.createRadialGradient(W / 2, H / 2, vr * 0.35, W / 2, H / 2, vr);
       vg.addColorStop(0, 'rgba(0,0,0,0)');
-      vg.addColorStop(1, `rgba(0,0,0,${lerp(0.55, 0.22, easeInOut4(clamp(p*1.3,0,1)))})`);
+      vg.addColorStop(1, `rgba(0,0,0,${lerp(0.55, 0.22, easeInOut4(clamp(p * 1.3, 0, 1)))})`);
       ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
 
       if (p > 0.76) {
         const bt = clamp((p - 0.76) / 0.24, 0, 1);
-        const bl = ctx.createRadialGradient(W/2, H*0.42, 0, W/2, H*0.42, Math.max(W,H)*0.75);
-        bl.addColorStop(0,   `rgba(10,132,255,${bt*0.18})`);
-        bl.addColorStop(0.4, `rgba(64,156,255,${bt*0.07})`);
-        bl.addColorStop(1,   'rgba(0,0,0,0)');
+        const bl = ctx.createRadialGradient(W / 2, H * 0.42, 0, W / 2, H * 0.42, Math.max(W, H) * 0.75);
+        bl.addColorStop(0, `rgba(10,132,255,${bt * 0.18})`);
+        bl.addColorStop(0.4, `rgba(64,156,255,${bt * 0.07})`);
+        bl.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.fillStyle = bl; ctx.fillRect(0, 0, W, H);
       }
 
-      const fo = lerp(0.12, 0.02, easeOut3(clamp(p*1.6,0,1)));
-      const fg = ctx.createLinearGradient(0, H*0.57, 0, H*0.82);
-      fg.addColorStop(0,   'rgba(10,20,40,0)');
+      const fo = lerp(0.12, 0.02, easeOut3(clamp(p * 1.6, 0, 1)));
+      const fg = ctx.createLinearGradient(0, H * 0.57, 0, H * 0.82);
+      fg.addColorStop(0, 'rgba(10,20,40,0)');
       fg.addColorStop(0.5, `rgba(10,20,40,${fo})`);
-      fg.addColorStop(1,   'rgba(10,20,40,0)');
+      fg.addColorStop(1, 'rgba(10,20,40,0)');
       ctx.fillStyle = fg; ctx.fillRect(0, 0, W, H);
     }
 
@@ -168,33 +179,33 @@ export default function CinematicIntro() {
 
   // ── 4. rAF loop ─────────────────────────────────────────────────────────────
   const tick = useCallback((now: number) => {
-    const tier    = getDeviceTier();
-    const mobile  = tier === 'mobile';
+    const tier = getDeviceTier();
+    const mobile = tier === 'mobile';
     const lerpFac = mobile ? 0.28 : 0.24; // Faster catch-up speed for responsive scroll
 
     // Smooth progress
     smoothPRef.current = lerp(smoothPRef.current, rawPRef.current, lerpFac);
-    
+
     // Snap progress if extremely close to settle animation
     const diff = Math.abs(smoothPRef.current - rawPRef.current);
     const settled = diff < 0.001;
     if (settled) {
       smoothPRef.current = rawPRef.current;
     }
-    
+
     const p = smoothPRef.current;
     const frameIdx = Math.min(Math.floor(p * (TOTAL_FRAMES - 1)), TOTAL_FRAMES - 1);
 
     // Throttle canvas draws by device tier
     const interval = getDrawInterval();
-    const canDraw  = now - lastDrawTime.current >= interval;
+    const canDraw = now - lastDrawTime.current >= interval;
 
     if (canDraw && (frameIdx !== lastDrawnRef.current || dirtyRef.current)) {
       const ok = drawFrame(frameIdx, p, mobile);
       if (ok) {
-        lastDrawnRef.current  = frameIdx;
-        dirtyRef.current      = false;
-        lastDrawTime.current  = now;
+        lastDrawnRef.current = frameIdx;
+        dirtyRef.current = false;
+        lastDrawTime.current = now;
       }
     }
 
@@ -206,19 +217,19 @@ export default function CinematicIntro() {
       const panel = panelRefs.current[i];
       if (!panel) return;
       const rEnd = seg.start + RISE;
-      const fSt  = seg.end   - FADE;
+      const fSt = seg.end - FADE;
 
       let op = 0, ty = 0, sc = 1;
-      if      (p < seg.start) { op=0;   ty=28;  sc=0.96; }
-      else if (p < rEnd)      { const t=easeOut3((p-seg.start)/RISE);    op=t;   ty=lerp(28,0,t);  sc=lerp(0.96,1,t); }
-      else if (p < fSt)       { op=1;   ty=0;   sc=1; }
-      else if (p < seg.end)   { const t=easeInOut4((p-fSt)/FADE);        op=1-t; ty=lerp(0,-20,t); sc=lerp(1,1.03,t); }
-      else                    { op=0;   ty=-20; sc=1.03; }
+      if (p < seg.start) { op = 0; ty = 28; sc = 0.96; }
+      else if (p < rEnd) { const t = easeOut3((p - seg.start) / RISE); op = t; ty = lerp(28, 0, t); sc = lerp(0.96, 1, t); }
+      else if (p < fSt) { op = 1; ty = 0; sc = 1; }
+      else if (p < seg.end) { const t = easeInOut4((p - fSt) / FADE); op = 1 - t; ty = lerp(0, -20, t); sc = lerp(1, 1.03, t); }
+      else { op = 0; ty = -20; sc = 1.03; }
 
       // Only write to the DOM if the panel is currently visible, OR just transitioned to 0
       const lastOp = lastOpacitiesRef.current[i];
       if (op !== 0 || lastOp !== 0) {
-        panel.style.opacity   = op.toFixed(3);
+        panel.style.opacity = op.toFixed(3);
         panel.style.transform = `translateY(${ty.toFixed(1)}px) scale(${sc.toFixed(3)})`;
         lastOpacitiesRef.current[i] = op;
       }
@@ -229,14 +240,14 @@ export default function CinematicIntro() {
     if (wEl) {
       let op = 0, ty = 28;
       if (p >= 0.88) {
-        const t = easeOut3(clamp((p-0.88)/0.08, 0, 1));
+        const t = easeOut3(clamp((p - 0.88) / 0.08, 0, 1));
         op = t;
         ty = lerp(28, 0, t);
       }
-      
+
       const lastWelcomeOp = lastWelcomeOpRef.current;
       if (op !== 0 || lastWelcomeOp !== 0) {
-        wEl.style.opacity   = op.toFixed(3);
+        wEl.style.opacity = op.toFixed(3);
         wEl.style.transform = `translateY(${ty.toFixed(1)}px)`;
         lastWelcomeOpRef.current = op;
       }
@@ -258,9 +269,35 @@ export default function CinematicIntro() {
     }
   }, [tick]);
 
+  // ── 5b. IntersectionObserver to completely pause/resume CinematicIntro processing
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isInViewRef.current = entry.isIntersecting;
+        if (!entry.isIntersecting) {
+          isLoopRunningRef.current = false;
+          if (rafRef.current) {
+            cancelAnimationFrame(rafRef.current);
+            rafRef.current = 0;
+          }
+        } else {
+          cacheWrapperMetrics();
+          wakeUpLoop();
+        }
+      },
+      { threshold: 0 }
+    );
+
+    if (wrapperRef.current) {
+      observer.observe(wrapperRef.current);
+    }
+    return () => observer.disconnect();
+  }, [cacheWrapperMetrics, wakeUpLoop]);
+
   // ── 6. Passive scroll listener — no layout reads, pure arithmetic ───────────
   useEffect(() => {
     const onScroll = () => {
+      if (!isInViewRef.current) return;
       const scrolled = clamp(
         window.scrollY - wrapTopRef.current,
         0,
@@ -285,17 +322,17 @@ export default function CinematicIntro() {
     if (!parent) return;
 
     const dpr = getTierDPR();
-    const W   = parent.clientWidth  || getVW();
-    const H   = parent.clientHeight || getVH();
+    const W = parent.clientWidth || getVW();
+    const H = parent.clientHeight || getVH();
 
     vpRef.current = { w: W, h: H };
 
     // Physical pixel size (crisp on retina)
-    c.width  = Math.round(W * dpr);
+    c.width = Math.round(W * dpr);
     c.height = Math.round(H * dpr);
 
     // Exact CSS size matching the container (zero gap guarantee)
-    c.style.width  = `${W}px`;
+    c.style.width = `${W}px`;
     c.style.height = `${H}px`;
 
     // Reset transform THEN scale — prevents accumulation on repeated calls
@@ -306,7 +343,7 @@ export default function CinematicIntro() {
     }
 
     lastDrawnRef.current = -1;
-    dirtyRef.current     = true;
+    dirtyRef.current = true;
   }, []);
 
   // ── 8. Preload — frame 0 critical path, then staggered batches ──────────────
@@ -337,7 +374,7 @@ export default function CinematicIntro() {
       };
 
       if ('decode' in img) {
-        img.decode().catch(() => {}).then(finish);
+        img.decode().catch(() => { }).then(finish);
       } else {
         finish();
       }
@@ -356,12 +393,12 @@ export default function CinematicIntro() {
       console.log('[CinematicIntro] WebP detection FAILED (expected in local dev). Falling back to PNG...', e);
       const pngImg = new Image();
       pngImg.decoding = 'async';
-      
+
       pngImg.onload = () => {
         console.log('[CinematicIntro] Fallback PNG frame 0 LOADED successfully.');
         markLoaded(pngImg, 0, () => startPreloadFlow('.png'));
       };
-      
+
       pngImg.onerror = (err) => {
         console.error('[CinematicIntro] Fallback PNG frame 0 FAILED to load:', err);
         loaded[0] = true;
@@ -380,19 +417,19 @@ export default function CinematicIntro() {
       const loadOne = (i: number) => {
         const img = new Image();
         img.decoding = 'async';
-        
+
         img.onload = () => {
           markLoaded(img, i);
         };
-        
+
         img.onerror = (err) => {
           console.error(`[CinematicIntro] Failed to load frame ${i + 1} (${ext}):`, err);
           loaded[i] = true;
           wakeUpLoop();
         };
-        
+
         frames[i] = img;
-        
+
         // Trigger loading after handlers are registered
         img.src = `/frames/ezgif-frame-${String(i + 1).padStart(3, '0')}${ext}`;
       };
@@ -429,13 +466,13 @@ export default function CinematicIntro() {
       if (!parent) return;
 
       const dpr = getTierDPR();
-      const W   = parent.clientWidth  || getVW();
-      const H   = parent.clientHeight || getVH();
+      const W = parent.clientWidth || getVW();
+      const H = parent.clientHeight || getVH();
 
       vpRef.current = { w: W, h: H };
-      c.width  = Math.round(W * dpr);
+      c.width = Math.round(W * dpr);
       c.height = Math.round(H * dpr);
-      c.style.width  = `${W}px`;
+      c.style.width = `${W}px`;
       c.style.height = `${H}px`;
 
       const ctx = c.getContext('2d');
@@ -444,7 +481,7 @@ export default function CinematicIntro() {
         ctx.scale(dpr, dpr);
       }
       lastDrawnRef.current = -1;
-      dirtyRef.current     = true;
+      dirtyRef.current = true;
     };
 
     doResize();
