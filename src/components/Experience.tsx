@@ -1,466 +1,900 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { ArrowUpRight } from 'lucide-react';
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
-const EXPERIENCES = [
+interface ExperienceItem {
+  id: string;
+  company: string;
+  role: string;
+  duration: string;
+  type: string;
+  logoText: string;
+  description: string;
+  technologies: string[];
+  link?: string | null;
+  active?: boolean;
+}
+
+const EXPERIENCES: ExperienceItem[] = [
   {
-    id: 1,
-    company: 'F1RSTLOOK DIGITAL',
-    companyShort: 'F1',
-    website: 'https://firstlook.digital/',
-    domain: 'firstlook.digital',
-    period: '2025 — Present',
-    status: 'active',
-    roles: [
-      {
-        title: 'Operations Head',
-        type: 'Leadership',
-        icon: (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
-            <circle cx="9" cy="7" r="4"/>
-            <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
-          </svg>
-        ),
-        color: '#38BDF8',
-        desc: 'Digital Startup · Full-time',
-      },
-      {
-        title: 'Web Developer',
-        type: 'Engineering',
-        icon: (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polyline points="16 18 22 12 16 6"/>
-            <polyline points="8 6 2 12 8 18"/>
-          </svg>
-        ),
-        color: '#FB923C',
-        desc: 'Designed & built firstlook.digital',
-      },
-    ],
-    highlights: [
-      { icon: '⚙', text: 'Led day-to-day digital operations and internal workflows' },
-      { icon: '🌐', text: 'Designed & developed the official F1RSTLOOK website' },
-      { icon: '⚡', text: 'Built responsive UI, integrated brand identity, optimized performance' },
-      { icon: '🎯', text: 'Bridged brand strategy with execution via digital tools' },
-      { icon: '🚀', text: 'Oversaw product launches, campaigns, and client deliverables' },
-      { icon: '🤖', text: 'Drove growth systems, automation, and process optimization' },
-    ],
-    tags: ['Operations', 'React', 'Web Dev', 'UI/UX', 'Strategy', 'Digital Marketing', 'Leadership'],
+    id: 'pantech',
+    company: 'Pantech eLearning',
+    role: 'Web Development Intern',
+    duration: 'Jun 2025 — Aug 2025',
+    type: 'Internship',
+    logoText: 'P',
+    description:
+      'Built responsive web interfaces using HTML, CSS, JavaScript, and React while learning responsive design, Git, debugging, and real-world development practices.',
+    technologies: ['HTML', 'CSS', 'JavaScript', 'React', 'Git'],
+    link: null,
+    active: false,
+  },
+  {
+    id: 'freelance',
+    company: 'Freelance',
+    role: 'Web Developer',
+    duration: '2024 — Present',
+    type: 'Freelance',
+    logoText: '✦',
+    description:
+      'Built responsive websites for clients using React and JavaScript while learning client communication, requirements gathering, deployment, and project delivery.',
+    technologies: ['React', 'JavaScript', 'Tailwind CSS', 'Deployment', 'Git'],
+    link: 'https://github.com/Madhu097',
+    active: true,
+  },
+  {
+    id: 'f1rstlook',
+    company: 'F1RSTLOOK',
+    role: 'Web Developer',
+    duration: '2025 — Present',
+    type: 'Startup',
+    logoText: 'F',
+    description:
+      'Developed responsive websites using modern web technologies while learning client requirements, real-world development, and project delivery.',
+    technologies: ['React', 'TypeScript', 'Tailwind CSS', 'Vite', 'UI/UX'],
+    link: 'https://firstlook.digital/',
+    active: true,
   },
 ];
 
-// ─── Component ─────────────────────────────────────────────────────────────────
 export default function Experience() {
   const sectionRef = useRef<HTMLElement>(null);
-  const [visible, setVisible] = useState(false);
-  const [revealed, setRevealed] = useState<Record<number, boolean>>({});
+  const [headerVisible, setHeaderVisible] = useState(false);
+  const [revealedIds, setRevealedIds] = useState<Record<string, boolean>>({});
+  const [beyondVisible, setBeyondVisible] = useState(false);
+  // Safeguard against any stale HMR reference or closures
+  const isVisible = headerVisible;
 
-  // Section entrance
+  // Individual scroll observers for each card and section element
   useEffect(() => {
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) setVisible(true); },
-      { threshold: 0.1 }
+    // Header observer
+    const headerEl = document.querySelector('.pe-header');
+    const headerObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setHeaderVisible(true);
+      },
+      { threshold: 0.15 }
     );
-    if (sectionRef.current) obs.observe(sectionRef.current);
-    return () => obs.disconnect();
+    if (headerEl) headerObserver.observe(headerEl);
+
+    // Cards observer: each card reveals independently when scrolled into view
+    // On mobile devices, use lower threshold and smaller rootMargin for snappy triggers
+    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+    const cardElements = document.querySelectorAll('.pe-card-row');
+    const cardObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.getAttribute('data-id');
+            if (id) {
+              setRevealedIds((prev) => ({ ...prev, [id]: true }));
+            }
+          }
+        });
+      },
+      {
+        threshold: isMobile ? 0.08 : 0.15,
+        rootMargin: isMobile ? '0px 0px -20px 0px' : '0px 0px -50px 0px'
+      }
+    );
+    cardElements.forEach((el) => cardObserver.observe(el));
+
+    // Beyond footer observer
+    const beyondEl = document.querySelector('.pe-beyond-wrap');
+    const beyondObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setBeyondVisible(true);
+      },
+      { threshold: 0.2 }
+    );
+    if (beyondEl) beyondObserver.observe(beyondEl);
+
+    return () => {
+      headerObserver.disconnect();
+      cardObserver.disconnect();
+      beyondObserver.disconnect();
+    };
   }, []);
 
-  // Card reveal stagger
-  useEffect(() => {
-    if (!visible) return;
-    EXPERIENCES.forEach((_, i) => {
-      setTimeout(() => setRevealed(r => ({ ...r, [i]: true })), 200 + i * 150);
-    });
-  }, [visible]);
+  // Spotlight mouse tracker
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    card.style.setProperty('--mouse-x', `${x}px`);
+    card.style.setProperty('--mouse-y', `${y}px`);
+  };
 
   return (
-    <section ref={sectionRef} className="exp-section">
-      <style>{CSS}</style>
+    <section ref={sectionRef} id="experience" className="pe-section">
+      <style>{STYLES}</style>
 
-      {/* Ambient */}
-      <div className="exp-grid" aria-hidden="true" />
-      <div className="exp-glow" aria-hidden="true" />
+      {/* Subtle ambient lighting */}
+      <div className="pe-ambient-glow" aria-hidden="true" />
 
-      <div className="exp-container">
+      <div className="pe-container">
+        {/* Section Header */}
+        <header className={`pe-header ${headerVisible ? 'is-in' : ''}`}>
+          <div className="pe-label-wrap">
+            <span className="pe-label-ping" />
+            <span className="pe-label">EXPERIENCE</span>
+          </div>
+          <h2 className="pe-heading">Where I Turned Learning Into Experience</h2>
+          <p className="pe-sub">
+            A small journey of building, learning, and working on real-world projects.
+          </p>
+        </header>
 
-        {/* Header */}
-        <div className={`exp-header${visible ? ' exp-header--in' : ''}`}>
-          <span className="exp-eyebrow">Work History</span>
-          <h2 className="exp-title">Experience</h2>
-          <p className="exp-subtitle">Building things that matter, end to end.</p>
+        {/* Subtle Vertical Timeline Spine Marker */}
+        <div className={`pe-marker-wrap ${headerVisible ? 'is-in' : ''}`} aria-hidden="true">
+          <div className="pe-marker-dot" />
+          <div className="pe-marker-line" />
         </div>
 
-        {/* Timeline */}
-        <div className="exp-timeline">
-          {EXPERIENCES.map((exp, idx) => (
-            <div
-              key={exp.id}
-              className={`exp-entry${revealed[idx] ? ' exp-entry--in' : ''}`}
-              style={{ transitionDelay: `${idx * 120}ms` }}
-            >
-              {/* Timeline spine: dot + line */}
-              <div className="exp-spine" aria-hidden="true">
-                <div className="exp-spine-dot">
-                  {exp.status === 'active' && <span className="exp-spine-ping" />}
-                </div>
-                {idx < EXPERIENCES.length - 1 && <div className="exp-spine-line" />}
-              </div>
+        {/* Stack of Clean, Spacious Experience Cards */}
+        <div className="pe-cards-list">
+          {EXPERIENCES.map((exp, idx) => {
+            const isRevealed = !!revealedIds[exp.id];
+            const CardTag = exp.link ? 'a' : 'article';
+            const linkProps = exp.link
+              ? {
+                  href: exp.link,
+                  target: '_blank',
+                  rel: 'noopener noreferrer',
+                  'aria-label': `Visit ${exp.company}`,
+                }
+              : {};
 
-              {/* Card */}
-              <div className="exp-card">
-
-                {/* Card top */}
-                <div className="exp-card-top">
-                  {/* Company */}
-                  <div className="exp-company-block">
-                    <a
-                      href={exp.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="exp-company-link"
-                      aria-label={`Visit ${exp.company}`}
-                    >
-                      <div className="exp-logo">
-                        <span className="exp-logo-text">{exp.companyShort}</span>
+            return (
+              <div
+                key={exp.id}
+                data-id={exp.id}
+                className={`pe-card-row ${isRevealed ? 'is-in' : ''}`}
+              >
+                <div
+                  onMouseMove={handleMouseMove}
+                  className={`pe-card-spotlight-wrapper ${exp.link ? 'is-clickable' : ''}`}
+                >
+                  <CardTag {...linkProps} className="pe-card">
+                    {/* Top Row: Company Info & Meta */}
+                    <div className="pe-card-top">
+                      <div className="pe-company-brand">
+                        <div className="pe-logo" aria-hidden="true">
+                          <span>{exp.logoText}</span>
+                        </div>
+                        <div className="pe-title-block">
+                          <div className="pe-company-name-row">
+                            <h3 className="pe-company">{exp.company}</h3>
+                            <span className="pe-badge">{exp.type}</span>
+                          </div>
+                          <p className="pe-role">{exp.role}</p>
+                        </div>
                       </div>
-                      <div>
-                        <span className="exp-company-name">{exp.company}</span>
-                        <span className="exp-company-domain">{exp.domain} ↗</span>
+
+                      {/* Right Meta: Date & Arrow Button */}
+                      <div className="pe-meta-block">
+                        <div className="pe-date-wrap">
+                          {exp.active && <span className="pe-live-pulse" />}
+                          <time className="pe-date">{exp.duration}</time>
+                        </div>
+                        <div className="pe-arrow-btn" aria-hidden="true">
+                          <ArrowUpRight className="pe-arrow-icon" />
+                        </div>
                       </div>
-                    </a>
-                  </div>
-
-                  {/* Period + status */}
-                  <div className="exp-meta">
-                    {exp.status === 'active' && (
-                      <span className="exp-badge exp-badge--active">
-                        <span className="exp-badge-dot" />
-                        Active
-                      </span>
-                    )}
-                    <span className="exp-period">{exp.period}</span>
-                  </div>
-                </div>
-
-                {/* Divider */}
-                <div className="exp-divider" />
-
-                {/* Roles row */}
-                <div className="exp-roles">
-                  {exp.roles.map((role) => (
-                    <div key={role.title} className="exp-role-pill" style={{ '--role-color': role.color } as React.CSSProperties}>
-                      <span className="exp-role-icon" style={{ color: role.color }}>{role.icon}</span>
-                      <div>
-                        <p className="exp-role-title">{role.title}</p>
-                        <p className="exp-role-desc">{role.desc}</p>
-                      </div>
-                      <span className="exp-role-type" style={{ color: role.color }}>{role.type}</span>
                     </div>
-                  ))}
+
+                    {/* Middle: Clean Description */}
+                    <p className="pe-desc">{exp.description}</p>
+
+                    {/* Bottom: Technology Pill Tags */}
+                    <div className="pe-tags">
+                      {exp.technologies.map((tech) => (
+                        <span key={tech} className="pe-tag">
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  </CardTag>
                 </div>
 
-                {/* Highlights */}
-                <div className="exp-highlights">
-                  <p className="exp-highlights-label">— Key Contributions</p>
-                  <div className="exp-highlights-grid">
-                    {exp.highlights.map((h, i) => (
-                      <div
-                        key={i}
-                        className="exp-hl"
-                        style={{ animationDelay: revealed[idx] ? `${300 + i * 60}ms` : '0ms' }}
-                      >
-                        <span className="exp-hl-icon">{h.icon}</span>
-                        <span className="exp-hl-text">{h.text}</span>
-                      </div>
-                    ))}
+                {/* Subtle vertical connector between cards */}
+                {idx < EXPERIENCES.length - 1 && (
+                  <div className="pe-connector" aria-hidden="true">
+                    <div className="pe-connector-line">
+                      <div className="pe-connector-beam" />
+                    </div>
                   </div>
-                </div>
-
-                {/* Tags */}
-                <div className="exp-tags">
-                  {exp.tags.map(tag => (
-                    <span key={tag} className="exp-tag">{tag}</span>
-                  ))}
-                </div>
+                )}
               </div>
+            );
+          })}
+        </div>
+
+        {/* Unique Signature Detail: Extending horizontal line to 'AND BEYOND' */}
+        <div className={`pe-beyond-wrap ${beyondVisible ? 'is-in' : ''}`}>
+          <div className="pe-beyond-line">
+            <div className="pe-beyond-beam" />
+          </div>
+          <div className="pe-beyond-content">
+            <div className="pe-beyond-header">
+              <span className="pe-beyond-dot" />
+              <span className="pe-beyond-title">AND BEYOND</span>
             </div>
-          ))}
+            <p className="pe-beyond-sub">Still learning. Still building.</p>
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-// ─── Styles ────────────────────────────────────────────────────────────────────
-const CSS = `
-/* === SECTION === */
-.exp-section {
+// ─── Theme-Matched Dark Premium SaaS Styles ───────────────────────────────────
+const STYLES = `
+/* Force clean modern sans-serif typography across the whole section */
+.pe-section,
+.pe-section * {
+  box-sizing: border-box;
+  font-family: 'Plus Jakarta Sans', 'Inter', 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+.pe-section {
   position: relative;
-  background: var(--color-background, #080810);
-  padding: 100px 16px 120px;
+  background-color: var(--color-background, #030308);
+  color: #F8FAFC;
+  padding: 120px 24px 140px;
   overflow: hidden;
-}
-.exp-grid {
-  position: absolute; inset: 0; pointer-events: none;
-  background-image:
-    linear-gradient(rgba(56,189,248,0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(56,189,248,0.05) 1px, transparent 1px);
-  background-size: 60px 60px;
-}
-.exp-glow {
-  position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
-  width: min(900px, 100vw); height: 500px; pointer-events: none;
-  background: radial-gradient(ellipse at center, rgba(56,189,248,0.08) 0%, transparent 65%);
-}
-.exp-container {
-  max-width: 900px; margin: 0 auto;
-  position: relative; z-index: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* === HEADER === */
-.exp-header {
-  text-align: center;
-  margin-bottom: 72px;
-  opacity: 0; transform: translateY(24px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
-}
-.exp-header--in { opacity: 1; transform: translateY(0); }
-.exp-eyebrow {
-  display: inline-block;
-  font-family: 'Courier New', monospace;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.45em;
-  text-transform: uppercase;
-  color: #38BDF8;
-  margin-bottom: 12px;
-}
-.exp-title {
-  font-size: clamp(2.4rem, 5vw, 4rem);
-  font-weight: 800; color: #fff;
-  letter-spacing: -0.02em; line-height: 1.1;
-  margin: 0 0 12px;
-}
-.exp-subtitle {
-  font-size: 0.95rem; color: #94A3B8;
-  letter-spacing: 0.02em; margin: 0;
+/* Ambient backlight */
+.pe-ambient-glow {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1000px, 95vw);
+  height: 500px;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, rgba(99, 102, 241, 0.05) 0%, transparent 70%);
 }
 
-/* === TIMELINE === */
-.exp-timeline { display: flex; flex-direction: column; gap: 0; }
-
-.exp-entry {
-  display: grid;
-  grid-template-columns: 32px 1fr;
-  gap: 0 24px;
-  opacity: 0; transform: translateY(32px);
-  transition: opacity 0.65s cubic-bezier(0.22,1,0.36,1), transform 0.65s cubic-bezier(0.22,1,0.36,1);
-}
-.exp-entry--in { opacity: 1; transform: translateY(0); }
-
-/* === SPINE === */
-.exp-spine {
-  display: flex; flex-direction: column; align-items: center;
-  padding-top: 6px;
-}
-.exp-spine-dot {
+.pe-container {
+  max-width: 1000px;
+  margin: 0 auto;
   position: relative;
-  width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0;
-  background: linear-gradient(135deg, #38BDF8, #60A5FA);
-  box-shadow: 0 0 14px rgba(56,189,248,0.8), 0 0 30px rgba(56,189,248,0.3);
   z-index: 1;
 }
-.exp-spine-ping {
-  position: absolute; inset: -4px;
+
+/* === HEADER ENTRANCE === */
+.pe-header {
+  margin-bottom: 36px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.pe-header.is-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.pe-label-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(129, 140, 248, 0.25);
+  margin-bottom: 14px;
+}
+
+.pe-label-ping {
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  border: 1.5px solid rgba(56,189,248,0.6);
-  animation: exp-ping 2s ease-out infinite;
-}
-@keyframes exp-ping {
-  0%   { transform: scale(1); opacity: 0.8; }
-  100% { transform: scale(2); opacity: 0; }
-}
-.exp-spine-line {
-  width: 1px; flex: 1; min-height: 24px; margin-top: 6px;
-  background: linear-gradient(to bottom, rgba(56,189,248,0.4), transparent);
+  background-color: #818CF8;
+  box-shadow: 0 0 8px #818CF8;
 }
 
-/* === CARD === */
-.exp-card {
-  background: rgba(255,255,255,0.035);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 20px;
-  padding: 28px;
-  margin-bottom: 40px;
-  backdrop-filter: blur(12px);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-.exp-card:hover {
-  border-color: rgba(56,189,248,0.4);
-  box-shadow: 0 0 40px rgba(56,189,248,0.12), 0 8px 32px rgba(0,0,0,0.3);
-}
-
-/* === CARD TOP === */
-.exp-card-top {
-  display: flex; flex-wrap: wrap;
-  align-items: flex-start; justify-content: space-between;
-  gap: 16px; margin-bottom: 20px;
-}
-.exp-company-block { display: flex; flex-direction: column; gap: 0; }
-.exp-company-link {
-  display: inline-flex; align-items: center; gap: 12px;
-  text-decoration: none;
-  transition: opacity 0.2s;
-}
-.exp-company-link:hover { opacity: 0.85; }
-.exp-logo {
-  width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  background: rgba(56,189,248,0.15);
-  border: 1px solid rgba(56,189,248,0.4);
-}
-.exp-logo-text {
-  font-size: 0.8rem; font-weight: 900; color: #38BDF8;
-  letter-spacing: 0.05em;
-}
-.exp-company-name {
-  display: block;
-  font-size: 1.15rem; font-weight: 800; color: #FFFFFF;
-  letter-spacing: 0.05em; line-height: 1.2;
-}
-.exp-company-domain {
-  display: block;
-  font-size: 0.75rem; color: #38BDF8;
-  font-weight: 600;
-  letter-spacing: 0.08em; margin-top: 3px;
-  font-family: 'Courier New', monospace;
-}
-.exp-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
-.exp-badge {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 4px 10px; border-radius: 20px;
-  background: rgba(74,222,128,0.12);
-  border: 1px solid rgba(74,222,128,0.4);
-  font-size: 0.68rem; font-weight: 600;
-  color: #4ADE80; letter-spacing: 0.15em; text-transform: uppercase;
-}
-.exp-badge-dot {
-  width: 6px; height: 6px; border-radius: 50%; background: #4ADE80;
-  box-shadow: 0 0 8px rgba(74,222,128,0.9);
-  animation: exp-ping 1.5s ease-out infinite;
-}
-.exp-period {
-  font-family: 'Courier New', monospace;
-  font-size: 0.75rem; color: #94A3B8; letter-spacing: 0.1em;
-}
-
-/* === DIVIDER === */
-.exp-divider {
-  height: 1px;
-  background: linear-gradient(90deg, rgba(56,189,248,0.3), rgba(255,255,255,0.1), rgba(251,146,60,0.2));
-  margin-bottom: 20px;
-}
-
-/* === ROLES === */
-.exp-roles {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 10px; margin-bottom: 24px;
-}
-.exp-role-pill {
-  display: flex; align-items: center; gap: 12px;
-  padding: 14px 16px; border-radius: 14px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.1);
-  transition: border-color 0.25s ease, background 0.25s ease;
-}
-.exp-role-pill:hover {
-  background: rgba(255,255,255,0.07);
-  border-color: color-mix(in srgb, var(--role-color) 50%, transparent);
-}
-.exp-role-icon {
-  width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  background: color-mix(in srgb, var(--role-color) 18%, transparent);
-}
-.exp-role-title {
-  font-size: 0.95rem; font-weight: 700; color: #FFFFFF;
-  margin: 0 0 2px;
-}
-.exp-role-desc {
-  font-size: 0.72rem; color: #94A3B8;
-  margin: 0; letter-spacing: 0.02em;
-}
-.exp-role-type {
-  margin-left: auto; flex-shrink: 0;
-  font-size: 0.6rem; font-weight: 700;
-  letter-spacing: 0.18em; text-transform: uppercase;
-  font-family: 'Courier New', monospace;
-}
-
-/* === HIGHLIGHTS === */
-.exp-highlights { margin-bottom: 22px; }
-.exp-highlights-label {
-  font-family: 'Courier New', monospace;
-  font-size: 0.65rem;
+.pe-label {
+  font-size: 0.7rem;
   font-weight: 700;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.2em;
+  color: #818CF8;
   text-transform: uppercase;
-  color: #38BDF8;
+}
+
+.pe-heading {
+  font-size: clamp(2rem, 4vw, 3.1rem);
+  font-weight: 800;
+  color: #FFFFFF;
+  letter-spacing: -0.025em;
+  line-height: 1.18;
   margin: 0 0 12px;
 }
-.exp-highlights-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+
+.pe-sub {
+  font-size: 1.02rem;
+  font-weight: 400;
+  color: #94A3B8;
+  line-height: 1.6;
+  max-width: 580px;
+  margin: 0;
+}
+
+/* === SUBTLE VERTICAL DATE MARKER === */
+.pe-marker-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: 28px;
+  margin-bottom: 12px;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.6s ease 0.1s, transform 0.6s ease 0.1s;
+}
+.pe-marker-wrap.is-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.pe-marker-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #818CF8;
+  box-shadow: 0 0 8px rgba(129, 140, 248, 0.8);
+  margin-left: -2.5px;
+}
+
+.pe-marker-line {
+  width: 1px;
+  height: 24px;
+  background: linear-gradient(180deg, #818CF8, rgba(255, 255, 255, 0.1));
+}
+
+/* === CARDS LIST === */
+.pe-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.pe-card-row {
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transform: translateY(38px) scale(0.985);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+.pe-card-row.is-in {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.pe-connector {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 28px;
+  margin-left: 44px;
+}
+
+.pe-connector-line {
+  position: relative;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(129, 140, 248, 0.45), rgba(255, 255, 255, 0.08));
+  overflow: hidden;
+}
+
+.pe-connector-beam {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60%;
+  background: linear-gradient(180deg, transparent, #818CF8, transparent);
+  animation: pe-stream-down 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes pe-stream-down {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(220%); }
+}
+
+/* === CARD SPOTLIGHT & CONTAINER === */
+.pe-card-spotlight-wrapper {
+  position: relative;
+  border-radius: 18px;
+  padding: 1px;
+  background: rgba(255, 255, 255, 0.07);
+  transition: background 0.3s ease, transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pe-card-spotlight-wrapper:hover {
+  background: linear-gradient(135deg, rgba(129, 140, 248, 0.45) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(99, 102, 241, 0.35) 100%);
+  transform: translateY(-4px);
+}
+
+.pe-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 26px 30px;
+  border-radius: 17px;
+  background-color: #080B14;
+  background-image: radial-gradient(400px circle at var(--mouse-x, -500px) var(--mouse-y, -500px), rgba(99, 102, 241, 0.12), transparent 70%);
+  text-decoration: none;
+  color: inherit;
+  overflow: hidden;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+  transition: background-color 260ms ease, box-shadow 260ms ease;
+}
+
+.pe-card-spotlight-wrapper:hover .pe-card {
+  background-color: #0B0F1C;
+  box-shadow: 0 16px 36px -10px rgba(99, 102, 241, 0.15), 0 4px 14px rgba(0, 0, 0, 0.6);
+}
+
+/* === CARD TOP ROW === */
+.pe-card-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 20px;
+}
+
+.pe-company-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.pe-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  background-color: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(129, 140, 248, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 260ms ease;
+}
+
+.pe-card-spotlight-wrapper:hover .pe-logo {
+  background-color: rgba(99, 102, 241, 0.22);
+  border-color: rgba(129, 140, 248, 0.6);
+  transform: scale(1.04);
+}
+
+.pe-logo span {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #818CF8;
+  line-height: 1;
+}
+
+.pe-title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pe-company-name-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+}
+
+.pe-company {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 0;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
+
+.pe-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #818CF8;
+  background-color: rgba(99, 102, 241, 0.12);
+  padding: 3px 8px;
+  border-radius: 99px;
+  border: 1px solid rgba(129, 140, 248, 0.25);
+  line-height: 1;
+}
+
+.pe-role {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #94A3B8;
+  margin: 0;
+  line-height: 1.35;
+}
+
+/* Meta: Date & Arrow */
+.pe-meta-block {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
+}
+
+.pe-date-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.pe-live-pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #34D399;
+  box-shadow: 0 0 8px #34D399;
+  animation: pe-radar 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes pe-radar {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.4); opacity: 1; box-shadow: 0 0 12px #34D399; }
+  100% { transform: scale(0.9); opacity: 0.8; }
+}
+
+.pe-date {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #64748B;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  white-space: nowrap;
+}
+
+.pe-arrow-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 260ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pe-arrow-icon {
+  width: 15px;
+  height: 15px;
+  color: #94A3B8;
+  transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1), color 260ms ease;
+}
+
+.pe-card-spotlight-wrapper:hover .pe-arrow-btn {
+  background-color: rgba(99, 102, 241, 0.25);
+  border-color: rgba(129, 140, 248, 0.5);
+}
+
+.pe-card-spotlight-wrapper:hover .pe-arrow-icon {
+  color: #818CF8;
+  transform: translate(3px, -3px);
+}
+
+/* === CARD MIDDLE: DESCRIPTION === */
+.pe-desc {
+  font-size: 0.93rem;
+  line-height: 1.65;
+  color: #CBD5E1;
+  margin: 0;
+  max-width: 820px;
+}
+
+/* === CARD BOTTOM: TECHNOLOGY TAGS === */
+.pe-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 2px;
+}
+
+.pe-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 99px;
+  background-color: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: #94A3B8;
+  transition: all 0.2s ease;
+}
+
+.pe-card-spotlight-wrapper:hover .pe-tag {
+  color: #E2E8F0;
+  background-color: rgba(255, 255, 255, 0.06);
+  border-color: rgba(129, 140, 248, 0.25);
+}
+
+/* === UNIQUE SIGNATURE DETAIL: AND BEYOND === */
+.pe-beyond-wrap {
+  display: flex;
+  align-items: center;
+  margin-top: 48px;
+  padding-left: 28px;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.7s ease 0.4s, transform 0.7s ease 0.4s;
+}
+.pe-beyond-wrap.is-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.pe-beyond-line {
+  position: relative;
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin-right: 28px;
+  overflow: hidden;
+}
+
+.pe-beyond-beam {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, #818CF8, transparent);
+  animation: pe-laser 3.5s ease-in-out infinite;
+}
+
+@keyframes pe-laser {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(350%); }
+}
+
+.pe-beyond-content {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.pe-beyond-header {
+  display: inline-flex;
+  align-items: center;
   gap: 8px;
 }
-.exp-hl {
-  display: flex; align-items: flex-start; gap: 10px;
-  padding: 11px 13px; border-radius: 10px;
-  background: rgba(255,255,255,0.035);
-  border: 1px solid rgba(255,255,255,0.08);
-  opacity: 0; animation: exp-hlIn 0.4s ease both;
-  transition: background 0.2s ease, border-color 0.2s ease;
-}
-.exp-hl:hover {
-  background: rgba(56,189,248,0.08);
-  border-color: rgba(56,189,248,0.25);
-}
-@keyframes exp-hlIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.exp-hl-icon { font-size: 0.95rem; flex-shrink: 0; margin-top: 1px; line-height: 1; }
-.exp-hl-text {
-  font-size: 0.82rem; color: #E2E8F0; line-height: 1.5;
-  letter-spacing: 0.01em;
+
+.pe-beyond-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #818CF8;
+  box-shadow: 0 0 10px #818CF8;
+  animation: pe-dot-pulse 2s infinite;
 }
 
-/* === TAGS === */
-.exp-tags {
-  display: flex; flex-wrap: wrap; gap: 6px;
-  padding-top: 18px;
-  border-top: 1px solid rgba(255,255,255,0.08);
-}
-.exp-tag {
-  padding: 4px 10px; border-radius: 20px;
-  font-size: 0.68rem; font-weight: 500;
-  color: #CBD5E1;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  letter-spacing: 0.06em;
-  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-  cursor: default;
-}
-.exp-tag:hover {
-  color: #38BDF8;
-  background: rgba(56,189,248,0.12);
-  border-color: rgba(56,189,248,0.4);
+@keyframes pe-dot-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.4); opacity: 1; box-shadow: 0 0 14px #818CF8; }
 }
 
-/* Responsive tweaks */
-@media (max-width: 600px) {
-  .exp-card { padding: 20px 16px; }
-  .exp-card-top { flex-direction: column; }
-  .exp-meta { align-items: flex-start; }
-  .exp-entry { grid-template-columns: 24px 1fr; gap: 0 16px; }
+.pe-beyond-title {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: #FFFFFF;
+  text-transform: uppercase;
+}
+
+.pe-beyond-sub {
+  font-size: 0.84rem;
+  color: #64748B;
+  margin: 3px 0 0;
+  line-height: 1.4;
+}
+
+/* === RESPONSIVE LAYOUT & ANIMATIONS === */
+@media (max-width: 768px) {
+  .pe-section {
+    padding: 80px 16px 100px;
+  }
+
+  .pe-card {
+    padding: 22px 20px;
+    gap: 14px;
+  }
+
+  .pe-card-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pe-meta-block {
+    width: 100%;
+    margin-left: 0;
+    justify-content: space-between;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .pe-connector {
+    height: 32px;
+    margin-left: 36px;
+  }
+
+  /* Entrance reveal animation for cards when scrolled into view */
+  .pe-card-row {
+    transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .pe-card-row.is-in {
+    animation: pe-mobile-card-reveal 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  @keyframes pe-mobile-card-reveal {
+    0% {
+      opacity: 0;
+      transform: translateY(22px) scale(0.98);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* Ambient border glow shimmer for revealed cards on mobile touchscreens */
+  .pe-card-row.is-in .pe-card-spotlight-wrapper {
+    background: linear-gradient(
+      135deg,
+      rgba(129, 140, 248, 0.4) 0%,
+      rgba(255, 255, 255, 0.08) 50%,
+      rgba(99, 102, 241, 0.35) 100%
+    );
+    background-size: 200% 200%;
+    animation: pe-mobile-border-shift 5s ease-in-out infinite;
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.6), 0 0 16px -4px rgba(99, 102, 241, 0.22);
+  }
+
+  @keyframes pe-mobile-border-shift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  /* Top hairline glowing accent across revealed cards */
+  .pe-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(129, 140, 248, 0.7), transparent);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  .pe-card-row.is-in .pe-card::after {
+    opacity: 1;
+    animation: pe-mobile-hairline 3.2s ease-in-out infinite;
+  }
+
+  @keyframes pe-mobile-hairline {
+    0%, 100% { opacity: 0.35; }
+    50% { opacity: 0.9; }
+  }
+
+  /* Logo Monogram subtle breathing pulse on mobile viewports */
+  .pe-card-row.is-in .pe-logo {
+    animation: pe-mobile-logo-float 3.5s ease-in-out infinite;
+  }
+  .pe-card-row:nth-child(2).is-in .pe-logo {
+    animation-delay: 0.7s;
+  }
+  .pe-card-row:nth-child(3).is-in .pe-logo {
+    animation-delay: 1.4s;
+  }
+
+  @keyframes pe-mobile-logo-float {
+    0%, 100% {
+      transform: translateY(0) scale(1);
+      border-color: rgba(129, 140, 248, 0.3);
+      box-shadow: 0 0 0 rgba(99, 102, 241, 0);
+    }
+    50% {
+      transform: translateY(-2px) scale(1.03);
+      border-color: rgba(129, 140, 248, 0.6);
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+    }
+  }
+
+  /* Staggered entrance pop for technology tags on mobile */
+  .pe-card-row.is-in .pe-tag {
+    animation: pe-mobile-tag-enter 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .pe-card-row.is-in .pe-tag:nth-child(1) { animation-delay: 0.1s; }
+  .pe-card-row.is-in .pe-tag:nth-child(2) { animation-delay: 0.17s; }
+  .pe-card-row.is-in .pe-tag:nth-child(3) { animation-delay: 0.24s; }
+  .pe-card-row.is-in .pe-tag:nth-child(4) { animation-delay: 0.31s; }
+
+  @keyframes pe-mobile-tag-enter {
+    0% {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Immediate tactile touch feedback when tapping cards on mobile */
+  .pe-card-spotlight-wrapper:active {
+    transform: scale(0.985);
+    transition: transform 120ms ease;
+  }
+
+  .pe-card-spotlight-wrapper:active .pe-card {
+    background-color: #0b1020;
+    box-shadow: 0 6px 20px -2px rgba(99, 102, 241, 0.25);
+  }
+
+  .pe-card-spotlight-wrapper:active .pe-arrow-btn {
+    background-color: rgba(99, 102, 241, 0.3);
+    border-color: rgba(129, 140, 248, 0.6);
+    transform: translate(2px, -2px);
+  }
+
+  .pe-card-spotlight-wrapper:active .pe-arrow-icon {
+    color: #818CF8;
+    transform: translate(2px, -2px);
+  }
+
+  .pe-beyond-wrap {
+    padding-left: 0;
+    margin-top: 36px;
+  }
+
+  .pe-beyond-line {
+    margin-right: 16px;
+  }
 }
 `;

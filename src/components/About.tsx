@@ -120,8 +120,20 @@ function IDCard() {
     };
     const onTMove = (e: TouchEvent) => {
       if (phase.current !== 'drag') return;
-      e.preventDefault();
       const t = e.touches[0];
+      const deltaX = Math.abs(t.clientX - touchStartPos.current.x);
+      const deltaY = Math.abs(t.clientY - touchStartPos.current.y);
+
+      // If user is swiping vertically (page scrolling), release card so page scrolls freely
+      if (!isVerticalScroll.current && deltaY > deltaX * 1.15 && deltaY > 6) {
+        isVerticalScroll.current = true;
+        phase.current = 'idle';
+        doSpring();
+        return;
+      }
+      if (isVerticalScroll.current) return;
+
+      if (e.cancelable) e.preventDefault();
       const rawX = t.clientX - grab.current.mx;
       const rawY = t.clientY - grab.current.my;
       const tx = grab.current.cx + rawX * DRAG_SCALE;
@@ -131,6 +143,7 @@ function IDCard() {
       apply(tx, ty);
     };
     const onTEnd = () => {
+      isVerticalScroll.current = false;
       if (phase.current !== 'drag') return;
       vel.current.x *= 0.25;
       vel.current.y *= 0.25;
@@ -151,6 +164,9 @@ function IDCard() {
     };
   }, []);
 
+  const touchStartPos = useRef({ x: 0, y: 0 });
+  const isVerticalScroll = useRef(false);
+
   const onMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
     if (raf.current) cancelAnimationFrame(raf.current);
@@ -160,8 +176,10 @@ function IDCard() {
     document.body.style.cursor = 'grabbing';
   };
   const onTouchStart = (e: React.TouchEvent) => {
-    if (raf.current) cancelAnimationFrame(raf.current);
     const t = e.touches[0];
+    touchStartPos.current = { x: t.clientX, y: t.clientY };
+    isVerticalScroll.current = false;
+    if (raf.current) cancelAnimationFrame(raf.current);
     phase.current = 'drag';
     grab.current = { mx: t.clientX, my: t.clientY, cx: pos.current.x, cy: pos.current.y };
     vel.current = { x: 0, y: 0 };
@@ -222,7 +240,7 @@ function IDCard() {
           ref={cardRef}
           onMouseDown={onMouseDown}
           onTouchStart={onTouchStart}
-          style={{ cursor: 'grab', willChange: 'transform', touchAction: 'none', position: 'relative' }}
+          style={{ cursor: 'grab', willChange: 'transform', touchAction: 'pan-y', position: 'relative' }}
         >
           {/* metal clip — INSIDE cardRef so it moves + rotates with the card */}
           <div className="absolute left-1/2 -translate-x-1/2 pointer-events-none z-20 flex flex-col items-center"
@@ -268,7 +286,7 @@ function IDCard() {
               </div>
 
               {/* name + role */}
-              <div className="text-center px-5 pt-4 pb-5">
+              <div className="text-center px-5 pt-4 pb-4">
                 <h3 className="text-white font-bold text-xl sm:text-2xl tracking-wide">Madhu Kuruva</h3>
                 <p className="mt-1.5 text-sm tracking-[0.2em] uppercase font-semibold
                               bg-gradient-to-r from-accent to-accentHover bg-clip-text text-transparent">
@@ -296,13 +314,15 @@ function IDCard() {
 
               </div>
 
+              {/* Single responsive swipe indicator on card */}
+              <div className="sm:hidden flex items-center justify-center gap-1.5 py-2 bg-black/40 border-t border-white/5 text-[10px] text-gray-400 font-mono tracking-wider">
+                <span className="text-accent animate-pulse">↕</span>
+                <span>SWIPE TO SCROLL</span>
+              </div>
+
               <div className="h-1.5 bg-gradient-to-r from-accent via-accentHover to-accent" />
             </div>
           </div>
-
-          <p className="text-center text-gray-700 text-[10px] tracking-widest mt-4 animate-pulse pointer-events-none select-none">
-            ✦ grab &amp; swing ✦
-          </p>
         </div>
       </div>
     </div>
@@ -332,7 +352,7 @@ export default function About() {
   const education = [
     {
       year: '2026', title: 'BTech in Computer Science',
-      institute: 'Malla Reddy Engineering College And Management Science', status: 'Current'
+      institute: 'Malla Reddy Engineering College And Management Science', status: 'Completed'
     },
     {
       year: '2023', title: 'Diploma – ECE Stream',

@@ -3,9 +3,10 @@ import CinematicIntro from './components/CinematicIntro';
 import Hero from './components/Hero';
 import ScrollAnimations from './components/ScrollAnimations';
 
+import Experience from './components/Experience';
+
 // Lazy-load below-the-fold sections
 const About = lazy(() => import('./components/About'));
-const Experience = lazy(() => import('./components/Experience'));
 const Skills = lazy(() => import('./components/Skills'));
 const Portfolio = lazy(() => import('./components/Portfolio'));
 const Certifications = lazy(() => import('./components/Certifications'));
