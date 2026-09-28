@@ -124,15 +124,39 @@ export default function Hero() {
     };
   }, []);
 
+  // Defer heavy 14MB background video loading until after critical paint
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const loadVideo = () => {
+      if (!video.src) {
+        video.src = heroVideo;
+        video.load();
+        video.play().catch(() => {});
+      }
+    };
+
+    if ('requestIdleCallback' in window) {
+      const id = (window as any).requestIdleCallback(() => {
+        setTimeout(loadVideo, 1200);
+      });
+      return () => (window as any).cancelIdleCallback(id);
+    } else {
+      const timer = setTimeout(loadVideo, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
   return (
-    <section ref={sectionRef} className="relative h-screen w-full overflow-hidden bg-black">
+    <section ref={sectionRef} id="hero" className="relative h-screen w-full overflow-hidden bg-black">
       <video
         ref={videoRef}
-        autoPlay loop muted playsInline
+        loop muted playsInline preload="none"
         className="absolute inset-0 w-full h-full object-cover opacity-60"
         style={{ objectPosition: 'center 20%' }}
       >
-        <source src={heroVideo} type="video/mp4" />
+        <track kind="captions" src="" label="English" default />
       </video>
 
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/60" />

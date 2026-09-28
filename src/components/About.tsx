@@ -278,9 +278,14 @@ function IDCard() {
                     border: '1px solid var(--color-border)'
                   }}>
                   <img
-                    src={profilePic} alt="Madhu Kuruva"
+                    src={profilePic}
+                    alt="Madhu Kuruva"
+                    width={400}
+                    height={533}
                     className="w-full h-full object-cover object-top pointer-events-none"
-                    draggable={false} loading="eager"
+                    draggable={false}
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
               </div>
@@ -367,6 +372,7 @@ export default function About() {
   return (
     <section
       ref={sectionRef}
+      id="about"
       className="bg-background px-4 sm:px-6 relative"
       style={{ paddingTop: 0, paddingBottom: '6rem', overflow: 'visible' }}
     >

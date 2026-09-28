@@ -2,16 +2,6 @@
 <html lang="en">
 
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-MJBS7YSCL1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-
-    gtag('config', 'G-MJBS7YSCL1');
-  </script>
-
   <meta charset="UTF-8" />
 
   <!-- ============================================================
@@ -115,28 +105,58 @@
   </script>
 
   <!-- ============================================================
-       PERFORMANCE — RESOURCE HINTS
+       PERFORMANCE — RESOURCE HINTS & NON-BLOCKING FONTS
   ============================================================ -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.simpleicons.org" />
   <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-  <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
-  <link rel="preload" href="/src/assets/madhu.jpeg" as="image" type="image/jpeg" fetchpriority="high" />
+  <link rel="dns-prefetch" href="https://cdn.simpleicons.org" />
+
+  <!-- Asynchronous Google Fonts (non-render-blocking) -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" media="print" onload="this.media='all'" />
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" />
+  </noscript>
 
   <!-- ============================================================
-       GOOGLE TAG MANAGER (async — non-blocking)
+       GOOGLE TAG MANAGER & GA (deferred — zero main-thread blocking)
   ============================================================ -->
-  <script>(function (w, d, s, l, i) {
-      w[l] = w[l] || []; w[l].push({
-        'gtm.start': new Date().getTime(), event: 'gtm.js'
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    var _gtmLoaded = false;
+    function _loadAnalytics() {
+      if (_gtmLoaded) return;
+      _gtmLoaded = true;
+      var events = ['scroll', 'mousemove', 'touchstart', 'keydown'];
+      events.forEach(function(e) {
+        window.removeEventListener(e, _loadAnalytics, { passive: true });
       });
-      var f = d.getElementsByTagName(s)[0],
-        j = d.createElement(s),
-        dl = l !== 'dataLayer' ? '&l=' + l : '';
-      j.async = true;
-      j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-      f.parentNode.insertBefore(j, f);
-    })(window, document, 'script', 'dataLayer', 'GTM-PVJ7XGS3');</script>
+
+      // Load GTM
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || []; w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+        var f = d.getElementsByTagName(s)[0], j = d.createElement(s), dl = l !== 'dataLayer' ? '&l=' + l : '';
+        j.async = true; j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, 'script', 'dataLayer', 'GTM-PVJ7XGS3');
+    }
+
+    var _userEvents = ['scroll', 'mousemove', 'touchstart', 'keydown'];
+    _userEvents.forEach(function(e) {
+      window.addEventListener(e, _loadAnalytics, { once: true, passive: true });
+    });
+
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(function() { setTimeout(_loadAnalytics, 3000); });
+    } else {
+      setTimeout(_loadAnalytics, 3500);
+    }
+  </script>
   <!-- End Google Tag Manager -->
 
 </head>

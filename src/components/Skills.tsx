@@ -48,6 +48,7 @@ export default function Skills() {
   return (
     <section
       ref={sectionRef}
+      id="skills"
       className="relative min-h-screen bg-background py-20 px-4 sm:px-6 overflow-hidden"
     >
       {/* Floating tech logos as minimal background decoration */}

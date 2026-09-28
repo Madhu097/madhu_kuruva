@@ -121,7 +121,7 @@ export default function Contact() {
   ];
 
   return (
-    <section ref={sectionRef} className="min-h-screen bg-background pt-16 sm:pt-24 md:pt-32 pb-4 sm:pb-6 px-4 sm:px-6 relative overflow-hidden flex flex-col justify-between">
+    <section ref={sectionRef} id="contact" className="min-h-screen bg-background pt-16 sm:pt-24 md:pt-32 pb-4 sm:pb-6 px-4 sm:px-6 relative overflow-hidden flex flex-col justify-between">
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-20 left-1/4 w-64 sm:w-96 h-64 sm:h-96 bg-accent rounded-full blur-[150px]" />
         <div className="absolute bottom-20 right-1/4 w-64 sm:w-96 h-64 sm:h-96 bg-accentHover rounded-full blur-[150px]" />

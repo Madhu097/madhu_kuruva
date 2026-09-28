@@ -16,23 +16,30 @@ async function main() {
     process.exit(0);
   }
 
-  let sharp;
-  try {
-    sharp = (await import('sharp')).default;
-  } catch (err) {
-    console.warn('\n[Warning] "sharp" library is not installed. Skipping WebP frame optimization.');
-    console.warn('To run optimization locally, install sharp: npm install -D sharp');
-    console.warn('Then run: npm run optimize-frames\n');
-    process.exit(0);
-  }
-
   const files = fs.readdirSync(FRAMES_DIR);
   const pngFiles = files
     .filter(f => f.endsWith('.png') && f.startsWith('ezgif-frame-'))
     .sort();
-  
-  if (pngFiles.length === 0) {
-    console.log('No matching PNG frames found in public/frames/.');
+
+  // Immediately remove obsolete PNG frames when corresponding WebP already exists
+  let cleaned = 0;
+  for (const file of pngFiles) {
+    const inputPath = path.join(FRAMES_DIR, file);
+    const webpPath = path.join(FRAMES_DIR, file.replace(/\.png$/, '.webp'));
+    if (fs.existsSync(webpPath)) {
+      try {
+        fs.unlinkSync(inputPath);
+        cleaned++;
+      } catch (e) {}
+    }
+  }
+  if (cleaned > 0) {
+    console.log(`Successfully removed ${cleaned} obsolete PNG frames.`);
+  }
+
+  const remainingPngs = fs.readdirSync(FRAMES_DIR).filter(f => f.endsWith('.png') && f.startsWith('ezgif-frame-'));
+  if (remainingPngs.length === 0) {
+    console.log('All frames are WebP. No PNG frames remaining.');
     return;
   }
 
@@ -47,6 +54,9 @@ async function main() {
     
     if (fs.existsSync(outputPath)) {
       skipped++;
+      try {
+        fs.unlinkSync(inputPath);
+      } catch (e) {}
       continue;
     }
     

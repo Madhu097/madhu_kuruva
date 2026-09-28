@@ -1,9 +1,11 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState, useRef } from 'react';
 import CinematicIntro from './components/CinematicIntro';
 import Hero from './components/Hero';
 import ScrollAnimations from './components/ScrollAnimations';
 
 import Experience from './components/Experience';
+import RightNavbar from './components/RightNavbar';
+import CliChatbot from './components/CliChatbot';
 
 // Lazy-load below-the-fold sections
 const About = lazy(() => import('./components/About'));
@@ -12,24 +14,62 @@ const Portfolio = lazy(() => import('./components/Portfolio'));
 const Certifications = lazy(() => import('./components/Certifications'));
 const Contact = lazy(() => import('./components/Contact'));
 
-/** Minimal preloader — dark overlay + thin progress bar, gone in ~1s */
+/** Viewport-based lazy section wrapper: only evaluates JS when scrolled near, or immediately on nav click */
+function LazySection({ id, children, minHeight = '500px' }: { id: string; children: React.ReactNode; minHeight?: string }) {
+  const [inView, setInView] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '600px 0px' }
+    );
+    observer.observe(el);
+
+    const onReveal = (e: Event) => {
+      const custom = e as CustomEvent<string>;
+      if (custom.detail === id) {
+        setInView(true);
+      }
+    };
+    window.addEventListener('reveal-section', onReveal);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('reveal-section', onReveal);
+    };
+  }, [id]);
+
+  return (
+    <div id={id} ref={ref} style={{ minHeight: inView ? undefined : minHeight }}>
+      {inView ? children : null}
+    </div>
+  );
+}
+
+/** Minimal preloader — ultra-fast ramp so it never blocks FCP or Lighthouse */
 function MinimalLoader() {
   const [progress, setProgress] = useState(0);
   const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
-    // Fast progress ramp: 0→100 in ~900ms
     let p = 0;
     const id = setInterval(() => {
-      p += Math.random() * 18 + 8;
+      p += Math.random() * 25 + 20;
       if (p >= 100) {
         p = 100;
         clearInterval(id);
-        // Fade out after bar completes
-        setTimeout(() => setHidden(true), 300);
+        setTimeout(() => setHidden(true), 150);
       }
       setProgress(p);
-    }, 60);
+    }, 40);
     return () => clearInterval(id);
   }, []);
 
@@ -44,7 +84,7 @@ function MinimalLoader() {
         alignItems: 'center', justifyContent: 'center',
         gap: '24px',
         opacity: progress >= 100 ? 0 : 1,
-        transition: 'opacity 0.3s ease',
+        transition: 'opacity 0.25s ease',
         pointerEvents: progress >= 100 ? 'none' : 'all',
       }}
     >
@@ -61,7 +101,7 @@ function MinimalLoader() {
             width: `${progress}%`,
             background: 'linear-gradient(90deg, #0A84FF, #409CFF)',
             borderRadius: '99px',
-            transition: 'width 0.06s linear',
+            transition: 'width 0.05s linear',
           }}
         />
       </div>
@@ -84,11 +124,21 @@ function App() {
       <Suspense fallback={null}>
         <About />
         <Experience />
-        <Skills />
-        <Portfolio />
-        <Certifications />
-        <Contact />
+        <LazySection id="skills" minHeight="600px">
+          <Skills />
+        </LazySection>
+        <LazySection id="portfolio" minHeight="700px">
+          <Portfolio />
+        </LazySection>
+        <LazySection id="certifications" minHeight="650px">
+          <Certifications />
+        </LazySection>
+        <LazySection id="contact" minHeight="500px">
+          <Contact />
+        </LazySection>
       </Suspense>
+      <RightNavbar />
+      <CliChatbot />
     </div>
   );
 }

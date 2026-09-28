@@ -19,6 +19,7 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom'],
           icons: ['lucide-react'],
+          ogl: ['ogl'],
           about: ['./src/components/About'],
           experience: ['./src/components/Experience'],
           skills: ['./src/components/Skills'],

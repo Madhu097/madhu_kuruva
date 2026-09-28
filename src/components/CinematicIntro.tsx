@@ -78,6 +78,9 @@ export default function CinematicIntro() {
   const welcomeRef = useRef<HTMLDivElement>(null);
   const lastOpacitiesRef = useRef<number[]>(new Array(6).fill(-999));
   const lastWelcomeOpRef = useRef<number>(-999);
+  const preloadUpcomingRef = useRef<((startIdx: number, count?: number) => void) | null>(null);
+  const scrollHintRef = useRef<HTMLDivElement>(null);
+  const lastHintOpRef = useRef<number>(-999);
 
   // ── 1. Removed Scroll to top on mount to fix refresh behavior ────────────────
   useEffect(() => {
@@ -100,23 +103,33 @@ export default function CinematicIntro() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return false;
 
-    // Walk back to nearest loaded frame
+    // Check if the exact target frame is loaded
     let img: HTMLImageElement | null = null;
     const currentFrame = framesRef.current[frameIdx];
-    
+
     if (currentFrame && loadedRef.current[frameIdx] && currentFrame.naturalWidth > 0) {
       img = currentFrame;
-    } else if (lastDrawnImgRef.current) {
-      img = lastDrawnImgRef.current;
     } else {
-      let si = frameIdx;
-      while (si >= 0) {
-        const c = framesRef.current[si];
-        if (c && loadedRef.current[si] && c.naturalWidth > 0) { img = c; break; }
-        si--;
+      // Missing frame: trigger priority preload for this and nearby frames
+      preloadUpcomingRef.current?.(frameIdx, 20);
+
+      // Search bidirectionally for nearest loaded frame to avoid visual jump
+      let bestImg: HTMLImageElement | null = null;
+      for (let offset = 1; offset < 30; offset++) {
+        const back = frameIdx - offset;
+        if (back >= 0 && loadedRef.current[back] && framesRef.current[back]?.naturalWidth! > 0) {
+          bestImg = framesRef.current[back];
+          break;
+        }
+        const fwd = frameIdx + offset;
+        if (fwd < TOTAL_FRAMES && loadedRef.current[fwd] && framesRef.current[fwd]?.naturalWidth! > 0) {
+          bestImg = framesRef.current[fwd];
+          break;
+        }
       }
+      img = bestImg || lastDrawnImgRef.current;
     }
-    
+
     if (!img) return false;
     lastDrawnImgRef.current = img;
 
@@ -181,7 +194,7 @@ export default function CinematicIntro() {
   const tick = useCallback((now: number) => {
     const tier = getDeviceTier();
     const mobile = tier === 'mobile';
-    const lerpFac = mobile ? 0.28 : 0.24; // Faster catch-up speed for responsive scroll
+    const lerpFac = mobile ? 0.35 : 0.30; // Butter-smooth responsive scroll tracking
 
     // Smooth progress
     smoothPRef.current = lerp(smoothPRef.current, rawPRef.current, lerpFac);
@@ -203,8 +216,14 @@ export default function CinematicIntro() {
     if (canDraw && (frameIdx !== lastDrawnRef.current || dirtyRef.current)) {
       const ok = drawFrame(frameIdx, p, mobile);
       if (ok) {
-        lastDrawnRef.current = frameIdx;
-        dirtyRef.current = false;
+        const isExact = loadedRef.current[frameIdx] && framesRef.current[frameIdx] === lastDrawnImgRef.current;
+        if (isExact) {
+          lastDrawnRef.current = frameIdx;
+          dirtyRef.current = false;
+        } else {
+          // Force redraw once the real frame loads
+          lastDrawnRef.current = -1;
+        }
         lastDrawTime.current = now;
       }
     }
@@ -250,6 +269,19 @@ export default function CinematicIntro() {
         wEl.style.opacity = op.toFixed(3);
         wEl.style.transform = `translateY(${ty.toFixed(1)}px)`;
         lastWelcomeOpRef.current = op;
+      }
+    }
+
+    // First frame scroll prompt: visible on initial frames (frameIdx <= 1), removes after 2nd frame
+    const hintEl = scrollHintRef.current;
+    if (hintEl) {
+      const showHint = frameIdx <= 1;
+      const targetOp = showHint ? 1 : 0;
+      if (lastHintOpRef.current !== targetOp) {
+        hintEl.style.opacity = String(targetOp);
+        hintEl.style.transform = `translateX(-50%) translateY(${showHint ? 0 : 8}px)`;
+        hintEl.style.pointerEvents = showHint ? 'auto' : 'none';
+        lastHintOpRef.current = targetOp;
       }
     }
 
@@ -305,6 +337,11 @@ export default function CinematicIntro() {
       );
       const denom = wrapHRef.current - window.innerHeight;
       rawPRef.current = denom > 0 ? scrolled / denom : 0;
+
+      // Preload next batch of frames just-in-time ahead of scroll position
+      const currentIdx = Math.floor(rawPRef.current * (TOTAL_FRAMES - 1));
+      preloadUpcomingRef.current?.(currentIdx, 20);
+
       wakeUpLoop();
     };
 
@@ -355,66 +392,39 @@ export default function CinematicIntro() {
     const frames = framesRef.current;
     const loaded = loadedRef.current;
 
-    // Helper to asynchronously decode images in background before marking them loaded
+    // Helper to mark images loaded and trigger redraw without blocking image decoders
     const markLoaded = (img: HTMLImageElement, i: number, cb?: () => void) => {
-      const finish = () => {
-        loaded[i] = true;
-        if (i === 0) {
-          frames[0] = img;
-          dirtyRef.current = true;
-          resizeCanvas();
-          cacheWrapperMetrics();
-          drawFrame(0, 0, getDeviceTier() === 'mobile');
-          lastDrawnRef.current = 0;
-        } else {
-          dirtyRef.current = true;
-        }
-        cb?.();
-        wakeUpLoop();
-      };
-
-      if ('decode' in img) {
-        img.decode().catch(() => { }).then(finish);
-      } else {
-        finish();
+      loaded[i] = true;
+      dirtyRef.current = true;
+      if (i === 0) {
+        frames[0] = img;
+        resizeCanvas();
+        cacheWrapperMetrics();
+        drawFrame(0, 0, getDeviceTier() === 'mobile');
+        lastDrawnRef.current = 0;
       }
+      cb?.();
+      wakeUpLoop();
     };
 
-    // Detect if WebP frames are available by checking frame 1 (index 0)
-    const testImg = new Image();
-    testImg.decoding = 'async';
+    // Load frame 1 (index 0) as WebP immediately
+    const firstImg = new Image();
+    firstImg.decoding = 'async';
 
-    testImg.onload = () => {
-      console.log('[CinematicIntro] WebP detection SUCCEEDED. Loading frames as WebP...');
-      markLoaded(testImg, 0, () => startPreloadFlow('.webp'));
+    firstImg.onload = () => {
+      markLoaded(firstImg, 0, () => startPreloadFlow());
     };
 
-    testImg.onerror = (e) => {
-      console.log('[CinematicIntro] WebP detection FAILED (expected in local dev). Falling back to PNG...', e);
-      const pngImg = new Image();
-      pngImg.decoding = 'async';
-
-      pngImg.onload = () => {
-        console.log('[CinematicIntro] Fallback PNG frame 0 LOADED successfully.');
-        markLoaded(pngImg, 0, () => startPreloadFlow('.png'));
-      };
-
-      pngImg.onerror = (err) => {
-        console.error('[CinematicIntro] Fallback PNG frame 0 FAILED to load:', err);
-        loaded[0] = true;
-        wakeUpLoop();
-      };
-
-      // Set src after registering onload/onerror
-      pngImg.src = `/frames/ezgif-frame-001.png`;
+    firstImg.onerror = () => {
+      loaded[0] = true;
+      wakeUpLoop();
     };
 
-    // Trigger WebP detection request after registering onload/onerror
-    testImg.src = `/frames/ezgif-frame-001.webp`;
+    firstImg.src = `/frames/ezgif-frame-001.webp`;
 
-    const startPreloadFlow = (ext: string) => {
-      console.log(`[CinematicIntro] Starting preload flow for extension: ${ext}`);
+    const startPreloadFlow = () => {
       const loadOne = (i: number) => {
+        if (i < 0 || i >= TOTAL_FRAMES || frames[i]) return;
         const img = new Image();
         img.decoding = 'async';
 
@@ -422,38 +432,44 @@ export default function CinematicIntro() {
           markLoaded(img, i);
         };
 
-        img.onerror = (err) => {
-          console.error(`[CinematicIntro] Failed to load frame ${i + 1} (${ext}):`, err);
+        img.onerror = () => {
           loaded[i] = true;
           wakeUpLoop();
         };
 
         frames[i] = img;
-
-        // Trigger loading after handlers are registered
-        img.src = `/frames/ezgif-frame-${String(i + 1).padStart(3, '0')}${ext}`;
+        img.src = `/frames/ezgif-frame-${String(i + 1).padStart(3, '0')}.webp`;
       };
 
-      // Frames 1-24: load right away (covers first 25% of scroll)
-      console.log('[CinematicIntro] Triggering fast preload for frames 1-24');
-      for (let i = 1; i < 25; i++) {
-        loadOne(i);
-      }
-
-      // Rest in batches — stagger so they don't fight for bandwidth
-      let cursor = 25;
-      const batch = () => {
-        const end = Math.min(cursor + 15, TOTAL_FRAMES);
-        console.log(`[CinematicIntro] Preloading batch frames ${cursor} to ${end - 1}`);
-        for (let i = cursor; i < end; i++) {
+      const preloadUpcoming = (startIdx: number, count = 25) => {
+        const end = Math.min(startIdx + count, TOTAL_FRAMES);
+        for (let i = startIdx; i < end; i++) {
           loadOne(i);
         }
-        cursor = end;
-        if (cursor < TOTAL_FRAMES) {
-          setTimeout(batch, 200);
+      };
+      preloadUpcomingRef.current = preloadUpcoming;
+
+      // Preload initial batch of frames (1-25) right away
+      preloadUpcoming(1, 25);
+
+      // Continuously preload all remaining frames in sequential background batches
+      let nextBatch = 26;
+      const loadNextBatch = () => {
+        if (nextBatch >= TOTAL_FRAMES) return;
+        preloadUpcoming(nextBatch, 20);
+        nextBatch += 20;
+        if ('requestIdleCallback' in window) {
+          (window as any).requestIdleCallback(loadNextBatch, { timeout: 800 });
+        } else {
+          setTimeout(loadNextBatch, 250);
         }
       };
-      setTimeout(batch, 500);
+
+      if ('requestIdleCallback' in window) {
+        (window as any).requestIdleCallback(loadNextBatch, { timeout: 400 });
+      } else {
+        setTimeout(loadNextBatch, 350);
+      }
     };
   }, [drawFrame, cacheWrapperMetrics, resizeCanvas, wakeUpLoop]);
 
@@ -680,6 +696,49 @@ export default function CinematicIntro() {
           background: #000000;
         }
 
+        /* First-frame mobile scroll hint */
+        .ci-mobile-scroll-hint {
+          position: absolute;
+          bottom: clamp(20px, 4.5vh, 42px);
+          left: 50%;
+          transform: translateX(-50%);
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px 16px;
+          border-radius: 99px;
+          background: rgba(8, 12, 24, 0.76);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
+          border: 1px solid rgba(129, 140, 248, 0.32);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.65), 0 0 16px rgba(99, 102, 241, 0.22);
+          z-index: 40;
+          opacity: 1;
+          transition: opacity 0.35s ease, transform 0.35s ease;
+          pointer-events: none;
+        }
+
+        .ci-hint-icon {
+          color: #818CF8;
+          font-size: 13px;
+          font-weight: 800;
+          animation: ci-hint-bounce 1.5s ease-in-out infinite;
+        }
+
+        .ci-hint-text {
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-size: 0.66rem;
+          font-weight: 700;
+          letter-spacing: 0.2em;
+          color: #E2E8F0;
+          text-transform: uppercase;
+        }
+
+        @keyframes ci-hint-bounce {
+          0%, 100% { transform: translateY(0); opacity: 0.7; }
+          50% { transform: translateY(4px); opacity: 1; }
+        }
+
         /* ─── Mobile ≤ 480px ──────────────────────────────────────────── */
         @media (max-width: 480px) {
           .ci-wrap { height: 380vh; }
@@ -749,6 +808,12 @@ export default function CinematicIntro() {
           <div ref={welcomeRef} className="ci-welcome">
             <h2 className="ci-welcome-h">Welcome to my<br />digital world.</h2>
             <p className="ci-welcome-cap">Scroll to begin</p>
+          </div>
+
+          {/* First frame mobile scroll indicator — prompts user to scroll, fades after 2nd frame */}
+          <div ref={scrollHintRef} className="ci-mobile-scroll-hint" aria-hidden="true">
+            <span className="ci-hint-icon">↓</span>
+            <span className="ci-hint-text">SCROLL DOWN</span>
           </div>
 
         </div>

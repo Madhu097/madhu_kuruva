@@ -152,7 +152,13 @@ export default function Portfolio() {
                     transform: 'translate3d(var(--tx, 0px), var(--ty, 0px), 0) scale(1.06)',
                   }}
                 >
-                  <img src={project.image} alt={project.title} className="w-full h-full object-cover opacity-40 grayscale group-hover:grayscale-0 group-hover:opacity-60 transition-all duration-700" />
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-cover opacity-40 grayscale group-hover:grayscale-0 group-hover:opacity-60 transition-all duration-700"
+                  />
                   {/* Better Contrast Overlays */}
                   <div className="absolute inset-0 bg-background/40" />
                   <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent opacity-100" />
@@ -190,10 +196,22 @@ export default function Portfolio() {
                   className="absolute top-8 right-8 flex flex-col gap-3 transition-all duration-500 translate-x-10 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 preserve-3d"
                   style={{ transform: 'translateZ(80px)' }}
                 >
-                  <a href={project.github} target="_blank" rel="noopener noreferrer" className="p-4 rounded-full bg-card border border-border hover:bg-accent text-primaryText transition-all backdrop-blur-xl">
+                  <a
+                    href={project.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`View ${project.title} source code on GitHub`}
+                    className="p-4 rounded-full bg-card border border-border hover:bg-accent text-primaryText transition-all backdrop-blur-xl"
+                  >
                     <Github size={20} />
                   </a>
-                  <a href={project.live} target="_blank" rel="noopener noreferrer" className="p-4 rounded-full bg-card border border-border hover:bg-accent text-primaryText transition-all backdrop-blur-xl">
+                  <a
+                    href={project.live}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Open ${project.title} live preview`}
+                    className="p-4 rounded-full bg-card border border-border hover:bg-accent text-primaryText transition-all backdrop-blur-xl"
+                  >
                     <ExternalLink size={20} />
                   </a>
                 </div>

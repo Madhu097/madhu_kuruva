@@ -46,8 +46,8 @@ function autoBind(instance: any) {
   });
 }
 
-const DEFAULT_FONT = 'bold 30px Figtree';
-const DEFAULT_FONT_URL = 'https://fonts.googleapis.com/css2?family=Figtree:wght@400;700&display=swap';
+const DEFAULT_FONT = 'bold 30px "Plus Jakarta Sans", sans-serif';
+const DEFAULT_FONT_URL = '';
 
 function deriveFontFamilyFromUrl(url: string): string {
   const fileName = (url.split('/').pop() || 'custom-font').split('?')[0];

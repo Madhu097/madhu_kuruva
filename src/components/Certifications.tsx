@@ -131,9 +131,11 @@ function generateCardImage(cert: CertificateData): string {
   const PL = 120; // left padding
   const PR = 120; // right padding
   const canvas = document.createElement('canvas');
-  canvas.width = W;
-  canvas.height = H;
+  // High-performance 2x retina size (900x1260) — 75% fewer pixels and memory, instant encoding
+  canvas.width = 900;
+  canvas.height = 1260;
   const ctx = canvas.getContext('2d')!;
+  ctx.scale(0.5, 0.5);
   polyfillRoundRect(ctx);
 
   // ── BACKGROUND ────────────────────────────────────────────────────
@@ -436,11 +438,26 @@ function FullScreenModal({ cert, onClose }: { cert: CertificateData; onClose: ()
 export default function Certifications() {
   const [selectedCert, setSelectedCert] = useState<CertificateData | null>(null);
 
-  const galleryItems = useMemo(() => rawCertificates.map(cert => ({
-    image: generateCardImage(cert),
-    text: cert.title,
-    url: cert.url,
-  })), []);
+  const [galleryItems, setGalleryItems] = useState<{ image: string; text: string; url: string }[]>([]);
+
+  useEffect(() => {
+    const generate = () => {
+      const items = rawCertificates.map(cert => ({
+        image: generateCardImage(cert),
+        text: cert.title,
+        url: cert.url,
+      }));
+      setGalleryItems(items);
+    };
+
+    if ('requestIdleCallback' in window) {
+      const id = (window as any).requestIdleCallback(generate);
+      return () => (window as any).cancelIdleCallback(id);
+    } else {
+      const timer = setTimeout(generate, 50);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   const handleCardClick = (item: { text: string }) => {
     const matched = rawCertificates.find(c => c.title === item.text);
