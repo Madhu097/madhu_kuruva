@@ -2,17 +2,16 @@ import { lazy, Suspense, useEffect, useState, useRef } from 'react';
 import CinematicIntro from './components/CinematicIntro';
 import Hero from './components/Hero';
 import ScrollAnimations from './components/ScrollAnimations';
-
-import Experience from './components/Experience';
 import RightNavbar from './components/RightNavbar';
-import CliChatbot from './components/CliChatbot';
 
-// Lazy-load below-the-fold sections
+// Code-split below-the-fold components so they do not block initial viewport or execute JS upfront
 const About = lazy(() => import('./components/About'));
+const Experience = lazy(() => import('./components/Experience'));
 const Skills = lazy(() => import('./components/Skills'));
 const Portfolio = lazy(() => import('./components/Portfolio'));
 const Certifications = lazy(() => import('./components/Certifications'));
 const Contact = lazy(() => import('./components/Contact'));
+const CliChatbot = lazy(() => import('./components/CliChatbot'));
 
 /** Viewport-based lazy section wrapper: only evaluates JS when scrolled near, or immediately on nav click */
 function LazySection({ id, children, minHeight = '500px' }: { id: string; children: React.ReactNode; minHeight?: string }) {
@@ -48,13 +47,13 @@ function LazySection({ id, children, minHeight = '500px' }: { id: string; childr
   }, [id]);
 
   return (
-    <div id={id} ref={ref} style={{ minHeight: inView ? undefined : minHeight }}>
+    <div id={inView ? undefined : id} ref={ref} style={{ minHeight: inView ? undefined : minHeight }}>
       {inView ? children : null}
     </div>
   );
 }
 
-/** Minimal preloader — ultra-fast ramp so it never blocks FCP or Lighthouse */
+/** Minimal preloader — ultra-fast ramp with GPU-composited transform and WCAG AA contrast */
 function MinimalLoader() {
   const [progress, setProgress] = useState(0);
   const [hidden, setHidden] = useState(false);
@@ -89,25 +88,28 @@ function MinimalLoader() {
       }}
     >
       {/* Name */}
-      <div style={{ fontFamily: 'monospace', fontSize: '13px', letterSpacing: '0.3em', color: '#64748b', textTransform: 'uppercase' }}>
+      <div style={{ fontFamily: 'monospace', fontSize: '13px', letterSpacing: '0.3em', color: '#94A3B8', textTransform: 'uppercase' }}>
         Madhu Kuruva
       </div>
 
-      {/* Progress bar */}
+      {/* Progress bar — GPU accelerated scaleX instead of layout-triggering width */}
       <div style={{ width: '180px', height: '2px', background: 'rgba(255,255,255,0.08)', borderRadius: '99px', overflow: 'hidden' }}>
         <div
           style={{
             height: '100%',
-            width: `${progress}%`,
+            width: '100%',
+            transform: `scaleX(${progress / 100})`,
+            transformOrigin: 'left',
             background: 'linear-gradient(90deg, #0A84FF, #409CFF)',
             borderRadius: '99px',
-            transition: 'width 0.05s linear',
+            transition: 'transform 0.05s linear',
+            willChange: 'transform',
           }}
         />
       </div>
 
       {/* Percent */}
-      <div style={{ fontFamily: 'monospace', fontSize: '11px', color: '#334155', letterSpacing: '0.15em' }}>
+      <div style={{ fontFamily: 'monospace', fontSize: '11px', color: '#94A3B8', letterSpacing: '0.15em' }}>
         {Math.floor(progress)}%
       </div>
     </div>
@@ -122,8 +124,12 @@ function App() {
       <CinematicIntro />
       <Hero />
       <Suspense fallback={null}>
-        <About />
-        <Experience />
+        <LazySection id="about" minHeight="500px">
+          <About />
+        </LazySection>
+        <LazySection id="experience" minHeight="500px">
+          <Experience />
+        </LazySection>
         <LazySection id="skills" minHeight="600px">
           <Skills />
         </LazySection>
@@ -138,7 +144,9 @@ function App() {
         </LazySection>
       </Suspense>
       <RightNavbar />
-      <CliChatbot />
+      <Suspense fallback={null}>
+        <CliChatbot />
+      </Suspense>
     </div>
   );
 }

@@ -383,7 +383,7 @@ function FullScreenModal({ cert, onClose }: { cert: CertificateData; onClose: ()
             <div className="min-w-0">
               <h2 className="text-xl sm:text-2xl font-bold text-white leading-snug">{cert.title}</h2>
               <p className="text-sm font-semibold mt-0.5" style={{ color: cert.color }}>{cert.issuer}</p>
-              <p className="text-xs text-slate-500 font-mono mt-1">Issued {cert.date} · ID: {cert.credId}</p>
+              <p className="text-xs text-slate-400 font-mono mt-1">Issued {cert.date} · ID: {cert.credId}</p>
             </div>
           </div>
 
@@ -491,7 +491,7 @@ export default function Certifications() {
             Achievements
           </span>
         </h2>
-        <p className="text-slate-500 text-xs max-w-sm mx-auto font-mono">
+        <p className="text-slate-400 text-xs max-w-sm mx-auto font-mono">
           Drag · Scroll · Tap any card to view credential
         </p>
       </div>

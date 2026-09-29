@@ -42,15 +42,14 @@ export default function RightNavbar() {
 
   // Show navbar only after cinematic intro is completed and hero section is reached
   useEffect(() => {
-    const handleScroll = () => {
+    let rafId: number | null = null;
+
+    const updateNavbarState = () => {
+      rafId = null;
       const heroEl = document.getElementById('hero');
       if (heroEl) {
         const heroTop = heroEl.offsetTop;
-        if (window.scrollY >= heroTop - 100) {
-          setIsVisible(true);
-        } else {
-          setIsVisible(false);
-        }
+        setIsVisible(window.scrollY >= heroTop - 100);
       } else {
         const fallbackThreshold = window.innerHeight * 3;
         setIsVisible(window.scrollY >= fallbackThreshold);
@@ -71,9 +70,18 @@ export default function RightNavbar() {
       }
     };
 
+    const handleScroll = () => {
+      if (rafId === null) {
+        rafId = requestAnimationFrame(updateNavbarState);
+      }
+    };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
+    updateNavbarState();
+    return () => {
+      if (rafId !== null) cancelAnimationFrame(rafId);
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   // Recalculate Desktop vertical sliding pill position
@@ -154,15 +162,18 @@ export default function RightNavbar() {
               '0 12px 35px -5px rgba(0, 0, 0, 0.75), 0 0 20px -2px rgba(99, 102, 241, 0.3)',
           }}
         >
-          {/* Animated Super-Cool Sliding Pill for Mobile */}
+          {/* Animated GPU-Composited Sliding Pill for Mobile */}
           <div
-            className="absolute rounded-full pointer-events-none transition-all duration-350 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
+            className="absolute rounded-full pointer-events-none"
             style={{
               top: 4,
               bottom: 4,
-              left: mobilePill.left,
+              left: 0,
               width: mobilePill.width,
+              transform: `translate3d(${mobilePill.left}px, 0, 0)`,
               opacity: mobilePill.opacity,
+              transition: 'transform 350ms cubic-bezier(0.34,1.56,0.64,1), width 300ms ease, opacity 200ms ease',
+              willChange: 'transform',
               background:
                 'linear-gradient(135deg, rgba(99, 102, 241, 0.40) 0%, rgba(129, 140, 248, 0.22) 100%)',
               border: '1px solid rgba(129, 140, 248, 0.55)',
@@ -221,8 +232,8 @@ export default function RightNavbar() {
         >
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
           <span className="font-semibold uppercase">{activeItemObj.label}</span>
-          <span className="text-slate-500">•</span>
-          <span className="text-slate-400">{activeItemObj.short}</span>
+          <span className="text-slate-400">•</span>
+          <span className="text-slate-300">{activeItemObj.short}</span>
         </div>
       </div>
 
@@ -267,13 +278,16 @@ export default function RightNavbar() {
             )}
           </button>
 
-          {/* Vertical Sliding Capsule Pill for Desktop */}
+          {/* Vertical Sliding GPU-Composited Capsule Pill for Desktop */}
           <div
-            className="absolute left-1.5 right-1.5 rounded-xl pointer-events-none transition-all duration-350 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
+            className="absolute left-1.5 right-1.5 rounded-xl pointer-events-none"
             style={{
-              top: desktopPill.top,
+              top: 0,
               height: desktopPill.height,
+              transform: `translate3d(0, ${desktopPill.top}px, 0)`,
               opacity: desktopPill.opacity,
+              transition: 'transform 350ms cubic-bezier(0.34,1.56,0.64,1), height 300ms ease, opacity 200ms ease',
+              willChange: 'transform',
               background:
                 'linear-gradient(135deg, rgba(99, 102, 241, 0.35) 0%, rgba(129, 140, 248, 0.18) 100%)',
               border: '1px solid rgba(129, 140, 248, 0.45)',
@@ -327,7 +341,7 @@ export default function RightNavbar() {
                       <span className="text-xs font-medium tracking-wide">
                         {item.label}
                       </span>
-                      <span className="text-[10px] font-mono text-slate-500 ml-2">
+                      <span className="text-[10px] font-mono text-slate-400 ml-2">
                         {item.short}
                       </span>
                     </div>

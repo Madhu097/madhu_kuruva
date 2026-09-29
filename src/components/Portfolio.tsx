@@ -68,30 +68,57 @@ export default function Portfolio() {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
+  const rafMapRef = useRef<Map<HTMLElement, number>>(new Map());
+
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setIsVisible(true); },
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
       { threshold: 0.1 }
     );
     if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
+    const activeRafs = rafMapRef.current;
+    return () => {
+      observer.disconnect();
+      activeRafs.forEach((id) => cancelAnimationFrame(id));
+      activeRafs.clear();
+    };
   }, []);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const card = e.currentTarget;
-    const rect = card.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-    card.style.setProperty('--rx', `${-y * 12}deg`);
-    card.style.setProperty('--ry', `${x * 12}deg`);
-    card.style.setProperty('--tx', `${x * -14}px`);
-    card.style.setProperty('--ty', `${y * -14}px`);
-    card.style.setProperty('--mx', `${(x + 0.5) * 100}%`);
-    card.style.setProperty('--my', `${(y + 0.5) * 100}%`);
+    const clientX = e.clientX;
+    const clientY = e.clientY;
+
+    if (rafMapRef.current.has(card)) return;
+
+    const id = requestAnimationFrame(() => {
+      rafMapRef.current.delete(card);
+      const rect = card.getBoundingClientRect();
+      const x = (clientX - rect.left) / rect.width - 0.5;
+      const y = (clientY - rect.top) / rect.height - 0.5;
+      card.style.setProperty('--rx', `${-y * 12}deg`);
+      card.style.setProperty('--ry', `${x * 12}deg`);
+      card.style.setProperty('--tx', `${x * -14}px`);
+      card.style.setProperty('--ty', `${y * -14}px`);
+      card.style.setProperty('--mx', `${(x + 0.5) * 100}%`);
+      card.style.setProperty('--my', `${(y + 0.5) * 100}%`);
+    });
+
+    rafMapRef.current.set(card, id);
   };
 
   const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
     const card = e.currentTarget;
+    const id = rafMapRef.current.get(card);
+    if (id !== undefined) {
+      cancelAnimationFrame(id);
+      rafMapRef.current.delete(card);
+    }
     card.style.setProperty('--rx', '0deg');
     card.style.setProperty('--ry', '0deg');
     card.style.setProperty('--tx', '0px');

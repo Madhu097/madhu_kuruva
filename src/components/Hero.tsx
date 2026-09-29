@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
-import heroVideo from '../assets/hero.mp4';
+import heroVideo from '../assets/hero-video.webm';
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -47,10 +47,10 @@ export default function Hero() {
     gc.fillStyle = grad;
     gc.fillRect(0, 0, GLOW * 2, GLOW * 2);
 
-    let rafId: number;
+    let rafId: number | null = null;
     let lastTime = 0;
     const FRAME_MS = 1000 / 45;
-    let isVisible = true;
+    let isVisible = false;
 
     const animate = (now: number) => {
       if (!isVisible) return;
@@ -95,10 +95,15 @@ export default function Hero() {
       ([entry]) => {
         isVisible = entry.isIntersecting;
         if (isVisible) {
-          rafId = requestAnimationFrame(animate);
+          if (rafId === null) {
+            rafId = requestAnimationFrame(animate);
+          }
           videoRef.current?.play().catch(() => { });
         } else {
-          cancelAnimationFrame(rafId);
+          if (rafId !== null) {
+            cancelAnimationFrame(rafId);
+            rafId = null;
+          }
           videoRef.current?.pause();
         }
       },
@@ -106,7 +111,6 @@ export default function Hero() {
     );
 
     if (sectionRef.current) observer.observe(sectionRef.current);
-    rafId = requestAnimationFrame(animate);
 
     window.addEventListener('resize', resize, { passive: true });
 
@@ -119,12 +123,12 @@ export default function Hero() {
 
     return () => {
       observer.disconnect();
-      cancelAnimationFrame(rafId);
+      if (rafId !== null) cancelAnimationFrame(rafId);
       window.removeEventListener('resize', resize);
     };
   }, []);
 
-  // Defer heavy 14MB background video loading until after critical paint
+  // Load background WebM video (412KB lightweight)
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -133,17 +137,17 @@ export default function Hero() {
       if (!video.src) {
         video.src = heroVideo;
         video.load();
-        video.play().catch(() => {});
       }
+      video.play().catch(() => { });
     };
 
     if ('requestIdleCallback' in window) {
       const id = (window as any).requestIdleCallback(() => {
-        setTimeout(loadVideo, 1200);
+        setTimeout(loadVideo, 200);
       });
       return () => (window as any).cancelIdleCallback(id);
     } else {
-      const timer = setTimeout(loadVideo, 1500);
+      const timer = setTimeout(loadVideo, 300);
       return () => clearTimeout(timer);
     }
   }, []);
@@ -152,10 +156,15 @@ export default function Hero() {
     <section ref={sectionRef} id="hero" className="relative h-screen w-full overflow-hidden bg-black">
       <video
         ref={videoRef}
-        loop muted playsInline preload="none"
+        loop
+        muted
+        playsInline
+        preload="auto"
         className="absolute inset-0 w-full h-full object-cover opacity-60"
         style={{ objectPosition: 'center 20%' }}
       >
+        <source src={heroVideo} type="video/webm" />
+        <source src="/hero-video.webm" type="video/webm" />
         <track kind="captions" src="" label="English" default />
       </video>
 

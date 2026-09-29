@@ -392,19 +392,25 @@ export default function CinematicIntro() {
     const frames = framesRef.current;
     const loaded = loadedRef.current;
 
-    // Helper to mark images loaded and trigger redraw without blocking image decoders
+    // Helper to mark images loaded without forcing redundant rAF loops for background frames
     const markLoaded = (img: HTMLImageElement, i: number, cb?: () => void) => {
       loaded[i] = true;
-      dirtyRef.current = true;
       if (i === 0) {
+        dirtyRef.current = true;
         frames[0] = img;
         resizeCanvas();
         cacheWrapperMetrics();
         drawFrame(0, 0, getDeviceTier() === 'mobile');
         lastDrawnRef.current = 0;
+        wakeUpLoop();
+      } else {
+        const curIdx = Math.min(Math.floor(smoothPRef.current * (TOTAL_FRAMES - 1)), TOTAL_FRAMES - 1);
+        if (i === curIdx) {
+          dirtyRef.current = true;
+          wakeUpLoop();
+        }
       }
       cb?.();
-      wakeUpLoop();
     };
 
     // Load frame 1 (index 0) as WebP immediately
@@ -434,7 +440,10 @@ export default function CinematicIntro() {
 
         img.onerror = () => {
           loaded[i] = true;
-          wakeUpLoop();
+          const curIdx = Math.min(Math.floor(smoothPRef.current * (TOTAL_FRAMES - 1)), TOTAL_FRAMES - 1);
+          if (i === curIdx) {
+            wakeUpLoop();
+          }
         };
 
         frames[i] = img;

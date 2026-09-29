@@ -19,9 +19,18 @@ export default function ScrollAnimations() {
         el.style.transform = `translate3d(${targetX.toFixed(1)}px, ${targetY.toFixed(1)}px, 0)`;
       };
 
+      let cachedRect: DOMRect | null = null;
+
+      const handleMouseEnter = () => {
+        cachedRect = el.getBoundingClientRect();
+      };
+
       const handleMouseMove = (e: MouseEvent) => {
         if (prefersReducedMotion) return;
-        const rect = el.getBoundingClientRect();
+        if (!cachedRect) {
+          cachedRect = el.getBoundingClientRect();
+        }
+        const rect = cachedRect;
         const x = e.clientX - rect.left - rect.width / 2;
         const y = e.clientY - rect.top - rect.height / 2;
 
@@ -38,6 +47,7 @@ export default function ScrollAnimations() {
       };
 
       const handleMouseLeave = () => {
+        cachedRect = null;
         targetX = 0;
         targetY = 0;
         if (mRafId === null) {
@@ -48,11 +58,13 @@ export default function ScrollAnimations() {
         }
       };
 
+      el.addEventListener('mouseenter', handleMouseEnter, { passive: true });
       el.addEventListener('mousemove', handleMouseMove, { passive: true });
       el.addEventListener('mouseleave', handleMouseLeave, { passive: true });
 
       return () => {
         if (mRafId !== null) cancelAnimationFrame(mRafId);
+        el.removeEventListener('mouseenter', handleMouseEnter);
         el.removeEventListener('mousemove', handleMouseMove);
         el.removeEventListener('mouseleave', handleMouseLeave);
       };

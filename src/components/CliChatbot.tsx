@@ -61,7 +61,10 @@ export default function CliChatbot() {
 
   // Show chatbot launcher only after cinematic intro is completed
   useEffect(() => {
-    const handleScroll = () => {
+    let rafId: number | null = null;
+
+    const updateVisibility = () => {
+      rafId = null;
       const heroEl = document.getElementById('hero');
       if (heroEl) {
         setIsVisible(window.scrollY >= heroEl.offsetTop - 100);
@@ -69,9 +72,19 @@ export default function CliChatbot() {
         setIsVisible(window.scrollY >= window.innerHeight * 3);
       }
     };
+
+    const handleScroll = () => {
+      if (rafId === null) {
+        rafId = requestAnimationFrame(updateVisibility);
+      }
+    };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
+    updateVisibility();
+    return () => {
+      if (rafId !== null) cancelAnimationFrame(rafId);
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   // Initialize initial welcome message
@@ -620,7 +633,7 @@ export default function CliChatbot() {
               background: 'rgba(0, 0, 0, 0.25)',
             }}
           >
-            <span className="text-[9px] font-mono text-slate-500 mr-1 flex-shrink-0 flex items-center gap-1">
+            <span className="text-[9px] font-mono text-slate-400 mr-1 flex-shrink-0 flex items-center gap-1">
               <Sparkles className="w-2 h-2 text-indigo-400" /> Quick:
             </span>
             {QUICK_COMMANDS.map((cmd) => (
@@ -654,11 +667,11 @@ export default function CliChatbot() {
                 {item.type === 'command' && (
                   <div className="flex items-start gap-1 text-slate-300 text-[10px]">
                     <span className="text-emerald-400 select-none">guest</span>
-                    <span className="text-slate-500 select-none">:</span>
+                    <span className="text-slate-400 select-none">:</span>
                     <span className="text-indigo-400 select-none">~</span>
-                    <span className="text-slate-500 select-none">$</span>
+                    <span className="text-slate-400 select-none">$</span>
                     <span className="font-semibold text-white ml-0.5">{item.content}</span>
-                    <span className="ml-auto text-[9px] text-slate-600 select-none">
+                    <span className="ml-auto text-[9px] text-slate-400 select-none">
                       {item.timestamp}
                     </span>
                   </div>
@@ -695,9 +708,9 @@ export default function CliChatbot() {
           >
             <div className="flex items-center gap-0.5 text-[10px] font-mono select-none flex-shrink-0">
               <span className="text-emerald-400 font-medium">guest</span>
-              <span className="text-slate-500">:</span>
+              <span className="text-slate-400">:</span>
               <span className="text-indigo-400">~</span>
-              <span className="text-slate-500">$</span>
+              <span className="text-slate-400">$</span>
             </div>
 
             <input
@@ -707,7 +720,7 @@ export default function CliChatbot() {
               onChange={(e) => setInputVal(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Type command or question..."
-              className="flex-1 bg-transparent border-none outline-none font-mono text-[11px] text-white placeholder-slate-500 min-w-0"
+              className="flex-1 bg-transparent border-none outline-none font-mono text-[11px] text-white placeholder-slate-400 min-w-0"
               autoComplete="off"
               spellCheck="false"
             />
