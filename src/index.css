@@ -20,11 +20,6 @@ html {
   text-rendering: optimizeLegibility;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
-  }
-}
 
 @layer base {
   body {

@@ -102,7 +102,7 @@ export default function CliChatbot() {
   // Auto-scroll to terminal bottom on new output
   useEffect(() => {
     if (isOpen && !isMinimized) {
-      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
   }, [history, isOpen, isMinimized, zoomLevel]);
 

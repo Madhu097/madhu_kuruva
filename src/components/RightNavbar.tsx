@@ -48,7 +48,7 @@ export default function RightNavbar() {
       rafId = null;
       const heroEl = document.getElementById('hero');
       if (heroEl) {
-        const heroTop = heroEl.offsetTop;
+        const heroTop = heroEl.getBoundingClientRect().top + window.scrollY;
         setIsVisible(window.scrollY >= heroTop - 100);
       } else {
         const fallbackThreshold = window.innerHeight * 3;
@@ -61,7 +61,7 @@ export default function RightNavbar() {
         const item = NAV_ITEMS[i];
         const el = document.getElementById(item.id);
         if (el) {
-          const top = el.offsetTop;
+          const top = el.getBoundingClientRect().top + window.scrollY;
           if (scrollPosition >= top) {
             setActiveSection(item.id);
             break;
@@ -114,26 +114,11 @@ export default function RightNavbar() {
       setIsExpanded(false);
     }
 
-    // Trigger immediate render of any lazy section matching this ID
-    window.dispatchEvent(new CustomEvent('reveal-section', { detail: id }));
-
-    if (id === 'hero') {
-      const heroEl = document.getElementById('hero');
-      if (heroEl) {
-        heroEl.scrollIntoView({ behavior: 'smooth' });
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    } else {
-      const el = document.getElementById(id);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-      } else {
-        setTimeout(() => {
-          const retryEl = document.getElementById(id);
-          retryEl?.scrollIntoView({ behavior: 'smooth' });
-        }, 30);
-      }
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    } else if (id === 'hero') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 

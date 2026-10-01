@@ -1,57 +1,17 @@
-import { lazy, Suspense, useEffect, useState, useRef } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import CinematicIntro from './components/CinematicIntro';
 import Hero from './components/Hero';
 import ScrollAnimations from './components/ScrollAnimations';
 import RightNavbar from './components/RightNavbar';
+import About from './components/About';
+import Experience from './components/Experience';
+import Skills from './components/Skills';
+import Portfolio from './components/Portfolio';
+import Certifications from './components/Certifications';
+import Contact from './components/Contact';
 
-// Code-split below-the-fold components so they do not block initial viewport or execute JS upfront
-const About = lazy(() => import('./components/About'));
-const Experience = lazy(() => import('./components/Experience'));
-const Skills = lazy(() => import('./components/Skills'));
-const Portfolio = lazy(() => import('./components/Portfolio'));
-const Certifications = lazy(() => import('./components/Certifications'));
-const Contact = lazy(() => import('./components/Contact'));
+// Only the floating assistant can be lazily loaded in the background
 const CliChatbot = lazy(() => import('./components/CliChatbot'));
-
-/** Viewport-based lazy section wrapper: only evaluates JS when scrolled near, or immediately on nav click */
-function LazySection({ id, children, minHeight = '500px' }: { id: string; children: React.ReactNode; minHeight?: string }) {
-  const [inView, setInView] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setInView(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: '600px 0px' }
-    );
-    observer.observe(el);
-
-    const onReveal = (e: Event) => {
-      const custom = e as CustomEvent<string>;
-      if (custom.detail === id) {
-        setInView(true);
-      }
-    };
-    window.addEventListener('reveal-section', onReveal);
-
-    return () => {
-      observer.disconnect();
-      window.removeEventListener('reveal-section', onReveal);
-    };
-  }, [id]);
-
-  return (
-    <div id={inView ? undefined : id} ref={ref} style={{ minHeight: inView ? undefined : minHeight }}>
-      {inView ? children : null}
-    </div>
-  );
-}
 
 /** Minimal preloader — ultra-fast ramp with GPU-composited transform and WCAG AA contrast */
 function MinimalLoader() {
@@ -65,17 +25,24 @@ function MinimalLoader() {
       if (p >= 100) {
         p = 100;
         clearInterval(id);
-        setTimeout(() => setHidden(true), 150);
+        setTimeout(() => {
+          setHidden(true);
+        }, 150);
       }
       setProgress(p);
     }, 40);
-    return () => clearInterval(id);
+
+    return () => {
+      clearInterval(id);
+    };
   }, []);
 
   if (hidden) return null;
 
   return (
     <div
+      onWheel={(e) => e.preventDefault()}
+      onTouchMove={(e) => e.preventDefault()}
       style={{
         position: 'fixed', inset: 0, zIndex: 9999,
         background: '#03030a',
@@ -117,32 +84,24 @@ function MinimalLoader() {
 }
 
 function App() {
+  useEffect(() => {
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+  }, []);
+
   return (
     <div className="bg-background text-primaryText">
       <MinimalLoader />
       <ScrollAnimations />
       <CinematicIntro />
       <Hero />
-      <Suspense fallback={null}>
-        <LazySection id="about" minHeight="500px">
-          <About />
-        </LazySection>
-        <LazySection id="experience" minHeight="500px">
-          <Experience />
-        </LazySection>
-        <LazySection id="skills" minHeight="600px">
-          <Skills />
-        </LazySection>
-        <LazySection id="portfolio" minHeight="700px">
-          <Portfolio />
-        </LazySection>
-        <LazySection id="certifications" minHeight="650px">
-          <Certifications />
-        </LazySection>
-        <LazySection id="contact" minHeight="500px">
-          <Contact />
-        </LazySection>
-      </Suspense>
+      <About />
+      <Experience />
+      <Skills />
+      <Portfolio />
+      <Certifications />
+      <Contact />
       <RightNavbar />
       <Suspense fallback={null}>
         <CliChatbot />

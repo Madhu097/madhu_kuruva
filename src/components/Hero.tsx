@@ -175,7 +175,11 @@ export default function Hero() {
       <div className="relative z-10 flex flex-col items-center justify-center h-full px-4 sm:px-6">
         <div className="text-center space-y-4 sm:space-y-6">
           <div className="overflow-hidden">
-            <h1 ref={nameRef} className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl xl:text-9xl font-extrabold tracking-[-0.02em] text-white leading-tight">
+            <h1
+              ref={nameRef}
+              aria-label="Madhu Kuruva"
+              className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl xl:text-9xl font-extrabold tracking-[-0.02em] text-white leading-tight"
+            >
               {'MADHU KURUVA'.split('').map((char, i) => (
                 <span key={i} className="inline-block opacity-0 translate-y-full letter" style={{ transitionDelay: `${i * 0.05}s` }}>
                   {char === ' ' ? '\u00A0' : char}
@@ -205,7 +209,15 @@ export default function Hero() {
           </div>
 
           <div className="pt-6 sm:pt-8 animate-fade-in-up opacity-0 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center" style={{ animationDelay: '1.8s', animationFillMode: 'forwards' }}>
-            <a href="#portfolio" data-magnetic className="group inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-accent to-accentHover rounded-full text-white font-medium relative overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(10,132,255,0.5)] text-sm sm:text-base">
+            <a
+              href="#portfolio"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('portfolio')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              data-magnetic
+              className="group inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-accent to-accentHover rounded-full text-white font-medium relative overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(10,132,255,0.5)] text-sm sm:text-base"
+            >
               <span className="relative z-10">View My Work</span>
               <div className="absolute inset-0 bg-gradient-to-r from-accentHover to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </a>
