@@ -80,7 +80,7 @@ const rawCertificates: CertificateData[] = [
     skills: ['SQL', 'MySQL', 'Schema Design', 'Query Optimization'],
     credId: 'UC-MYSQL-EXP',
     description: 'Relational database architecture, relational algebra, index tuning, transaction isolation, and query optimization.',
-    url: 'https://drive.google.com/file/d/1n25Y3Y_placeholder/view',
+    url: '',
   },
 ];
 
@@ -417,16 +417,18 @@ function FullScreenModal({ cert, onClose }: { cert: CertificateData; onClose: ()
               <CheckCircle2 className="w-4 h-4" />
               <span>Verified Credential</span>
             </div>
-            <a
-              href={cert.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 active:scale-95"
-              style={{ background: `linear-gradient(135deg, ${cert.color}, ${cert.secondaryColor})` }}
-            >
-              View Certificate
-              <ExternalLink className="w-4 h-4" />
-            </a>
+            {cert.url && (
+              <a
+                href={cert.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-black transition-all hover:opacity-90 active:scale-95"
+                style={{ background: '#FFFFFF' }}
+              >
+                View Certificate
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            )}
           </div>
         </div>
       </div>
@@ -469,25 +471,25 @@ export default function Certifications() {
       {/* Ambient glow */}
       <div
         className="absolute top-1/3 left-1/4 w-[500px] h-[500px] rounded-full blur-[180px] pointer-events-none"
-        style={{ background: 'rgba(6,182,212,0.06)' }}
+        style={{ background: 'rgba(255,255,255,0.03)' }}
       />
       <div
         className="absolute bottom-1/3 right-1/4 w-[500px] h-[500px] rounded-full blur-[180px] pointer-events-none"
-        style={{ background: 'rgba(99,102,241,0.05)' }}
+        style={{ background: 'rgba(255,255,255,0.02)' }}
       />
 
       {/* Header */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10 text-center space-y-3 mb-10">
         <div
           className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border font-mono text-xs tracking-widest uppercase"
-          style={{ background: 'rgba(10,132,255,0.08)', borderColor: 'rgba(10,132,255,0.2)', color: '#0A84FF' }}
+          style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.12)', color: '#FFFFFF' }}
         >
           <Trophy className="w-3.5 h-3.5" />
           <span>Certifications</span>
         </div>
         <h2 className="font-syne text-4xl sm:text-5xl font-bold text-white tracking-tight">
           Credentials &{' '}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/50">
             Achievements
           </span>
         </h2>

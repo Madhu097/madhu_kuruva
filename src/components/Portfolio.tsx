@@ -136,8 +136,8 @@ export default function Portfolio() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
         <div className={`mb-20 space-y-4 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <div className="flex items-center gap-4">
-            <div className="h-[1px] w-12 bg-accent" />
-            <span className="text-accent font-mono text-sm tracking-widest uppercase">Portfolio</span>
+            <div className="h-[1px] w-12 bg-white/30" />
+            <span className="text-white/40 font-mono text-sm tracking-widest uppercase">Portfolio</span>
           </div>
           <h2 className="font-syne text-5xl sm:text-7xl font-bold text-white leading-none">
             CREATIVE <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/20">WORKS</span>
@@ -228,7 +228,7 @@ export default function Portfolio() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`View ${project.title} source code on GitHub`}
-                    className="p-4 rounded-full bg-card border border-border hover:bg-accent text-primaryText transition-all backdrop-blur-xl"
+                    className="p-4 rounded-full bg-white/10 border border-white/20 hover:bg-white hover:text-black text-white transition-all backdrop-blur-xl"
                   >
                     <Github size={20} />
                   </a>
@@ -237,7 +237,7 @@ export default function Portfolio() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`Open ${project.title} live preview`}
-                    className="p-4 rounded-full bg-card border border-border hover:bg-accent text-primaryText transition-all backdrop-blur-xl"
+                    className="p-4 rounded-full bg-white/10 border border-white/20 hover:bg-white hover:text-black text-white transition-all backdrop-blur-xl"
                   >
                     <ExternalLink size={20} />
                   </a>

@@ -67,7 +67,7 @@ function MinimalLoader() {
             width: '100%',
             transform: `scaleX(${progress / 100})`,
             transformOrigin: 'left',
-            background: 'linear-gradient(90deg, #0A84FF, #409CFF)',
+            background: 'linear-gradient(90deg, #FFFFFF, rgba(255, 255, 255, 0.7))',
             borderRadius: '99px',
             transition: 'transform 0.05s linear',
             willChange: 'transform',

@@ -508,11 +508,11 @@ export default function CliChatbot() {
           aria-label="Open CLI Terminal Assistant"
           className="group relative flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-300 hover:scale-105 active:scale-95"
           style={{
-            background: 'rgba(8, 11, 20, 0.85)',
+            background: 'rgba(10, 10, 10, 0.88)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(129, 140, 248, 0.30)',
-            boxShadow: '0 6px 24px rgba(0, 0, 0, 0.6), 0 0 16px -2px rgba(99, 102, 241, 0.25)',
+            border: '1px solid rgba(255, 255, 255, 0.18)',
+            boxShadow: '0 6px 24px rgba(0, 0, 0, 0.75), 0 0 16px -2px rgba(255, 255, 255, 0.08)',
           }}
         >
           {/* Pulsing online status indicator */}
@@ -521,7 +521,7 @@ export default function CliChatbot() {
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
           </span>
 
-          <Terminal className="w-3.5 h-3.5 text-indigo-400 group-hover:text-indigo-300 transition-colors" />
+          <Terminal className="w-3.5 h-3.5 text-white/70 group-hover:text-white transition-colors" />
 
           <span className="text-[11px] font-mono font-medium text-slate-200 group-hover:text-white transition-colors">
             &gt;_ CLI
@@ -542,15 +542,15 @@ export default function CliChatbot() {
               : 'bottom-14 sm:bottom-16 right-3 left-3 sm:left-auto sm:right-5 w-auto sm:w-[350px] md:w-[370px] h-[310px] sm:h-[350px] max-h-[50vh] rounded-2xl'
           } ${isMinimized ? 'hidden' : 'flex'}`}
           style={{
-            background: isGreenTheme ? 'rgba(5, 14, 8, 0.92)' : 'rgba(8, 11, 20, 0.92)',
+            background: isGreenTheme ? 'rgba(5, 14, 8, 0.95)' : 'rgba(10, 10, 10, 0.95)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
             border: isGreenTheme
               ? '1px solid rgba(16, 185, 129, 0.30)'
-              : '1px solid rgba(129, 140, 248, 0.30)',
+              : '1px solid rgba(255, 255, 255, 0.18)',
             boxShadow: isGreenTheme
-              ? '0 16px 40px rgba(0, 0, 0, 0.75), 0 0 25px -5px rgba(16, 185, 129, 0.2)'
-              : '0 16px 40px rgba(0, 0, 0, 0.75), 0 0 25px -5px rgba(99, 102, 241, 0.2)',
+              ? '0 16px 40px rgba(0, 0, 0, 0.85), 0 0 25px -5px rgba(16, 185, 129, 0.2)'
+              : '0 16px 40px rgba(0, 0, 0, 0.85), 0 0 25px -5px rgba(255, 255, 255, 0.08)',
           }}
         >
           {/* Window Header Bar */}
@@ -634,7 +634,7 @@ export default function CliChatbot() {
             }}
           >
             <span className="text-[9px] font-mono text-slate-400 mr-1 flex-shrink-0 flex items-center gap-1">
-              <Sparkles className="w-2 h-2 text-indigo-400" /> Quick:
+              <Sparkles className="w-2 h-2 text-white/70" /> Quick:
             </span>
             {QUICK_COMMANDS.map((cmd) => (
               <button
@@ -642,9 +642,9 @@ export default function CliChatbot() {
                 onClick={() => executeCommand(cmd)}
                 className="flex-shrink-0 text-[10px] font-mono px-1.5 py-0.5 rounded transition-all duration-150 hover:scale-105 active:scale-95"
                 style={{
-                  background: isGreenTheme ? 'rgba(16, 185, 129, 0.15)' : 'rgba(99, 102, 241, 0.15)',
-                  border: isGreenTheme ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(129, 140, 248, 0.22)',
-                  color: isGreenTheme ? '#6EE7B7' : '#C7D2FE',
+                  background: isGreenTheme ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.08)',
+                  border: isGreenTheme ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(255, 255, 255, 0.15)',
+                  color: isGreenTheme ? '#6EE7B7' : '#F1F5F9',
                 }}
               >
                 {cmd}

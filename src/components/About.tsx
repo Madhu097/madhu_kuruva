@@ -253,7 +253,7 @@ function IDCard() {
             className="rounded-3xl overflow-hidden border border-border
                        shadow-[0_40px_100px_rgba(0,0,0,0.85),0_0_80px_rgba(10,132,255,0.07)]">
 
-            <div className="h-2 bg-gradient-to-r from-accent to-accentHover" />
+            <div className="h-2 bg-white/20" />
 
             <div className="bg-card">
               {/* header */}
@@ -262,9 +262,8 @@ function IDCard() {
                   <p className="text-[9px] tracking-[0.28em] text-accent/60 uppercase font-semibold">Portfolio</p>
                   <p className="text-[8px] text-gray-600 tracking-widest">Developer ID</p>
                 </div>
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-accent to-accentHover
-                                flex items-center justify-center
-                                shadow-[0_0_18px_rgba(10,132,255,0.45)]">
+                <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20
+                                flex items-center justify-center">
                   <span className="text-white text-xs font-bold">MK</span>
                 </div>
               </div>
@@ -293,8 +292,7 @@ function IDCard() {
               {/* name + role */}
               <div className="text-center px-5 pt-4 pb-4">
                 <h3 className="text-white font-bold text-xl sm:text-2xl tracking-wide">Madhu Kuruva</h3>
-                <p className="mt-1.5 text-sm tracking-[0.2em] uppercase font-semibold
-                              bg-gradient-to-r from-accent to-accentHover bg-clip-text text-transparent">
+                <p className="mt-1.5 text-sm tracking-[0.2em] uppercase font-semibold text-white/60">
                   Full Stack Developer
                 </p>
                 {/* ── Recruiter-attention badge ── */}
@@ -325,7 +323,7 @@ function IDCard() {
                 <span>SWIPE TO SCROLL</span>
               </div>
 
-              <div className="h-1.5 bg-gradient-to-r from-accent via-accentHover to-accent" />
+              <div className="h-1.5 bg-white/10" />
             </div>
           </div>
         </div>
@@ -389,7 +387,7 @@ export default function About() {
           <div ref={leftRef} className="space-y-6 about-left pt-20 md:pt-16">
             <div>
               <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4">About Me</h2>
-              <div className="h-1 w-24 bg-gradient-to-r from-accent to-accentHover rounded-full" />
+              <div className="h-1 w-24 bg-white/20 rounded-full" />
             </div>
 
             <p className="text-secondaryText text-sm sm:text-base md:text-lg leading-relaxed">
@@ -425,14 +423,13 @@ export default function About() {
                              hover:border-accent/50 transition-all duration-300"
                   style={{ transitionDelay: `${i * 80}ms` }}>
                   <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14
-                                  bg-gradient-to-br from-accent to-accentHover
-                                  rounded-lg flex items-center justify-center">
-                    <span className="text-white font-bold text-xs sm:text-sm">{item.year}</span>
+                                  bg-white rounded-lg flex items-center justify-center shadow-md">
+                    <span className="text-black font-bold text-xs sm:text-sm">{item.year}</span>
                   </div>
                   <div className="min-w-0">
                     <p className="text-primaryText font-semibold text-sm sm:text-base">{item.title}</p>
                     <p className="text-secondaryText text-xs sm:text-sm">{item.institute}</p>
-                    <p className="text-accent text-xs mt-1">{item.status}</p>
+                    <p className="text-white/40 text-xs mt-1">{item.status}</p>
                   </div>
                 </div>
               ))}

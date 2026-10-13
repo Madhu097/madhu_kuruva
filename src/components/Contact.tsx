@@ -135,7 +135,7 @@ export default function Contact() {
           <p className="text-gray-400 text-sm sm:text-base md:text-lg max-w-2xl mx-auto">
             Have a project in mind? Let's create something extraordinary together
           </p>
-          <div className="h-1 w-24 bg-gradient-to-r from-accent to-accentHover rounded-full mx-auto mt-6" />
+          <div className="h-px w-24 bg-white/20 rounded-full mx-auto mt-6" />
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 md:gap-12">
@@ -154,7 +154,7 @@ export default function Contact() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-card backdrop-blur-sm border border-border rounded-xl hover:border-accent/50 transition-all duration-300 group"
               >
-                <div className="w-10 sm:w-12 h-10 sm:h-12 bg-gradient-to-br from-accent to-accentHover rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="w-10 sm:w-12 h-10 sm:h-12 bg-white/10 border border-white/15 rounded-lg flex items-center justify-center flex-shrink-0">
                   <Mail className="w-5 sm:w-6 h-5 sm:h-6 text-white" />
                 </div>
                 <div className="flex-1">
@@ -164,7 +164,7 @@ export default function Contact() {
               </a>
 
               <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-card backdrop-blur-sm border border-border rounded-xl hover:border-accent/50 transition-all duration-300">
-                <div className="w-10 sm:w-12 h-10 sm:h-12 bg-gradient-to-br from-accent to-accentHover rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="w-10 sm:w-12 h-10 sm:h-12 bg-white/10 border border-white/15 rounded-lg flex items-center justify-center flex-shrink-0">
                   <Linkedin className="w-5 sm:w-6 h-5 sm:h-6 text-white" />
                 </div>
                 <div>
@@ -251,7 +251,7 @@ export default function Contact() {
                 type="submit"
                 disabled={isSubmitting || submitted}
                 data-magnetic
-                className="group relative w-full px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-accent to-accentHover rounded-xl text-white font-medium text-sm sm:text-base overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(10,132,255,0.5)] disabled:opacity-50 disabled:cursor-not-allowed"
+                className="group relative w-full px-6 sm:px-8 py-3 sm:py-4 bg-white rounded-xl text-black font-semibold text-sm sm:text-base overflow-hidden transition-all duration-300 hover:bg-white/90 hover:shadow-[0_0_30px_rgba(255,255,255,0.15)] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">
                   {submitted ? (
@@ -281,7 +281,7 @@ export default function Contact() {
                     100% { transform: translate(150%, -150%) scale(1.2); opacity: 0; }
                   }
                 `}</style>
-                <div className="absolute inset-0 bg-gradient-to-r from-accentHover to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
               </button>
               {error && (
                 <p className="text-sm text-red-400 text-center">{error}</p>
@@ -306,7 +306,7 @@ export default function Contact() {
           </p>
           <button 
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="w-10 h-10 bg-card backdrop-blur-sm border border-border rounded-full flex items-center justify-center text-primaryText hover:text-accent hover:border-accent hover:bg-card/80 hover:shadow-[0_0_15px_rgba(10,132,255,0.5)] transition-all duration-300 group cursor-pointer z-50 animate-bounce hover:animate-none"
+            className="w-10 h-10 bg-card backdrop-blur-sm border border-border rounded-full flex items-center justify-center text-primaryText hover:text-white hover:border-white/40 hover:bg-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300 group cursor-pointer z-50 animate-bounce hover:animate-none"
             aria-label="Go to top"
           >
             <ArrowUp className="w-5 h-5 group-hover:-translate-y-1 transition-transform" />

@@ -80,9 +80,9 @@ export default function Skills() {
 
       {/* Subtle ambient glows */}
       <div className="absolute top-1/4 left-1/4 w-80 h-80 rounded-full blur-[140px] pointer-events-none"
-        style={{ background: 'rgba(10,132,255,0.05)' }} />
+        style={{ background: 'rgba(255,255,255,0.03)' }} />
       <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full blur-[140px] pointer-events-none"
-        style={{ background: 'rgba(99,102,241,0.04)' }} />
+        style={{ background: 'rgba(255,255,255,0.02)' }} />
 
       <div className="max-w-7xl mx-auto relative z-10">
 
@@ -104,9 +104,9 @@ export default function Skills() {
               onClick={() => setActiveFilter(cat)}
               className="relative px-5 py-2 rounded-full text-xs font-semibold tracking-wider uppercase transition-all duration-300 overflow-hidden"
               style={{
-                color: activeFilter === cat ? 'var(--color-background)' : 'var(--color-secondary-text)',
+                color: activeFilter === cat ? '#000000' : 'var(--color-secondary-text)',
                 background: activeFilter === cat
-                  ? 'linear-gradient(135deg, var(--color-accent), var(--color-accent-hover))'
+                  ? '#FFFFFF'
                   : 'var(--color-card)',
                 border: `1px solid ${activeFilter === cat ? 'transparent' : 'var(--color-border)'}`,
               }}

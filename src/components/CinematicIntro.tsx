@@ -642,21 +642,21 @@ export default function CinematicIntro() {
         }
 
         .ci-welcome-h {
-          font-family: 'Playfair Display', serif;
+          font-family: 'Fraunces', Georgia, serif;
           font-weight: 700;
           font-size: clamp(1.6rem, 4.5vw, 5rem);
           color: #fff;
           letter-spacing: -0.02em;
           line-height: 1.10;
           margin: 0;
-          text-shadow: 0 0 70px rgba(10,132,255,0.50), 0 2px 32px rgba(0,0,0,0.98);
+          text-shadow: 0 0 70px rgba(255,255,255,0.30), 0 2px 32px rgba(0,0,0,0.98);
         }
 
         .ci-welcome-cap {
           display: inline-block;
           font-family: 'Plus Jakarta Sans', sans-serif;
           font-size: clamp(0.6rem, 1.3vw, 0.82rem);
-          color: rgba(10,132,255,0.65);
+          color: rgba(255,255,255,0.60);
           letter-spacing: 0.38em;
           text-transform: uppercase;
           margin-top: 1.3em;
@@ -719,8 +719,8 @@ export default function CinematicIntro() {
           background: rgba(8, 12, 24, 0.76);
           backdrop-filter: blur(14px);
           -webkit-backdrop-filter: blur(14px);
-          border: 1px solid rgba(129, 140, 248, 0.32);
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.65), 0 0 16px rgba(99, 102, 241, 0.22);
+          border: 1px solid rgba(255, 255, 255, 0.25);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 0 16px rgba(255, 255, 255, 0.1);
           z-index: 40;
           opacity: 1;
           transition: opacity 0.35s ease, transform 0.35s ease;
@@ -728,7 +728,7 @@ export default function CinematicIntro() {
         }
 
         .ci-hint-icon {
-          color: #818CF8;
+          color: #FFFFFF;
           font-size: 13px;
           font-weight: 800;
           animation: ci-hint-bounce 1.5s ease-in-out infinite;
@@ -793,17 +793,17 @@ export default function CinematicIntro() {
           <div className="ci-flare" style={{
             width: 'clamp(80px,15vw,220px)', height: 'clamp(80px,15vw,220px)',
             top: '12%', left: '6%',
-            background: 'radial-gradient(circle,rgba(10,132,255,0.10) 0%,transparent 72%)',
+            background: 'radial-gradient(circle,rgba(255,255,255,0.06) 0%,transparent 72%)',
           }} />
           <div className="ci-flare" style={{
             width: 'clamp(60px,12vw,150px)', height: 'clamp(60px,12vw,150px)',
             top: '58%', right: '8%',
-            background: 'radial-gradient(circle,rgba(64,156,255,0.08) 0%,transparent 72%)',
+            background: 'radial-gradient(circle,rgba(255,255,255,0.04) 0%,transparent 72%)',
           }} />
           <div className="ci-flare" style={{
             width: 'clamp(30px,5vw,80px)', height: 'clamp(30px,5vw,80px)',
             top: '26%', right: '16%',
-            background: 'radial-gradient(circle,rgba(10,132,255,0.12) 0%,transparent 72%)',
+            background: 'radial-gradient(circle,rgba(255,255,255,0.08) 0%,transparent 72%)',
           }} />
 
           {TEXT_SEQUENCE.map((seg, i) => (

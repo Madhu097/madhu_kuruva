@@ -139,12 +139,12 @@ export default function RightNavbar() {
         <div
           className="relative flex items-center p-1 rounded-full"
           style={{
-            background: 'rgba(7, 10, 20, 0.88)',
+            background: 'rgba(10, 10, 10, 0.90)',
             backdropFilter: 'blur(24px)',
             WebkitBackdropFilter: 'blur(24px)',
-            border: '1px solid rgba(129, 140, 248, 0.28)',
+            border: '1px solid rgba(255, 255, 255, 0.12)',
             boxShadow:
-              '0 12px 35px -5px rgba(0, 0, 0, 0.75), 0 0 20px -2px rgba(99, 102, 241, 0.3)',
+              '0 12px 35px -5px rgba(0, 0, 0, 0.85), 0 0 20px -2px rgba(255, 255, 255, 0.05)',
           }}
         >
           {/* Animated GPU-Composited Sliding Pill for Mobile */}
@@ -160,10 +160,10 @@ export default function RightNavbar() {
               transition: 'transform 350ms cubic-bezier(0.34,1.56,0.64,1), width 300ms ease, opacity 200ms ease',
               willChange: 'transform',
               background:
-                'linear-gradient(135deg, rgba(99, 102, 241, 0.40) 0%, rgba(129, 140, 248, 0.22) 100%)',
-              border: '1px solid rgba(129, 140, 248, 0.55)',
+                'rgba(255, 255, 255, 0.12)',
+              border: '1px solid rgba(255, 255, 255, 0.30)',
               boxShadow:
-                '0 0 16px rgba(99, 102, 241, 0.5), inset 0 0 8px rgba(129, 140, 248, 0.3)',
+                '0 0 16px rgba(255, 255, 255, 0.08), inset 0 0 8px rgba(255, 255, 255, 0.05)',
             }}
           />
 
@@ -188,14 +188,14 @@ export default function RightNavbar() {
                   <Icon
                     className={`w-3.5 h-3.5 transition-all duration-300 ${
                       isActive
-                        ? 'text-indigo-300 scale-110 drop-shadow-[0_0_6px_rgba(129,140,248,0.8)]'
+                        ? 'text-white scale-110'
                         : 'scale-95 hover:scale-105'
                     }`}
                   />
 
                   {/* Micro active dot */}
                   {isActive && (
-                    <span className="absolute bottom-1 w-1 h-1 rounded-full bg-indigo-400 shadow-[0_0_6px_#818CF8]" />
+                    <span className="absolute bottom-1 w-1 h-1 rounded-full bg-white" />
                   )}
                 </button>
               );
@@ -207,11 +207,11 @@ export default function RightNavbar() {
         <div
           className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono tracking-wider transition-all duration-300"
           style={{
-            background: 'rgba(8, 11, 22, 0.75)',
+            background: 'rgba(10, 10, 10, 0.85)',
             backdropFilter: 'blur(12px)',
             WebkitBackdropFilter: 'blur(12px)',
-            border: '1px solid rgba(129, 140, 248, 0.20)',
-            color: '#A5B4FC',
+            border: '1px solid rgba(255, 255, 255, 0.10)',
+            color: '#E0E0E0',
             boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)',
           }}
         >
@@ -235,12 +235,12 @@ export default function RightNavbar() {
         <div
           className="relative flex items-center rounded-2xl p-1.5 transition-all duration-300"
           style={{
-            background: 'rgba(8, 12, 24, 0.76)',
+            background: 'rgba(10, 10, 10, 0.80)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(129, 140, 248, 0.25)',
+            border: '1px solid rgba(255, 255, 255, 0.10)',
             boxShadow:
-              '0 8px 32px 0 rgba(0, 0, 0, 0.55), 0 0 20px -2px rgba(99, 102, 241, 0.18)',
+              '0 8px 32px 0 rgba(0, 0, 0, 0.60), 0 0 20px -2px rgba(255, 255, 255, 0.03)',
           }}
         >
           {/* Toggle Drawer Button on left edge of navbar */}
@@ -249,17 +249,17 @@ export default function RightNavbar() {
             aria-label={isExpanded ? 'Collapse navigation drawer' : 'Expand navigation drawer'}
             className="absolute -left-7 top-1/2 -translate-y-1/2 w-7 h-12 flex items-center justify-center rounded-l-lg transition-all duration-300 group"
             style={{
-              background: 'rgba(8, 12, 24, 0.88)',
+              background: 'rgba(10, 10, 10, 0.92)',
               backdropFilter: 'blur(16px)',
               WebkitBackdropFilter: 'blur(16px)',
-              border: '1px solid rgba(129, 140, 248, 0.25)',
+              border: '1px solid rgba(255, 255, 255, 0.10)',
               borderRight: 'none',
             }}
           >
             {isExpanded ? (
-              <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-400 transition-colors" />
+              <ChevronRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-white transition-colors" />
             ) : (
-              <ChevronLeft className="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-400 transition-colors" />
+              <ChevronLeft className="w-3.5 h-3.5 text-gray-400 group-hover:text-white transition-colors" />
             )}
           </button>
 
@@ -274,18 +274,18 @@ export default function RightNavbar() {
               transition: 'transform 350ms cubic-bezier(0.34,1.56,0.64,1), height 300ms ease, opacity 200ms ease',
               willChange: 'transform',
               background:
-                'linear-gradient(135deg, rgba(99, 102, 241, 0.35) 0%, rgba(129, 140, 248, 0.18) 100%)',
-              border: '1px solid rgba(129, 140, 248, 0.45)',
+                'rgba(255, 255, 255, 0.10)',
+              border: '1px solid rgba(255, 255, 255, 0.22)',
               boxShadow:
-                '0 0 16px -2px rgba(99, 102, 241, 0.4), inset 0 0 8px rgba(129, 140, 248, 0.2)',
+                '0 0 16px -2px rgba(255, 255, 255, 0.06), inset 0 0 8px rgba(255, 255, 255, 0.03)',
             }}
           >
             {/* Sliding neon accent edge bar */}
             <span
               className="absolute -left-1.5 top-1.5 bottom-1.5 w-1 rounded-r-full"
               style={{
-                background: '#818CF8',
-                boxShadow: '0 0 10px #818CF8',
+                background: '#FFFFFF',
+                boxShadow: '0 0 8px rgba(255,255,255,0.5)',
               }}
             />
           </div>
@@ -306,7 +306,7 @@ export default function RightNavbar() {
                   className={`group relative flex items-center gap-2.5 px-2.5 py-2 rounded-xl transition-all duration-200 text-left ${
                     isActive
                       ? 'text-white'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
+                      : 'text-gray-500 hover:text-gray-200 hover:bg-white/5'
                   }`}
                 >
                   {/* Icon */}
@@ -314,7 +314,7 @@ export default function RightNavbar() {
                     <Icon
                       className={`w-4 h-4 transition-all duration-300 ${
                         isActive
-                          ? 'text-indigo-300 scale-110 drop-shadow-[0_0_6px_rgba(129,140,248,0.7)]'
+                          ? 'text-white scale-110'
                           : 'group-hover:scale-110'
                       }`}
                     />
@@ -337,12 +337,12 @@ export default function RightNavbar() {
                     <div
                       className="absolute right-full mr-3.5 px-2.5 py-1 rounded-md text-[11px] font-medium tracking-wider whitespace-nowrap opacity-0 pointer-events-none -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200"
                       style={{
-                        background: 'rgba(10, 14, 28, 0.92)',
+                        background: 'rgba(10, 10, 10, 0.95)',
                         backdropFilter: 'blur(12px)',
                         WebkitBackdropFilter: 'blur(12px)',
-                        border: '1px solid rgba(129, 140, 248, 0.3)',
+                        border: '1px solid rgba(255, 255, 255, 0.12)',
                         boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
-                        color: isActive ? '#A5B4FC' : '#E2E8F0',
+                        color: isActive ? '#FFFFFF' : '#E2E8F0',
                       }}
                     >
                       {item.label}
